@@ -18,6 +18,18 @@
                 <NuxtLink to="/camera">Camera</NuxtLink>
             </li>
         </ul>
+        <h1>Math</h1>
+        <ul>
+            <li>
+                <NuxtLink to="coordinate">三次元座標</NuxtLink>
+            </li>
+        </ul>
+        <h1>Custom</h1>
+        <ul>
+            <li>
+                <NuxtLink to="custom">Custom</NuxtLink>
+            </li>
+        </ul>
     </nav>
 </template>
 

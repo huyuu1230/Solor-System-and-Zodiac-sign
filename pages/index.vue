@@ -1,71 +1,115 @@
 <template>
-    <div>
-        <canvas id="index"></canvas>
-    </div>
+  <div>
+    <canvas id="index"></canvas>
+  </div>
 </template>
 
 <script setup>
-import * as THREE from "three"
+import * as THREE from "three";
+
+function toRad(deg) {
+  return (deg * Math.PI) / 180;
+}
 
 onMounted(() => {
-    let scene, camera, renderer;
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+  let scene, camera, renderer;
+  let width = window.innerWidth;
+  let height = window.innerHeight;
 
-    function init() {
+  function init() {
+    renderer = new THREE.WebGLRenderer({
+      canvas: document.querySelector("#index"),
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
 
-        renderer = new THREE.WebGLRenderer({
-            canvas: document.querySelector("#index")
-        });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(width, height);
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
 
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xffffff)
+    camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
 
-        camera = new THREE.PerspectiveCamera(100, width / height,5000,0);
+    camera.position.set(0, 0, +1500);
 
-        camera.position.set(0, 0, +1500)
+    // -----Geometry___オブジェクトの形 , 大きさなど
+    const geometry = new THREE.SphereGeometry(400, 30, 30);
+    // -----Material___オブジェクトの質感 , 色など
+    const material = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      wireframe: true,
+    });
+    // -----Mesh___Geometry と Materialをまとめて一つのオブジェクトにする
+    const box = new THREE.Mesh(geometry, material);
 
-        // -----Geometry___オブジェクトの形 , 大きさなど
-        const geometry = new THREE.SphereGeometry(400, 30, 30);
-        // -----Material___オブジェクトの質感 , 色など
-        const material = new THREE.MeshBasicMaterial({
-            color: 0x000000,
-            wireframe: true
-        })
+    // -----半径
+    const radius = 800;
+    // -----仰角
+    let phi = (toRad(45) * Math.PI) / 180;
+    // -----方位角
+    let theta = ((toRad(45) - 180) * Math.PI) / 180;
+    // -----x座標
+    const x = -1 * radius * Math.cos(phi) * Math.cos(theta);
+    // -----y座標
+    const y = radius * Math.sin(phi);
+    // -----z座標
+    const z = radius * Math.cos(phi) * Math.sin(theta);
+    // -----position
+    box.position.set(x, y, z);
+    scene.add(box);
 
-        // -----Mesh___Geometry と Materialをまとめて一つのオブジェクトにする
-        const box = new THREE.Mesh(geometry, material);
+    const sphereGeometry = new THREE.SphereGeometry(200, 20, 20);
+    const sphereMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      wireframe: true,
+    });
+    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
-        
-        const radius = 800;
-        let rad = 90
-        const x = radius*2 * Math.cos(rad);
-        const y = 0;
-        const z = radius * Math.cos(rad);
-        box.position.set(x, y, z)
-        scene.add(box);
+    const sphereR = 1200;
+    let spherePhi = toRad(45);
+    let sphereTheta = toRad(45);
+    const sphereX = sphereR * Math.cos(spherePhi);
+    const sphereY = Math.sin(1);
+    const sphereZ = sphereR * Math.sin(spherePhi);
+    sphere.position.set(sphereX, sphereY, sphereZ);
 
-        tick();
+    scene.add(sphere);
 
-        // 毎フレーム時に実行されるループイベントです
-        function tick() {
-            box.rotation.x += 0.01;
-            box.rotation.y += 0.01;
+    tick();
 
-            rad += 0.01;
-            const x = radius*2 * Math.cos(rad);
-            const y = 0;
-            const z = radius * Math.sin(rad);
-            box.position.set(x, y, z)
+    // 毎フレーム時に実行されるループイベントです
+    function tick() {
+      box.rotation.x += 0.01;
+      box.rotation.y += 0.01;
 
-            renderer.render(scene, camera); // レンダリング
+      // -----加算する角度
+      phi += toRad(0.5);
+      // -----加算する方位角
+      theta += toRad(0.5);
+      // -----x座標
+      const x = -2 * radius * Math.cos(phi) * Math.cos(theta);
+      // -----y座標
+      const y = radius * Math.sin(phi);
+      // -----z座標
+      const z = -2 *radius * Math.cos(phi) * Math.sin(theta);
+      // -----position
+      box.position.set(x, y, z);
 
-            requestAnimationFrame(tick);
-        }
+      // ----------SPHERE
+      // -----rotate
+      sphere.rotation.x -= 0.01;
+      sphere.rotation.y -= 0.01;
+      spherePhi += toRad(0.5);
+      sphereTheta += toRad(0.5)
+      const sphereX = sphereR * Math.cos(spherePhi);
+      const sphereY = 200 * Math.sin(sphereTheta) -100;
+      const sphereZ = sphereR * Math.sin(spherePhi);
+      sphere.position.set(sphereX, sphereY, sphereZ);
+      console.log(sphereY)
+
+      renderer.render(scene, camera); // レンダリング
+      requestAnimationFrame(tick);
     }
-    init()
-})
+  }
+  init();
+});
 </script>
 

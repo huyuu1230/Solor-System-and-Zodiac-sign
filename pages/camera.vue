@@ -1,5 +1,5 @@
 <template>
-    <div id="camera">
+    <div id="information">
         <h2>Camera</h2>
         <section class="paragraph">
             <h3>THREE.PerspectiveCamera / カメラ</h3>
@@ -19,38 +19,3 @@
         </section>
     </div>
 </template>
-
-<style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&display=swap');
-
-#camera {
-    font-family: 'Kaisei Decol', serif;
-    margin: 0 0 0 200px;
-}
-
-h2 {
-    font-size: 40px;
-    letter-spacing: 0.25em;
-    margin: 100px 0 0 100px;
-}
-
-.paragraph {
-    width: 1000px;
-    margin: 100px auto 0;
-
-    h3 {
-        font-size: 32px;
-    }
-
-    h4 {
-        margin: 50px 0 0 50px;
-        font-size: 24px;
-    }
-
-    p {
-        margin: 30px 0 0 50px;
-        font-size: 20px;
-        line-height: 2em;
-    }
-}
-</style>
