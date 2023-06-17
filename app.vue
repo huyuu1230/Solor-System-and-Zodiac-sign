@@ -11,6 +11,10 @@
   padding: 0;
 }
 
+h1,h2,h3,h4,h5,h6,p,a{
+  line-height: 1.5;
+}
+
 body {
   font-size: 16px;
 }

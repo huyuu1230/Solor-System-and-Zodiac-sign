@@ -30,6 +30,12 @@
                 <NuxtLink to="custom">Custom</NuxtLink>
             </li>
         </ul>
+        <h1>Plans</h1>
+        <ul>
+            <li>
+                <NuxtLink to="/plan001">Plan001</NuxtLink>
+            </li>
+        </ul>
     </nav>
 </template>
 
