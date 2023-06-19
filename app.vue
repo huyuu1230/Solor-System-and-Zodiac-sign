@@ -1,7 +1,6 @@
 <template>
   <div>
     <headerNav/>
-    <three/>
     <NuxtPage />
   </div>
 </template>
