@@ -30,12 +30,6 @@
                 <NuxtLink to="custom">Custom</NuxtLink>
             </li>
         </ul>
-        <h1>Plans</h1>
-        <ul>
-            <li>
-                <NuxtLink to="/plan001">Plan001</NuxtLink>
-            </li>
-        </ul>
     </nav>
 </template>
 
@@ -49,7 +43,7 @@
     max-width: 200px;
     width: fit-content;
     height: 100vh;
-    padding: 50px 50px 0;
+    padding: 50px 30px 0;
     font-family: 'Kaisei Decol', serif;
     z-index: 1000;
 }
@@ -60,11 +54,11 @@ h1 {
 }
 
 h1:not(:first-child) {
-    margin: 50px 0 0 0;
+    margin: 30px 0 0 0;
 }
 
 ul {
-    margin: 30px 0 0 0;
+    margin: 20px 0 0 0;
 }
 
 li {

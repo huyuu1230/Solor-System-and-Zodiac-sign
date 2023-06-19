@@ -29,7 +29,7 @@
                 z = 半径 * Math.sin(方位角)
             </p>
         </div>
-        <div class="paragraph">
+        <!-- <div class="paragraph">
             <h3>orbit / 軌道</h3>
             <h4>position.x / x軸座標</h4>
             <p>
@@ -46,6 +46,6 @@
                 z = radius * Math.cos(仰角) * Math.cos(方位角)<br>
                 z = 半径 * cosθ * sinθ'
             </p>
-        </div>
+        </div> -->
     </div>
 </template>
