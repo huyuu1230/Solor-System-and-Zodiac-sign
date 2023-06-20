@@ -26,7 +26,7 @@ onMounted(() => {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xffffff);
     camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
-    camera.position.set(0, 500, +2000);
+    camera.position.set(0, 500, +3000);
 
     // -----規準となる地球の変数を定義
     const earthRaddius = 100;
@@ -59,15 +59,12 @@ onMounted(() => {
     Earth.position.set(earthX, earthY, earthZ);
     scene.add(Earth);
 
-
-
-
     // ----------惑星を生成するクラス
     class Planet {
       constructor(radius, orbitRadius, phiSpeed) {
         this.r = earthRaddius * radius;
         this.w = this.r / 5;
-        this.h = this.r / 5
+        this.h = this.r / 5;
         this.or = earthOrbitRaddius * orbitRadius;
         this.phi = toRad(0);
         this.theta = toRad(0);
@@ -81,7 +78,7 @@ onMounted(() => {
           wireframe: true,
         });
         this.planet = new THREE.Mesh(this.geometry, this.material);
-        this.planet.position.set(this.x, this.y, this.z)
+        this.planet.position.set(this.x, this.y, this.z);
         scene.add(this.planet);
       }
       update() {
@@ -89,12 +86,18 @@ onMounted(() => {
         this.x = this.or * Math.cos(this.phi);
         this.y = this.or * Math.sin(this.theta);
         this.z = this.or * Math.sin(this.phi);
-        this.planet.position.set(this.x, this.y, this.z)
+        this.planet.position.set(this.x, this.y, this.z);
       }
     }
     const Mercury = new Planet(0.38, 0.39, 0.24);
     const Venus = new Planet(0.95, 0.72, 0.62);
+    const Mars = new Planet(0.53, 1.52, 1.88);
 
+    // var material = new THREE.MeshBasicMaterial( { color: 0x666666 } );
+    //   var geometry = new THREE.CircleGeometry( 1200, 1000 );
+    //   var mesh = new THREE.Mesh( geometry, material );
+    //   mesh.position.set(0,0,0)
+    //   scene.add( mesh );
 
     tick();
 
@@ -109,7 +112,8 @@ onMounted(() => {
       Earth.position.set(earthX, earthY, earthZ);
       // -----水星
       Mercury.update();
-      Venus.update()
+      Venus.update();
+      Mars.update();
 
       renderer.render(scene, camera); // レンダリング
       requestAnimationFrame(tick);
