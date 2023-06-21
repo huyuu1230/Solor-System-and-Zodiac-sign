@@ -93,11 +93,43 @@ onMounted(() => {
     const Venus = new Planet(0.95, 0.72, 0.62);
     const Mars = new Planet(0.53, 1.52, 1.88);
 
-    // var material = new THREE.MeshBasicMaterial( { color: 0x666666 } );
-    //   var geometry = new THREE.CircleGeometry( 1200, 1000 );
-    //   var mesh = new THREE.Mesh( geometry, material );
-    //   mesh.position.set(0,0,0)
-    //   scene.add( mesh );
+
+
+
+
+
+
+
+    // ----------軌道
+    createLine();
+
+    //*****************************************
+    // 線を作成
+    //*****************************************
+    function createLine() {
+      const points = [];
+      const pointNum = 360;
+      for (let i = 0; i <= pointNum; i++) {
+        const rad = toRad(360 / pointNum * i);
+
+        const x = earthOrbitRaddius * Math.cos(rad);        
+        const y = 0;
+        const z = earthOrbitRaddius * Math.sin(rad);;
+        const p = new THREE.Vector3(x, y, z);
+        points.push(p);
+      }
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({ color: 0x000000 });
+      const line = new THREE.Line(geo, mat);
+      scene.add(line);
+    }
+
+
+
+
+
+
+
 
     tick();
 
