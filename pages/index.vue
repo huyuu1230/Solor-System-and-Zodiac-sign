@@ -26,7 +26,7 @@ onMounted(() => {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xffffff);
     camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
-    camera.position.set(0, 500, +2000);
+    camera.position.set(0, 5000, +20000);
 
     // -----規準となる地球の変数を定義
     const earthRaddius = 100;
@@ -44,8 +44,8 @@ onMounted(() => {
     class Planet {
       constructor(radius, orbitRadius, phiSpeed) {
         this.r = earthRaddius * radius;
-        this.w = this.r / 10;
-        this.h = this.r / 10;
+        this.w = this.r / 100;
+        this.h = this.r / 100;
         this.or = earthOrbitRaddius * orbitRadius;
         this.phi = toRad(0);
         this.theta = toRad(0);
@@ -102,6 +102,10 @@ onMounted(() => {
     Jupiter.orbit();
     const Saturn = new Planet(9.45, 9.58, 29.4);
     Saturn.orbit();
+    const Uranus = new Planet(4.01,19.2,83.8);
+    Uranus.orbit();
+    const Neptune = new Planet(3.88,30.0,163.8);
+    Neptune.orbit();
 
     tick();
 
@@ -115,6 +119,9 @@ onMounted(() => {
       Mars.update();
       Jupiter.update();
       Saturn.update();
+      Uranus.update();
+      Neptune.update();
+      
       renderer.render(scene, camera); // レンダリング
       requestAnimationFrame(tick);
     }
