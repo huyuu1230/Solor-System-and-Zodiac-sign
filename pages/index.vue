@@ -37,15 +37,12 @@ onMounted(() => {
     // 経度(仰角)の変化する値
     const earthThetaSpeed = toRad(0.75);
     
-
-    
-
     // ----------惑星を生成するクラス
     class Planet {
       constructor(radius, orbitRadius, phiSpeed) {
         this.r = earthRaddius * radius;
-        this.w = this.r / 100;
-        this.h = this.r / 100;
+        this.w = this.r / 50;
+        this.h = this.r / 50;
         this.or = earthOrbitRaddius * orbitRadius;
         this.phi = toRad(0);
         this.theta = toRad(0);
@@ -62,7 +59,7 @@ onMounted(() => {
         this.planet.position.set(this.x, this.y, this.z);
         scene.add(this.planet);
       }
-      // 軌道を生成するメソッド
+      // -----軌道を生成するメソッド
       orbit() {
         this.orbitPoints = [];
         this.orbitPointNum = 360;
@@ -81,7 +78,7 @@ onMounted(() => {
         this.orbitMesh = new THREE.Line(this.orbitGeometry, this.orbitMaterial);
         scene.add(this.orbitMesh);
       }
-      // 惑星をアニメーションさせるメソッド
+      // -----惑星をアニメーションさせるメソッド
       update() {
         this.phi += this.phiSpeed;
         this.x = this.or * Math.cos(this.phi);
@@ -89,7 +86,9 @@ onMounted(() => {
         this.z = this.or * Math.sin(this.phi);
         this.planet.position.set(this.x, this.y, this.z);
       }
-    }
+    };
+
+    // -----惑星
     const Mercury = new Planet(0.38, 0.39, 0.24);
     Mercury.orbit();
     const Venus = new Planet(0.95, 0.72, 0.62);
@@ -112,7 +111,7 @@ onMounted(() => {
     // 毎フレーム時に実行されるループイベントです
     function tick() {
       
-      // -----水星
+      // -----惑星
       Mercury.update();
       Venus.update();
       Earth.update();
@@ -121,8 +120,10 @@ onMounted(() => {
       Saturn.update();
       Uranus.update();
       Neptune.update();
-      
-      renderer.render(scene, camera); // レンダリング
+
+      // -----レンダリング
+      renderer.render(scene, camera);
+
       requestAnimationFrame(tick);
     }
   }
