@@ -33,13 +33,18 @@ onMounted(() => {
     // 地球の軌道半径
     const earthOrbitRaddius = 1200;
     // 緯度(方位角)の変化する値
-    const earthPhiSpeed = toRad(0.75);
+    const earthPhiSpeed = toRad(1);
     // 経度(仰角)の変化する値
-    const earthThetaSpeed = toRad(0.75);
+    const earthThetaSpeed = toRad(1);
+    // 自転の速度
+    const earthRotation = toRad(1);
+
+    // -----1秒に60回実行される
+    // -----６秒で360回
     
     // ----------惑星を生成するクラス
     class Planet {
-      constructor(radius, orbitRadius, phiSpeed) {
+      constructor(radius, orbitRadius, phiSpeed,rotation) {
         this.r = earthRaddius * radius;
         this.w = this.r / 50;
         this.h = this.r / 50;
@@ -50,6 +55,9 @@ onMounted(() => {
         this.x = this.or * Math.cos(this.phi);
         this.y = this.or * Math.sin(this.theta);
         this.z = this.or * Math.sin(this.phi);
+        this.rotationX = toRad(0);
+        this.rotationY = toRad(0);
+        this.rotationSpeed = earthRotation * rotation
         this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
         this.material = new THREE.MeshBasicMaterial({
           color: 0x000000,
@@ -84,26 +92,34 @@ onMounted(() => {
         this.x = this.or * Math.cos(this.phi);
         this.y = this.or * Math.sin(this.theta);
         this.z = this.or * Math.sin(this.phi);
+        this.rotationY += this.rotationSpeed;
+
         this.planet.position.set(this.x, this.y, this.z);
+        this.planet.rotation.y = this.rotationY;
       }
     };
 
+    // -----引数
+    // radius : 惑星の半径 , 
+    // orbitRadius : 軌道の半径 ,
+    // phiSpeed : 公転速度 ,
+    // rotation : 自転速度
     // -----惑星
-    const Mercury = new Planet(0.38, 0.39, 0.24);
+    const Mercury = new Planet(0.38, 0.39, 0.24,1);
     Mercury.orbit();
-    const Venus = new Planet(0.95, 0.72, 0.62);
+    const Venus = new Planet(0.95, 0.72, 0.62,1);
     Venus.orbit();
-    const Earth = new Planet(1,1,1);
+    const Earth = new Planet(1,1,1,1);
     Earth.orbit();
-    const Mars = new Planet(0.53, 1.52, 1.88);
+    const Mars = new Planet(0.53, 1.52, 1.88,1);
     Mars.orbit();
-    const Jupiter = new Planet(11.21, 5.2, 11.9);
+    const Jupiter = new Planet(11.21, 5.2, 11.9,1);
     Jupiter.orbit();
-    const Saturn = new Planet(9.45, 9.58, 29.4);
+    const Saturn = new Planet(9.45, 9.58, 29.4,1);
     Saturn.orbit();
-    const Uranus = new Planet(4.01,19.2,83.8);
+    const Uranus = new Planet(4.01,19.2,83.8,1);
     Uranus.orbit();
-    const Neptune = new Planet(3.88,30.0,163.8);
+    const Neptune = new Planet(3.88,30.0,163.8,1);
     Neptune.orbit();
 
     tick();
