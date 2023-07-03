@@ -24,24 +24,35 @@ onMounted(() => {
   let height = window.innerHeight;
 
   function init() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
+
     renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector("#index"),
     });
+    
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+
+    // -----camera
     camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
-    camera.position.set(0, 5000, +20000);
+    camera.position.set(0, 5000, 20000);
+    scene.add(camera);
+    
 
     // -----Orbit_Controls
-    const controls = new OrbitControls(camera, canvas)
+    document.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0,0,0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.5;
 
     
     // clickEvent
     mouse = new THREE.Vector2();
     raycaster = new THREE.Raycaster();
     canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('click',handleClick);
 
     function handleMouseMove(event) {
       const element = event.currentTarget;
@@ -54,11 +65,13 @@ onMounted(() => {
       //マウス座標を-1〜1の範囲に変換
       mouse.x = (x / w) * 2 - 1;
       mouse.y = -(y / h) * 2 + 1;
-      console.log(mouse.x);
-      console.log(mouse.y);
     }
 
+    function handleClick(event){
+      console.log('click')
+    }
 
+    
 
 
     // -----規準となる地球の変数を定義
@@ -171,23 +184,22 @@ onMounted(() => {
       // -----Orbit_Controls
       controls.update();
       // -----惑星
-      // Mercury.update();
-      // Venus.update();
-      // Earth.update();
-      // Mars.update();
-      // Jupiter.update();
-      // Saturn.update();
-      // Uranus.update();
-      // Neptune.update();
+      Mercury.update();
+      Venus.update();
+      Earth.update();
+      Mars.update();
+      Jupiter.update();
+      Saturn.update();
+      Uranus.update();
+      Neptune.update();
 
       //マウス位置からまっすぐに伸びる光線ベクトルを生成
       raycaster.setFromCamera(mouse, camera);
 
       //光線と交差したオブジェクトを取得
 
-      const intersects = raycaster.intersectObjects(scene.children);
-      // console.log(scene.children);
-      // console.log(intersects);
+      const intersects = raycaster.intersectObjects(scene.children,false);
+   
 
       if (intersects.length > 0) {
         console.log('intersects')
