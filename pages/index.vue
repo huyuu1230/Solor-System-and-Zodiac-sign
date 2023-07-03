@@ -18,7 +18,6 @@ onMounted(() => {
   // -----クリック関連
   let mouse;
   let raycaster;
-
   let scene, camera, renderer;
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -29,8 +28,9 @@ onMounted(() => {
 
     renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector("#index"),
+      antialias: true
     });
-    
+
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
 
@@ -38,40 +38,15 @@ onMounted(() => {
     camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
     camera.position.set(0, 5000, 20000);
     scene.add(camera);
-    
+
 
     // -----Orbit_Controls
-    document.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
+    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
     const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0,0,0);
+    controls.target.set(0, 0, 0);
     controls.enableDamping = true;
     controls.dampingFactor = 0.5;
 
-    
-    // clickEvent
-    mouse = new THREE.Vector2();
-    raycaster = new THREE.Raycaster();
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('click',handleClick);
-
-    function handleMouseMove(event) {
-      const element = event.currentTarget;
-      //canvas上のマウスのXY座標
-      const x = event.clientX - element.offsetLeft;
-      const y = event.clientY - element.offsetTop;
-      //canvasの幅と高さを取得
-      const w = element.offsetWidth;
-      const h = element.offsetHeight;
-      //マウス座標を-1〜1の範囲に変換
-      mouse.x = (x / w) * 2 - 1;
-      mouse.y = -(y / h) * 2 + 1;
-    }
-
-    function handleClick(event){
-      console.log('click')
-    }
-
-    
 
 
     // -----規準となる地球の変数を定義
@@ -175,9 +150,29 @@ onMounted(() => {
     const Neptune = new Planet(3.88, 30.0, 163.8, 1);
     Neptune.orbit();
 
-    tick();
 
-    
+    // clickEvent
+    mouse = new THREE.Vector2();
+    raycaster = new THREE.Raycaster();
+    canvas.addEventListener('mousemove', handleMouseMove);
+  
+
+    function handleMouseMove(event) {
+      const element = event.currentTarget;
+      //canvas上のマウスのXY座標
+      const x = event.clientX - element.offsetLeft;
+      const y = event.clientY - element.offsetTop;
+      //canvasの幅と高さを取得
+      const w = element.offsetWidth;
+      const h = element.offsetHeight;
+      //マウス座標を-1〜1の範囲に変換
+      mouse.x = (x / w) * 2 - 1;
+      mouse.y = -(y / h) * 2 + 1;
+    }
+
+  
+
+    tick();
 
     // 毎フレーム時に実行されるループイベントです
     function tick() {
@@ -198,12 +193,12 @@ onMounted(() => {
 
       //光線と交差したオブジェクトを取得
 
-      const intersects = raycaster.intersectObjects(scene.children,false);
-   
+      const intersects = raycaster.intersectObjects(scene.children , false);
 
-      if (intersects.length > 0) {
-        console.log('intersects')
-      }
+
+
+      console.log(intersects)
+
 
 
 
