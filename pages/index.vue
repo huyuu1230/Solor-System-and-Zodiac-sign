@@ -18,50 +18,26 @@ onMounted(() => {
   // -----クリック関連
   let mouse;
   let raycaster;
-  let scene, camera, renderer;
+  let scene, camera, renderer, controls;
   let width = window.innerWidth;
   let height = window.innerHeight;
 
+  // -----規準となる地球の変数を定義
+  const earthRaddius = 1000;
+  // 地球の軌道半径
+  const earthOrbitRaddius = 12000;
+  // 緯度(方位角)の変化する値
+  const earthPhiSpeed = toRad(1);
+  // 経度(仰角)の変化する値
+  const earthThetaSpeed = toRad(1);
+  // 自転の速度
+  const earthRotation = toRad(1);
+
+
+
   function init() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
-
-    renderer = new THREE.WebGLRenderer({
-      canvas: document.querySelector("#index"),
-      antialias: true
-    });
-
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
-
-    // -----camera
-    camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
-    camera.position.set(0, 5000, 20000);
-    scene.add(camera);
-
-
-    // -----Orbit_Controls
-    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
-    const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, 0, 0);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.5;
-
-
-
-    // -----規準となる地球の変数を定義
-    const earthRaddius = 1000;
-    // 地球の軌道半径
-    const earthOrbitRaddius = 12000;
-    // 緯度(方位角)の変化する値
-    const earthPhiSpeed = toRad(1);
-    // 経度(仰角)の変化する値
-    const earthThetaSpeed = toRad(1);
-    // 自転の速度
-    const earthRotation = toRad(1);
-
-    // -----1秒に60回実行される
-    // -----６秒で360回
+    setInit();
+    setControll();
 
     // ----------惑星を生成するクラス
     class Planet {
@@ -86,7 +62,7 @@ onMounted(() => {
         this.z = this.or * Math.sin(this.phi);
         this.rotationX = toRad(0);
         this.rotationY = toRad(0);
-        this.rotationSpeed = earthRotation * rotation
+        this.rotationSpeed = earthRotation * rotation;
         this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
         this.material = new THREE.MeshBasicMaterial({
           color: 0x000000,
@@ -125,13 +101,8 @@ onMounted(() => {
         this.planet.position.set(this.x, this.y, this.z);
         this.planet.rotation.y = this.rotationY;
       }
-    };
+    }
 
-    // -----引数
-    // radius : 惑星の半径 , 
-    // orbitRadius : 軌道の半径 ,
-    // phiSpeed : 公転速度 ,
-    // rotation : 自転速度
     // -----惑星
     const Mercury = new Planet(0.38, 0.39, 0.24, 1);
     Mercury.orbit();
@@ -150,34 +121,14 @@ onMounted(() => {
     const Neptune = new Planet(3.88, 30.0, 163.8, 1);
     Neptune.orbit();
 
-
-    // clickEvent
-    mouse = new THREE.Vector2();
-    raycaster = new THREE.Raycaster();
-    canvas.addEventListener('mousemove', handleMouseMove);
-  
-
-    function handleMouseMove(event) {
-      const element = event.currentTarget;
-      //canvas上のマウスのXY座標
-      const x = event.clientX - element.offsetLeft;
-      const y = event.clientY - element.offsetTop;
-      //canvasの幅と高さを取得
-      const w = element.offsetWidth;
-      const h = element.offsetHeight;
-      //マウス座標を-1〜1の範囲に変換
-      mouse.x = (x / w) * 2 - 1;
-      mouse.y = -(y / h) * 2 + 1;
-    }
-
-  
-
     tick();
+
+    
 
     // 毎フレーム時に実行されるループイベントです
     function tick() {
       // -----Orbit_Controls
-      controls.update();
+      // controls.update();
       // -----惑星
       Mercury.update();
       Venus.update();
@@ -189,26 +140,76 @@ onMounted(() => {
       Neptune.update();
 
       //マウス位置からまっすぐに伸びる光線ベクトルを生成
+      
       raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children);
 
+      // 衝突したオブジェクトの処理
+      if (intersects.length > 0) {
+        const firstIntersectedObject = intersects[0].object;
+        console.log(intersects)
+        // 衝突したオブジェクトに対する処理を記述
+        console.log("Clicked on:", firstIntersectedObject);
+      }
       //光線と交差したオブジェクトを取得
-
-      const intersects = raycaster.intersectObjects(scene.children , false);
-
-
-
-      console.log(intersects)
-
-
-
+      
 
       // -----レンダリング
       renderer.render(scene, camera);
 
       requestAnimationFrame(tick);
     }
+    console.log(raycaster)
   }
   init();
+
+  function setInit() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
+    // -----renderer
+    renderer = new THREE.WebGLRenderer({
+      canvas: document.querySelector("#index"),
+      antialias: true,
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
+    // -----camera
+    camera = new THREE.PerspectiveCamera(100, width / height, 5000, 0);
+    camera.position.set(0, 5000, 20000);
+  }
+
+  function setControll() {
+    // -----Orbit_Controls
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+    controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 0, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.5;
+    // -----clickEvent
+    mouse = new THREE.Vector2();
+    raycaster = new THREE.Raycaster();
+    canvas.addEventListener("mousemove", handleMouseMove);
+    // -----MouseMove
+    function handleMouseMove(event) {
+      const element = event.currentTarget;
+      //canvas上のマウスのXY座標
+      const x = event.clientX - element.getBoundingClientRect().left;
+      const y = event.clientY - element.getBoundingClientRect().top;
+      //canvasの幅と高さを取得
+      const w = element.offsetWidth;
+      const h = element.offsetHeight;
+      //マウス座標を-1〜1の範囲に変換
+      mouse.x = (x / w) * 2 - 1;
+      mouse.y = -(y / h) * 2 + 1; 
+      console.log('move')  
+    }
+  }
 });
 </script>
 
