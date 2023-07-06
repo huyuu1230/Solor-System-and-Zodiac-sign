@@ -8,9 +8,14 @@
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+const route = useRouter();
 
 function toRad(deg) {
   return (deg * Math.PI) / 180;
+}
+
+function ononon(){
+  route.push('/camera')
 }
 
 let scene, camera, renderer;
@@ -33,12 +38,14 @@ const earthThetaSpeed = toRad(1);
 // 自転の速度
 const earthRotation = toRad(1);
 
+
 onMounted(() => {
   const container = document.getElementById("index");
 
+  
   // ----------惑星を生成するクラス
   class Planet {
-    constructor(radius, orbitRadius, phiSpeed, rotation) {
+    constructor(name, radius, orbitRadius, phiSpeed, rotation) {
       this.r = earthRaddius * radius;
       if (radius <= 1) {
         this.w = this.r / 70;
@@ -67,7 +74,7 @@ onMounted(() => {
       });
       this.planet = new THREE.Mesh(this.geometry, this.material);
       this.planet.position.set(this.x, this.y, this.z);
-      this.planet.name = 'earth'
+      this.planet.name = name
       scene.add(this.planet);
       orbits.push(this.planet)
     }
@@ -127,21 +134,21 @@ onMounted(() => {
 
   function threeWorld() {
     // -----惑星
-    Mercury = new Planet(0.38, 0.39, 0.24, 1);
+    Mercury = new Planet('mercury', 0.38, 0.39, 0.24, 1);
     Mercury.orbit();
-    Venus = new Planet(0.95, 0.72, 0.62, 1);
+    Venus = new Planet('venus', 0.95, 0.72, 0.62, 1);
     Venus.orbit();
-    Earth = new Planet(1, 1, 1, 1);
+    Earth = new Planet('earth', 1, 1, 1, 1);
     Earth.orbit();
-    Mars = new Planet(0.53, 1.52, 1.88, 1);
+    Mars = new Planet('mars', 0.53, 1.52, 1.88, 1);
     Mars.orbit();
-    Jupiter = new Planet(11.21, 5.2, 11.9, 1);
+    Jupiter = new Planet('jupiter', 11.21, 5.2, 11.9, 1);
     Jupiter.orbit();
-    Saturn = new Planet(9.45, 9.58, 29.4, 1);
+    Saturn = new Planet('saturn', 9.45, 9.58, 29.4, 1);
     Saturn.orbit();
-    Uranus = new Planet(4.01, 19.2, 83.8, 1);
+    Uranus = new Planet('uranus', 4.01, 19.2, 83.8, 1);
     Uranus.orbit();
-    Neptune = new Planet(3.88, 30.0, 163.8, 1);
+    Neptune = new Planet('neptune', 3.88, 30.0, 163.8, 1);
     Neptune.orbit();
   }
 
@@ -169,14 +176,15 @@ onMounted(() => {
     }
     function handleClick(event) {
       if (clickFlg) {
-        window.open('https://www.pentacreation.com/blog/');
+        ononon()
       }
     }
   }
 
   function rendering() {
-
-    orbitControls.update();
+    if (orbitControls) {
+      orbitControls.update();
+    }
     // -----惑星
     Mercury.update();
     Venus.update();
@@ -192,13 +200,18 @@ onMounted(() => {
 
     if (intersects.length > 0) {
       const obj = intersects[0].object;
-      if (obj.name == 'spehere') {
+      if (obj.name == 'mercury') {
+        if (moveFlg) {
+          clickFlg = true;
+        }
+      } else if (obj.name == 'venus') {
         if (moveFlg) {
           clickFlg = true;
         }
       } else if (obj.name == 'earth') {
-        console.log(intersects[0])
-        clickFlg = true;
+        if (moveFlg) {
+          clickFlg = true;
+        }
       }
       else {
         clickFlg = false;
