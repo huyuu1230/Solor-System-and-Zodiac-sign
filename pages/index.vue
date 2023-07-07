@@ -1,11 +1,11 @@
 <template>
   <div>
-    <canvas id="index"></canvas>
+    <h1>index</h1>
   </div>
 </template>
 
 
-<script setup>
+<!-- <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 const route = useRouter();
@@ -41,8 +41,6 @@ const earthRotation = toRad(1);
 
 onMounted(() => {
   const container = document.getElementById("index");
-
-  
   // ----------惑星を生成するクラス
   class Planet {
     constructor(name, radius, orbitRadius, phiSpeed, rotation) {
@@ -230,7 +228,6 @@ onMounted(() => {
     requestAnimationFrame(rendering);
   }
 
-
 });
 </script>
-
+ -->
