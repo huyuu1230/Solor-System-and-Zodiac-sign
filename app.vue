@@ -1,6 +1,7 @@
 
 <template>
   <div>
+    <headerNav />
     <div>
       <canvas id="index"></canvas>
     </div>
@@ -9,6 +10,8 @@
 </template>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -25,8 +28,20 @@ a {
   line-height: 1.5;
 }
 
+a {
+  display: block;
+  text-decoration: none;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
 body {
+  color: #ffffff;
   font-size: 16px;
+  letter-spacing: 0.25em;
 }
 
 body::-webkit-scrollbar {
@@ -76,7 +91,7 @@ function toRad(deg) {
   return (deg * Math.PI) / 180;
 };
 // -----ラジアンから度に変換
-function toDeg(rad){
+function toDeg(rad) {
   return rad * (180 / Math.PI);
 };
 
@@ -84,11 +99,11 @@ function toMercury() {
   route.push('/mercury');
 }
 
-function toVenus(){
+function toVenus() {
   route.push('/venus');
 }
 
-function toEarth(){
+function toEarth() {
   route.push('/earth');
 }
 
@@ -144,7 +159,7 @@ onMounted(() => {
       this.rotationSpeed = earthRotation * rotation;
       this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
       this.material = new THREE.MeshBasicMaterial({
-        color: 0x000000,
+        color: 0xffffff,
         wireframe: true,
       });
       this.planet = new THREE.Mesh(this.geometry, this.material);
@@ -168,7 +183,7 @@ onMounted(() => {
       this.orbitGeometry = new THREE.BufferGeometry().setFromPoints(
         this.orbitPoints
       );
-      this.orbitMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+      this.orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
       this.orbitMesh = new THREE.Line(this.orbitGeometry, this.orbitMaterial);
       scene.add(this.orbitMesh);
     }
@@ -194,7 +209,7 @@ onMounted(() => {
 
   function setup() {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x222222);
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000000);
     camera.position.set(0, 5000, 100000);
     scene.add(camera);
@@ -232,7 +247,8 @@ onMounted(() => {
     orbitControls = new OrbitControls(camera, renderer.domElement);
     orbitControls.target.set(0, 0, 0);
     orbitControls.enableDamping = true;
-    orbitControls.dampingFactor = 0.5;
+    // -----慣性のかかり方
+    // orbitControls.dampingFactor = 0.5;
 
     mouse = new THREE.Vector2();
     raycaster = new THREE.Raycaster();
@@ -255,7 +271,7 @@ onMounted(() => {
           toMercury();
         } else if (currentOrbit == 'venus') {
           toVenus();
-        } else if (currentOrbit == 'earth'){
+        } else if (currentOrbit == 'earth') {
           toEarth();
         }
       }
@@ -263,9 +279,9 @@ onMounted(() => {
   }
 
   function rendering() {
-    if (orbitControls) {
-      orbitControls.update();
-    }
+    
+    orbitControls.update();
+
     // -----惑星
     Mercury.update();
     Venus.update();
