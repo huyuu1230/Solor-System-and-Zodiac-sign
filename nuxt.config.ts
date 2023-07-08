@@ -2,5 +2,8 @@
 export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' }
-  }
+  },
+  css : [
+    '@/assets/css/style.css'
+  ]
 })

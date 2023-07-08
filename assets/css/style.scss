@@ -1,0 +1,27 @@
+.orbit{
+    position: fixed;
+    top: 50%;
+    left: 50px;
+    transform: translate(0,-50%);
+    padding: 50px;
+    border: 1px solid;
+    background-color: rgba($color: #222222, $alpha: 0.8);
+    font-family: 'Shippori Mincho', serif;
+    h2{
+        font-size: 32px;
+    }
+    .orbit-status{
+        margin: 40px 0 0;
+        li{
+            font-size: 16px;
+        }
+        li:not(:last-child){
+            margin: 0 0 16px;
+        }
+    }
+    p{
+        width: 400px;
+        margin: 40px 0 0;
+        font-size: 12px;
+    }
+}
