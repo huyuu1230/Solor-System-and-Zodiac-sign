@@ -9,78 +9,6 @@
   </div>
 </template>
 
-<style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a {
-  line-height: 1.5;
-}
-
-a {
-  display: block;
-  text-decoration: none;
-}
-
-ul,
-li {
-  list-style: none;
-}
-
-body {
-  color: #ffffff;
-  font-size: 16px;
-  letter-spacing: 0.25em;
-}
-
-body::-webkit-scrollbar {
-  display: none;
-}
-
-.nav-menu {
-  position: fixed;
-  left: 50%;
-  bottom: 50px;
-  transform: translate(-50%, 0);
-  z-index: 1000;
-
-  a {
-    color: #ffffff;
-    text-decoration: none;
-  }
-}
-
-.page-enter-active,
-.page-leave-active {
-  transition: all 0.5s;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-  filter: blur(1rem);
-}
-
-#index {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1000;
-}
-</style>
-
-
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -105,6 +33,7 @@ function toVenus() {
 
 function toEarth() {
   route.push('/earth');
+  // camera.position.set(0, 5000, 100000);
 }
 
 let scene, camera, renderer;
@@ -334,3 +263,74 @@ onMounted(() => {
 </script>
 
 
+
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a {
+  line-height: 1.5;
+}
+
+a {
+  display: block;
+  text-decoration: none;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+body {
+  color: #ffffff;
+  font-size: 16px;
+  letter-spacing: 0.25em;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-menu {
+  position: fixed;
+  left: 50%;
+  bottom: 50px;
+  transform: translate(-50%, 0);
+  z-index: 1000;
+
+  a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.5s;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
+
+#index {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1000;
+}
+</style>
