@@ -5,6 +5,7 @@
     <div>
       <canvas id="index"></canvas>
     </div>
+  
     <NuxtPage />
   </div>
 </template>
@@ -286,6 +287,7 @@ a {
 a {
   display: block;
   text-decoration: none;
+  color: #ffffff;
 }
 
 ul,
