@@ -19,6 +19,7 @@ const route = useRouter();
 function toRad(deg) {
   return (deg * Math.PI) / 180;
 };
+
 // -----ラジアンから度に変換
 function toDeg(rad) {
   return rad * (180 / Math.PI);
@@ -26,16 +27,16 @@ function toDeg(rad) {
 
 function toMercury() {
   route.push('/mercury');
-}
+};
 
 function toVenus() {
   route.push('/venus');
-}
+};
 
 function toEarth() {
   route.push('/earth');
   // camera.position.set(0, 5000, 100000);
-}
+};
 
 let scene, camera, renderer;
 let orbitControls;
