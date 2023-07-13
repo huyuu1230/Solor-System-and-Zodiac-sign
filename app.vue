@@ -5,7 +5,6 @@
     <div>
       <canvas id="index"></canvas>
     </div>
-  
     <NuxtPage />
   </div>
 </template>
@@ -18,25 +17,25 @@ const route = useRouter();
 // -----度からラジアンに変換
 function toRad(deg) {
   return (deg * Math.PI) / 180;
-};
+}
 
 // -----ラジアンから度に変換
 function toDeg(rad) {
   return rad * (180 / Math.PI);
-};
+}
 
 function toMercury() {
-  route.push('/mercury');
-};
+  route.push("/mercury");
+}
 
 function toVenus() {
-  route.push('/venus');
-};
+  route.push("/venus");
+}
 
 function toEarth() {
-  route.push('/earth');
+  route.push("/earth");
   // camera.position.set(0, 5000, 100000);
-};
+}
 
 let scene, camera, renderer;
 let orbitControls;
@@ -60,7 +59,6 @@ const earthThetaSpeed = toRad(1);
 // 自転の速度
 // earthPhiSpeedの360倍 -> 公転が毎秒一度の時に自転が360度で毎秒一周する
 const earthRotation = earthPhiSpeed * 360;
-
 
 onMounted(() => {
   const container = document.getElementById("index");
@@ -95,9 +93,9 @@ onMounted(() => {
       });
       this.planet = new THREE.Mesh(this.geometry, this.material);
       this.planet.position.set(this.x, this.y, this.z);
-      this.planet.name = name
+      this.planet.name = name;
       scene.add(this.planet);
-      orbits.push(this.planet)
+      orbits.push(this.planet);
     }
     // -----軌道を生成するメソッド
     orbit() {
@@ -141,7 +139,12 @@ onMounted(() => {
   function setup() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x222222);
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000000);
+    camera = new THREE.PerspectiveCamera(
+      50,
+      window.innerWidth / window.innerHeight,
+      1,
+      10000000
+    );
     camera.position.set(0, 5000, 100000);
     scene.add(camera);
     // -----renderer
@@ -155,26 +158,32 @@ onMounted(() => {
 
   function threeWorld() {
     // -----惑星
-    Mercury = new Planet('mercury', 0.38, 0.39, 0.24, 1);
+    Mercury = new Planet("mercury", 0.38, 0.39, 0.24, 1);
     Mercury.orbit();
-    Venus = new Planet('venus', 0.95, 0.72, 0.62, 1);
+    Venus = new Planet("venus", 0.95, 0.72, 0.62, 1);
     Venus.orbit();
-    Earth = new Planet('earth', 1, 1, 1, 1);
+    Earth = new Planet("earth", 1, 1, 1, 1);
     Earth.orbit();
-    Mars = new Planet('mars', 0.53, 1.52, 1.88, 1);
+    Mars = new Planet("mars", 0.53, 1.52, 1.88, 1);
     Mars.orbit();
-    Jupiter = new Planet('jupiter', 11.21, 5.2, 11.9, 1);
+    Jupiter = new Planet("jupiter", 11.21, 5.2, 11.9, 1);
     Jupiter.orbit();
-    Saturn = new Planet('saturn', 9.45, 9.58, 29.4, 1);
+    Saturn = new Planet("saturn", 9.45, 9.58, 29.4, 1);
     Saturn.orbit();
-    Uranus = new Planet('uranus', 4.01, 19.2, 83.8, 1);
+    Uranus = new Planet("uranus", 4.01, 19.2, 83.8, 1);
     Uranus.orbit();
-    Neptune = new Planet('neptune', 3.88, 30.0, 163.8, 1);
+    Neptune = new Planet("neptune", 3.88, 30.0, 163.8, 1);
     Neptune.orbit();
   }
 
   function setControll() {
-    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
     orbitControls = new OrbitControls(camera, renderer.domElement);
     orbitControls.target.set(0, 0, 0);
     orbitControls.enableDamping = true;
@@ -183,8 +192,8 @@ onMounted(() => {
 
     mouse = new THREE.Vector2();
     raycaster = new THREE.Raycaster();
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('click', handleClick);
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("click", handleClick);
 
     function handleMouseMove(event) {
       moveFlg = true;
@@ -198,11 +207,11 @@ onMounted(() => {
     }
     function handleClick(event) {
       if (clickFlg) {
-        if (currentOrbit == 'mercury') {
+        if (currentOrbit == "mercury") {
           toMercury();
-        } else if (currentOrbit == 'venus') {
+        } else if (currentOrbit == "venus") {
           toVenus();
-        } else if (currentOrbit == 'earth') {
+        } else if (currentOrbit == "earth") {
           toEarth();
         }
       }
@@ -210,7 +219,6 @@ onMounted(() => {
   }
 
   function rendering() {
-    
     orbitControls.update();
 
     // -----惑星
@@ -228,23 +236,22 @@ onMounted(() => {
 
     if (intersects.length > 0) {
       const obj = intersects[0].object;
-      if (obj.name == 'mercury') {
+      if (obj.name == "mercury") {
         if (moveFlg) {
-          currentOrbit = 'mercury';
+          currentOrbit = "mercury";
           clickFlg = true;
         }
-      } else if (obj.name == 'venus') {
+      } else if (obj.name == "venus") {
         if (moveFlg) {
-          currentOrbit = 'venus';
+          currentOrbit = "venus";
           clickFlg = true;
         }
-      } else if (obj.name == 'earth') {
+      } else if (obj.name == "earth") {
         if (moveFlg) {
-          currentOrbit = 'earth';
+          currentOrbit = "earth";
           clickFlg = true;
         }
-      }
-      else {
+      } else {
         clickFlg = false;
       }
     } else {
@@ -252,22 +259,22 @@ onMounted(() => {
     }
 
     if (clickFlg) {
-      container.style.cursor = 'pointer';
+      container.style.cursor = "pointer";
     } else {
-      container.style.cursor = 'grab';
+      container.style.cursor = "grab";
     }
     // -----レンダリング
     renderer.render(scene, camera);
     requestAnimationFrame(rendering);
   }
-
 });
+
 </script>
 
 
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap");
 
 * {
   margin: 0;
@@ -336,4 +343,5 @@ body::-webkit-scrollbar {
   left: 0;
   z-index: -1000;
 }
+
 </style>

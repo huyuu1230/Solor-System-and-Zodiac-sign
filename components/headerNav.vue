@@ -2,8 +2,10 @@
     <header>
         <div id="header">
             <NuxtLink to="/">
-                <h1>
-                    Solor System and Signs
+                <h1 class="js-shuffle">
+                    <span v-for="(item , index) in siteTitle" :key="index">
+                    {{ item }}
+                    </span>
                 </h1>
             </NuxtLink>
             <div v-on:click="view_header" class="h-menu">
@@ -270,8 +272,10 @@ header {
 </style>
 
 <script setup lang="ts">
+const siteTitle:string = "Solor System and Signs"
 onMounted(() => {
-
+    const shuffleElem = document.querySelectorAll('.js-shuffle');
+    shuffle(shuffleElem[0],siteTitle)
 });
 
 function view_header() {
@@ -291,5 +295,36 @@ function view_header() {
         copy.classList.add('header-copyright-from');
     }
 }
+
+// ----------SHUFFLE_ANIMATION----------
+// -----乱数生成
+function getRandom(min: number, max: number): number {
+  return Math.floor(Math.random() * (max + 1 - min)) + min
+}
+// -----アルファベット a から z と、数字の 0 から 9 までの文字配列
+const randomTextArray: string[] = [
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+];
+
+function shuffle(elem: any , text:string): void {
+  const df: string = text;
+  const child = elem.children;
+  for (let i = 0; i < child.length; i++) {
+    let count = 0;
+    setTimeout(() => {
+      const animated = setInterval(() => {
+        if (count < 30) {
+          count++;
+          child[i].innerHTML = randomTextArray[getRandom(0, randomTextArray.length - 1)];
+        } else {
+          clearInterval(animated);
+          child[i].innerHTML = df[i];
+        }
+      }, 1000 / 60);
+    }, i * 1000 / 20);
+  };
+};
 
 </script>
