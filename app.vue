@@ -143,7 +143,7 @@ onMounted(() => {
       50,
       window.innerWidth / window.innerHeight,
       1,
-      10000000
+      100000000000
     );
     camera.position.set(0, 5000, 100000);
     scene.add(camera);
@@ -174,6 +174,34 @@ onMounted(() => {
     Uranus.orbit();
     Neptune = new Planet("neptune", 3.88, 30.0, 163.8, 1);
     Neptune.orbit();
+    // -----星座
+    signs(32,23);
+    signs(28,20);
+    signs(28,19);
+    signs(48,20);
+
+    signs(223,-16);
+    signs(229,-9);
+    signs(234,-15);
+    signs(226,-25);
+  }
+
+  function signs(p,t){
+    const alphaGeometry = new THREE.SphereGeometry(10000,10,10);
+    const alphaMaterial = new THREE.MeshBasicMaterial({
+      color:0xffffff,
+      wireframe:true,
+    });
+    const alphaMesh = new THREE.Mesh(alphaGeometry,alphaMaterial);
+    const raddius = 3000000;
+    const phi = toRad(p);
+    const theta = toRad(t);
+    alphaMesh.position.set(
+      raddius * Math.cos(theta) * Math.cos(phi),
+      raddius * Math.cos(theta) * Math.sin(phi),
+      raddius * Math.sin(theta)
+      );
+    scene.add(alphaMesh);
   }
 
   function setControll() {
