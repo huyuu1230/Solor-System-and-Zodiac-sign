@@ -3,9 +3,7 @@
         <div id="header">
             <NuxtLink to="/">
                 <h1 class="js-shuffle">
-                    <span v-for="(item , index) in siteTitle" :key="index">
-                    {{ item }}
-                    </span>
+                    {{ siteTitle }}
                 </h1>
             </NuxtLink>
             <div v-on:click="view_header" class="h-menu">
@@ -32,20 +30,11 @@
                     <h3>PLANETS</h3>
                     <div class="header-links-line"></div>
                     <ul>
-                        <li>
-                            <NuxtLink to="/mercury" v-on:click="view_header">MERCURY</NuxtLink>
+                        <li v-for="(item, index) in planets" :key="index">
+                            <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
+                                {{ item.text }}
+                            </NuxtLink>
                         </li>
-                        <li>
-                            <NuxtLink to="/venus" v-on:click="view_header">VENUS</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/earth" v-on:click="view_header">EARTH</NuxtLink>
-                        </li>
-                        <li>MARS</li>
-                        <li>JUPITER</li>
-                        <li>SATURN</li>
-                        <li>URANUS</li>
-                        <li>NEPTUNE</li>
                     </ul>
                 </div>
                 <!--SIGNS-->
@@ -53,18 +42,11 @@
                     <h3>SIGNS</h3>
                     <div class="header-links-line"></div>
                     <ul>
-                        <li>ARIES</li>
-                        <li>TAURUS</li>
-                        <li>GEMINI</li>
-                        <li>CANCER</li>
-                        <li>LEO</li>
-                        <li>VIRGO</li>
-                        <li>LIBRA</li>
-                        <li>SCORPIUS</li>
-                        <li>SAGITTARIUS</li>
-                        <li>CAPRICORNUS</li>
-                        <li>AQUARIUS</li>
-                        <li>PISCES</li>
+                        <li v-for="(item, index) in signs" :key="index">
+                            <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
+                                {{ item.text }}
+                            </NuxtLink>
+                        </li>
                     </ul>
                 </div>
                 <!--ABOUT-->
@@ -72,8 +54,11 @@
                     <h3>ABOUT</h3>
                     <div class="header-links-line"></div>
                     <ul>
-                        <li>GREETING</li>
-                        <li>EXPLANTION</li>
+                        <li v-for="(item, index) in abouts" :key="index">
+                            <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
+                                {{ item.text }}
+                            </NuxtLink>
+                        </li>
                     </ul>
                 </div>
                 <!--CONTACTS-->
@@ -81,9 +66,11 @@
                     <h3>CONTACTS</h3>
                     <div class="header-links-line"></div>
                     <ul>
-                        <li>PROFILE</li>
-                        <li>MAIL</li>
-                        <li>SNS</li>
+                        <li v-for="(item, index) in contacts" :key="index">
+                            <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
+                                {{ item.text }}
+                            </NuxtLink>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -93,6 +80,204 @@
         </div>
     </header>
 </template>
+
+
+
+<script setup lang="ts">
+
+const siteTitle: string = "Solor System and Signs";
+type HeaderLink = {
+    text: string,
+    path: string
+}
+// ----------Header_Link
+// -----PLANETS
+const planets: HeaderLink[] = [
+    {
+        text: 'MERCURY',
+        path: '/mercury'
+    },
+    {
+        text: 'VENUS',
+        path: '/venus'
+    },
+    {
+        text: 'EARTH',
+        path: '/earth'
+    },
+    {
+        text: 'MARS',
+        path: '/mars'
+    },
+    {
+        text: 'JUPITER',
+        path: '/jupiter'
+    },
+    {
+        text: 'SATURN',
+        path: '/saturn'
+    },
+    {
+        text: 'URANUS',
+        path: '/uranus'
+    },
+    {
+        text: 'NEPTUNE',
+        path: '/neptune'
+    },
+];
+// -----SIGNS
+const signs: HeaderLink[] = [
+    {
+        text: 'ARIES',
+        path: '/aries'
+    },
+    {
+        text: 'TAURUS',
+        path: '/taurus'
+    },
+    {
+        text: 'GEMINI',
+        path: '/gemini'
+    },
+    {
+        text: 'CANCER',
+        path: '/cancer'
+    },
+    {
+        text: 'LEO',
+        path: '/leo'
+    },
+    {
+        text: 'VIRGO',
+        path: '/virgo'
+    },
+    {
+        text: 'LIBRA',
+        path: '/libra'
+    },
+    {
+        text: 'SCORPIUS',
+        path: '/scorpius'
+    },
+    {
+        text: 'SAGITTARIUS',
+        path: '/sagittarius'
+    },
+    {
+        text: 'CAPRICORNUS',
+        path: '/capricornus'
+    },
+    {
+        text: 'AQUARIUS',
+        path: '/aquarius'
+    },
+    {
+        text: 'PISCES',
+        path: '/pisces'
+    }
+];
+// -----ABOUT
+const abouts: HeaderLink[] = [
+    {
+        text: 'GREETING',
+        path: '/greeting'
+    },
+    {
+        text: 'EXPLANTION',
+        path: '/explantion'
+    }
+];
+// -----CONTACTS
+const contacts: HeaderLink[] = [
+    {
+        text: 'PROFILE',
+        path: '/profile'
+    },
+    {
+        text: 'MAIL',
+        path: '/mail'
+    },
+    {
+        text: 'SNS',
+        path: '/sns'
+    }
+];
+
+const DefaultShuffleTextArray: string[] = [];
+let shuffleElem: any;
+
+onMounted(() => {
+    shuffleElem = document.querySelectorAll('.js-shuffle');
+    shuffle_active();
+});
+
+function view_header() {
+    const menuButton: HTMLDivElement = <HTMLDivElement>document.querySelector('.h-menu');
+    const bg: HTMLDivElement = <HTMLDivElement>document.getElementById("header-toggle-bg");
+    const toggle: HTMLDivElement = <HTMLDivElement>document.getElementById("header-toggle");
+    const copy: HTMLDivElement = <HTMLDivElement>document.getElementById("header-copyright");
+    if (copy.classList.contains('header-copyright-from') === true) {
+        menuButton.classList.add('h-menu-active');
+        bg.classList.remove('header-toggle-bg-from');
+        toggle.classList.remove('header-toggle-from');
+        copy.classList.remove('header-copyright-from');
+        // -----shuffle
+        shuffle_active();
+    } else {
+        menuButton.classList.remove('h-menu-active');
+        bg.classList.add('header-toggle-bg-from');
+        toggle.classList.add('header-toggle-from');
+        copy.classList.add('header-copyright-from');
+    }
+}
+
+// ----------SHUFFLE_ANIMATION----------
+// -----乱数生成
+function getRandom(min: number, max: number): number {
+    return Math.floor(Math.random() * (max + 1 - min)) + min
+}
+// -----アルファベット a から z と、数字の 0 から 9 までの文字配列
+const randomTextArray: string[] = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+];
+
+function wrapSpan(elem: any): void {
+    let text = elem.innerText;
+    text = "<span>" + text.split("").join("</span><span>") + "</span>";
+    elem.innerHTML = text
+}
+
+function shuffle(elem: any, text: string): void {
+    wrapSpan(elem);
+    const df: string = text;
+    const child = elem.children;
+    for (let i = 0; i < child.length; i++) {
+        let count = 0;
+        setTimeout(() => {
+            const animated = setInterval(() => {
+                if (count < 30) {
+                    count++;
+                    child[i].innerHTML = randomTextArray[getRandom(0, randomTextArray.length - 1)];
+                } else {
+                    clearInterval(animated);
+                    child[i].innerHTML = df[i];
+                }
+            }, 1000 / 60);
+        }, i * 1000 / 20);
+    };
+};
+
+function shuffle_active(): void {
+    for (let i = 0; i < shuffleElem.length; i++) {
+        DefaultShuffleTextArray.push(shuffleElem[i].innerHTML);
+        shuffle(shuffleElem[i], DefaultShuffleTextArray[i]);
+    }
+}
+
+</script>
 
 <style lang="scss" scoped>
 header {
@@ -270,61 +455,3 @@ header {
     }
 }
 </style>
-
-<script setup lang="ts">
-const siteTitle:string = "Solor System and Signs"
-onMounted(() => {
-    const shuffleElem = document.querySelectorAll('.js-shuffle');
-    shuffle(shuffleElem[0],siteTitle)
-});
-
-function view_header() {
-    const menuButton: HTMLDivElement = <HTMLDivElement>document.querySelector('.h-menu');
-    const bg: HTMLDivElement = <HTMLDivElement>document.getElementById("header-toggle-bg");
-    const toggle: HTMLDivElement = <HTMLDivElement>document.getElementById("header-toggle");
-    const copy: HTMLDivElement = <HTMLDivElement>document.getElementById("header-copyright");
-    if (copy.classList.contains('header-copyright-from') === true) {
-        menuButton.classList.add('h-menu-active');
-        bg.classList.remove('header-toggle-bg-from');
-        toggle.classList.remove('header-toggle-from');
-        copy.classList.remove('header-copyright-from');
-    } else {
-        menuButton.classList.remove('h-menu-active');
-        bg.classList.add('header-toggle-bg-from');
-        toggle.classList.add('header-toggle-from');
-        copy.classList.add('header-copyright-from');
-    }
-}
-
-// ----------SHUFFLE_ANIMATION----------
-// -----乱数生成
-function getRandom(min: number, max: number): number {
-  return Math.floor(Math.random() * (max + 1 - min)) + min
-}
-// -----アルファベット a から z と、数字の 0 から 9 までの文字配列
-const randomTextArray: string[] = [
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
-];
-
-function shuffle(elem: any , text:string): void {
-  const df: string = text;
-  const child = elem.children;
-  for (let i = 0; i < child.length; i++) {
-    let count = 0;
-    setTimeout(() => {
-      const animated = setInterval(() => {
-        if (count < 30) {
-          count++;
-          child[i].innerHTML = randomTextArray[getRandom(0, randomTextArray.length - 1)];
-        } else {
-          clearInterval(animated);
-          child[i].innerHTML = df[i];
-        }
-      }, 1000 / 60);
-    }, i * 1000 / 20);
-  };
-};
-
-</script>
