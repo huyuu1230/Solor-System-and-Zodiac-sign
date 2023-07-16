@@ -187,21 +187,21 @@ onMounted(() => {
   }
 
   function signs(p,t){
-    const alphaGeometry = new THREE.SphereGeometry(10000,10,10);
-    const alphaMaterial = new THREE.MeshBasicMaterial({
+    const Geometry = new THREE.SphereGeometry(10000,10,10);
+    const Material = new THREE.MeshBasicMaterial({
       color:0xffffff,
       wireframe:true,
     });
-    const alphaMesh = new THREE.Mesh(alphaGeometry,alphaMaterial);
+    const Mesh = new THREE.Mesh(Geometry,Material);
     const raddius = 3000000;
     const phi = toRad(p);
     const theta = toRad(t);
-    alphaMesh.position.set(
+    Mesh.position.set(
       raddius * Math.cos(theta) * Math.cos(phi),
       raddius * Math.cos(theta) * Math.sin(phi),
       raddius * Math.sin(theta)
       );
-    scene.add(alphaMesh);
+    scene.add(Mesh);
   }
 
   function setControll() {
