@@ -12,7 +12,7 @@
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { data_Aries, data_Taurus,data_Gemini,data_Cancer,data_Leo,data_Virgo,data_Libra,data_Scorpius,data_Sagittarius } from 'assets/js/data_signs';
+import { data_Aries, data_Taurus,data_Gemini,data_Cancer,data_Leo,data_Virgo,data_Libra,data_Scorpius,data_Sagittarius,data_Capriconus,data_Aquarius,data_Pisces } from 'assets/js/data_signs';
 const route = useRouter();
 
 // -----度からラジアンに変換
@@ -57,7 +57,9 @@ const Virgo = [];
 const Libra = [];
 const Scorpius = [];
 const Sagittarius = [];
-
+const Capricornus = [];
+const Aquarius = [];
+const Pisces = [];
 
 // -----規準となる地球の変数を定義
 const earthRaddius = 1000;
@@ -219,6 +221,9 @@ onMounted(() => {
     createSign(Libra,data_Libra);
     createSign(Scorpius,data_Scorpius);
     createSign(Sagittarius,data_Sagittarius);
+    createSign(Capricornus,data_Capriconus);
+    createSign(Aquarius,data_Aquarius);
+    createSign(Pisces,data_Pisces);
   }
 
   function createSign(sign,data){
