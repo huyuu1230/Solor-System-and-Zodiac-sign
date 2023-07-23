@@ -12,6 +12,7 @@
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { data_Aries, data_Taurus,data_Gemini,data_Cancer,data_Leo,data_Virgo,data_Libra,data_Scorpius,data_Sagittarius } from 'assets/js/data_signs';
 const route = useRouter();
 
 // -----度からラジアンに変換
@@ -46,6 +47,17 @@ let moveFlg = false;
 let currentOrbit;
 let Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune;
 const orbits = [];
+
+const Aries = [];
+const Taurus = [];
+const Gemini = [];
+const Cancer = [];
+const Leo = [];
+const Virgo = [];
+const Libra = [];
+const Scorpius = [];
+const Sagittarius = [];
+
 
 // -----規準となる地球の変数を定義
 const earthRaddius = 1000;
@@ -127,6 +139,29 @@ onMounted(() => {
       this.planet.rotation.y = this.rotationY;
     }
   }
+  class Sign {
+    constructor(sign, name, alpha, delta) {
+      this.radius = 3000000;
+      this.alpha = (alpha * Math.PI) / 180;
+      this.delta = (delta * Math.PI) / 180;
+      // y と z どっちがどっち？
+      this.x = this.radius * Math.cos(this.delta) * Math.cos(this.alpha);
+      this.z = this.radius * Math.cos(this.delta) * Math.sin(this.alpha);
+      this.y = this.radius * Math.sin(this.delta);
+      this.geometry = new THREE.SphereGeometry(1000, 50, 50);
+      this.material = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+      });
+      this.mesh = new THREE.Mesh(this.geometry, this.material);
+      this.mesh.position.set(this.x, this.y, this.z);
+      this.mesh.name = name;
+      sign.push(this);
+    }
+  }
+
+
+
 
   function init() {
     setup();
@@ -174,34 +209,23 @@ onMounted(() => {
     Uranus.orbit();
     Neptune = new Planet("neptune", 3.88, 30.0, 163.8, 1);
     Neptune.orbit();
-    // -----星座
-    signs(32,23);
-    signs(28,20);
-    signs(28,19);
-    signs(48,20);
 
-    signs(223,-16);
-    signs(229,-9);
-    signs(234,-15);
-    signs(226,-25);
+    createSign(Aries,data_Aries);
+    createSign(Taurus,data_Taurus);
+    createSign(Gemini,data_Gemini);
+    createSign(Cancer,data_Cancer);
+    createSign(Leo,data_Leo);
+    createSign(Virgo,data_Virgo);
+    createSign(Libra,data_Libra);
+    createSign(Scorpius,data_Scorpius);
+    createSign(Sagittarius,data_Sagittarius);
   }
 
-  function signs(p,t){
-    const Geometry = new THREE.SphereGeometry(10000,10,10);
-    const Material = new THREE.MeshBasicMaterial({
-      color:0xffffff,
-      wireframe:true,
-    });
-    const Mesh = new THREE.Mesh(Geometry,Material);
-    const raddius = 3000000;
-    const phi = toRad(p);
-    const theta = toRad(t);
-    Mesh.position.set(
-      raddius * Math.cos(theta) * Math.cos(phi),
-      raddius * Math.cos(theta) * Math.sin(phi),
-      raddius * Math.sin(theta)
-      );
-    scene.add(Mesh);
+  function createSign(sign,data){
+    for (let i = 0; i < data.length; i++) {
+      new Sign(sign, data[i].name, data[i].alpha, data[i].delta);
+      scene.add(sign[i].mesh);
+    }
   }
 
   function setControll() {
@@ -371,5 +395,4 @@ body::-webkit-scrollbar {
   left: 0;
   z-index: -1000;
 }
-
 </style>
