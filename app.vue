@@ -150,7 +150,7 @@ onMounted(() => {
       this.x = this.radius * Math.cos(this.delta) * Math.cos(this.alpha);
       this.z = this.radius * Math.cos(this.delta) * Math.sin(this.alpha);
       this.y = this.radius * Math.sin(this.delta);
-      this.geometry = new THREE.SphereGeometry(1000, 50, 50);
+      this.geometry = new THREE.SphereGeometry(5000, 50, 50);
       this.material = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         wireframe: true,
