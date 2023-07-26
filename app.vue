@@ -132,7 +132,6 @@ onMounted(() => {
       this.radius = 3000000;
       this.alpha = (alpha * Math.PI) / 180;
       this.delta = (delta * Math.PI) / 180;
-      // y と z どっちがどっち？
       this.x = this.radius * Math.cos(this.delta) * Math.cos(this.alpha);
       this.y = this.radius * Math.sin(this.delta);
       this.z = this.radius * Math.cos(this.delta) * Math.sin(this.alpha);
