@@ -12,31 +12,17 @@
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { data_Aries, data_Taurus,data_Gemini,data_Cancer,data_Leo,data_Virgo,data_Libra,data_Scorpius,data_Sagittarius,data_Capriconus,data_Aquarius,data_Pisces } from 'assets/js/data_signs';
+import { data_Aries, data_Taurus, data_Gemini, data_Cancer, data_Leo, data_Virgo, data_Libra, data_Scorpius, data_Sagittarius, data_Capriconus, data_Aquarius, data_Pisces } from 'assets/js/data_signs';
 const route = useRouter();
 
-// -----度からラジアンに変換
+// ----------度からラジアンに変換
 function toRad(deg) {
   return (deg * Math.PI) / 180;
-}
-
-// -----ラジアンから度に変換
+};
+// ----------ラジアンから度に変換
 function toDeg(rad) {
   return rad * (180 / Math.PI);
-}
-
-function toMercury() {
-  route.push("/mercury");
-}
-
-function toVenus() {
-  route.push("/venus");
-}
-
-function toEarth() {
-  route.push("/earth");
-  // camera.position.set(0, 5000, 100000);
-}
+};
 
 let scene, camera, renderer;
 let orbitControls;
@@ -45,9 +31,10 @@ let raycaster;
 let clickFlg = false;
 let moveFlg = false;
 let currentOrbit;
+// ----------惑星の変数
 let Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune;
 const orbits = [];
-
+// ----------星座を格納する変数
 const Aries = [];
 const Taurus = [];
 const Gemini = [];
@@ -81,22 +68,20 @@ onMounted(() => {
     constructor(name, radius, orbitRadius, phiSpeed, rotation) {
       this.r = earthRaddius * radius;
       if (radius <= 1) {
-        this.w = this.r / 50;
-        this.h = this.r / 50;
-      } else if (radius > 1 && radius <= 5) {
-        this.w = this.r / 500;
-        this.h = this.r / 500;
+        this.w = this.r / 40;
+        this.h = this.r / 40;
       } else {
-        this.w = this.r / 500;
-        this.h = this.r / 500;
-      }
+        this.w = this.r / 400;
+        this.h = this.r / 400;
+      };
       this.or = earthOrbitRaddius * orbitRadius;
       this.phi = toRad(0);
       this.theta = toRad(0);
       this.phiSpeed = earthPhiSpeed / phiSpeed;
-      this.x = this.or * Math.cos(this.phi);
+      this.thetaSpeed = earthThetaSpeed;
+      this.x = this.or * Math.cos(this.phi) * Math.cos(this.theta);
       this.y = this.or * Math.sin(this.theta);
-      this.z = this.or * Math.sin(this.phi);
+      this.z = this.or * Math.cos(this.theta) * Math.sin(this.phi);
       this.rotationX = toRad(0);
       this.rotationY = toRad(0);
       this.rotationSpeed = earthRotation * rotation;
@@ -110,7 +95,7 @@ onMounted(() => {
       this.planet.name = name;
       scene.add(this.planet);
       orbits.push(this.planet);
-    }
+    };
     // -----軌道を生成するメソッド
     orbit() {
       this.orbitPoints = [];
@@ -122,25 +107,26 @@ onMounted(() => {
         const z = this.or * Math.sin(rad);
         const p = new THREE.Vector3(x, y, z);
         this.orbitPoints.push(p);
-      }
+      };
       this.orbitGeometry = new THREE.BufferGeometry().setFromPoints(
         this.orbitPoints
       );
       this.orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
       this.orbitMesh = new THREE.Line(this.orbitGeometry, this.orbitMaterial);
       scene.add(this.orbitMesh);
-    }
+    };
     // -----惑星をアニメーションさせるメソッド
     update() {
-      this.phi += this.phiSpeed;
-      this.x = this.or * Math.cos(this.phi);
+      this.phi -= this.phiSpeed;
+      this.x = this.or * Math.cos(this.phi) * Math.cos(this.theta);
       this.y = this.or * Math.sin(this.theta);
-      this.z = this.or * Math.sin(this.phi);
+      this.z = this.or * Math.cos(this.theta) * Math.sin(this.phi);
       this.rotationY += this.rotationSpeed;
       this.planet.position.set(this.x, this.y, this.z);
       this.planet.rotation.y = this.rotationY;
-    }
-  }
+    };
+  };
+  // ----------星座を作成するクラス
   class Sign {
     constructor(sign, name, alpha, delta) {
       this.radius = 3000000;
@@ -148,8 +134,8 @@ onMounted(() => {
       this.delta = (delta * Math.PI) / 180;
       // y と z どっちがどっち？
       this.x = this.radius * Math.cos(this.delta) * Math.cos(this.alpha);
-      this.z = this.radius * Math.cos(this.delta) * Math.sin(this.alpha);
       this.y = this.radius * Math.sin(this.delta);
+      this.z = this.radius * Math.cos(this.delta) * Math.sin(this.alpha);
       this.geometry = new THREE.SphereGeometry(5000, 50, 50);
       this.material = new THREE.MeshBasicMaterial({
         color: 0xffffff,
@@ -159,12 +145,9 @@ onMounted(() => {
       this.mesh.position.set(this.x, this.y, this.z);
       this.mesh.name = name;
       sign.push(this);
-    }
-  }
-
-
-
-
+    };
+  };
+  // --------------------様々な処理をここで実行
   function init() {
     setup();
     setControll();
@@ -172,7 +155,7 @@ onMounted(() => {
     rendering();
   }
   init();
-
+  // --------------------Setup_scene , camera , rendererの設定
   function setup() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x222222);
@@ -191,8 +174,8 @@ onMounted(() => {
     });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
+  };
+  // --------------------Three.jsにオブジェクトを作成
   function threeWorld() {
     // -----惑星
     Mercury = new Planet("mercury", 0.38, 0.39, 0.24, 1);
@@ -211,29 +194,27 @@ onMounted(() => {
     Uranus.orbit();
     Neptune = new Planet("neptune", 3.88, 30.0, 163.8, 1);
     Neptune.orbit();
+    // -----星座
+    createSign(Aries, data_Aries);
+    createSign(Taurus, data_Taurus);
+    createSign(Gemini, data_Gemini);
+    createSign(Cancer, data_Cancer);
+    createSign(Leo, data_Leo);
+    createSign(Virgo, data_Virgo);
+    createSign(Libra, data_Libra);
+    createSign(Scorpius, data_Scorpius);
+    createSign(Sagittarius, data_Sagittarius);
+    createSign(Capricornus, data_Capriconus);
+    createSign(Aquarius, data_Aquarius);
+    createSign(Pisces, data_Pisces);
+  };
 
-    createSign(Aries,data_Aries);
-    createSign(Taurus,data_Taurus);
-    createSign(Gemini,data_Gemini);
-    createSign(Cancer,data_Cancer);
-    createSign(Leo,data_Leo);
-    createSign(Virgo,data_Virgo);
-    createSign(Libra,data_Libra);
-    createSign(Scorpius,data_Scorpius);
-    createSign(Sagittarius,data_Sagittarius);
-    createSign(Capricornus,data_Capriconus);
-    createSign(Aquarius,data_Aquarius);
-    createSign(Pisces,data_Pisces);
-  }
-
-  function createSign(sign,data){
-    for (let i = 0; i < data.length; i++) {
-      new Sign(sign, data[i].name, data[i].alpha, data[i].delta);
-      scene.add(sign[i].mesh);
-    }
-  }
-
+  // --------------------コントロール関連
+  // OrbitControl関連
+  // Three.Raycaster 関連
+  // clickEvent 関連
   function setControll() {
+    // ----------TouchMove_タッチムーブイベントの初期化
     document.addEventListener(
       "touchmove",
       function (e) {
@@ -241,17 +222,15 @@ onMounted(() => {
       },
       { passive: false }
     );
+    // ----------OrbitControls関連
     orbitControls = new OrbitControls(camera, renderer.domElement);
     orbitControls.target.set(0, 0, 0);
     orbitControls.enableDamping = true;
-    // -----慣性のかかり方
-    // orbitControls.dampingFactor = 0.5;
-
+    // ----------Three.js Raycaster関連
     mouse = new THREE.Vector2();
     raycaster = new THREE.Raycaster();
+    // ----------MouseMove_マウスが動いたときに発火するイベント
     container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("click", handleClick);
-
     function handleMouseMove(event) {
       moveFlg = true;
       const element = event.currentTarget;
@@ -261,7 +240,9 @@ onMounted(() => {
       const h = element.offsetHeight;
       mouse.x = (x / w) * 2 - 1;
       mouse.y = -(y / h) * 2 + 1;
-    }
+    };
+    // ----------HandleClick_Three.js用のクリックイベント
+    container.addEventListener("click", handleClick);
     function handleClick(event) {
       if (clickFlg) {
         if (currentOrbit == "mercury") {
@@ -272,12 +253,12 @@ onMounted(() => {
           toEarth();
         }
       }
-    }
-  }
+    };
+  };
 
+  // --------------------Rendering
   function rendering() {
     orbitControls.update();
-
     // -----惑星
     Mercury.update();
     Venus.update();
@@ -287,10 +268,10 @@ onMounted(() => {
     Saturn.update();
     Uranus.update();
     Neptune.update();
-
+    // -----Three_Raycaster
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(orbits, false);
-
+    // -----Three_ClickEvent
     if (intersects.length > 0) {
       const obj = intersects[0].object;
       if (obj.name == "mercury") {
@@ -314,7 +295,6 @@ onMounted(() => {
     } else {
       clickFlg = false;
     }
-
     if (clickFlg) {
       container.style.cursor = "pointer";
     } else {
@@ -324,7 +304,36 @@ onMounted(() => {
     renderer.render(scene, camera);
     requestAnimationFrame(rendering);
   }
+
+  // 星座を格納する変数にデータの数だけクラスを作成しプッシュする関数
+  // クラスではsceneにaddする処理を行っていない。この関数内にてaddしている。
+  // 1 . 格納する配列
+  // 2 . データのnameプロパティ
+  // 3 . データのalphaプロパティ
+  // 4 . データのdeltaプロパティ
+  function createSign(sign, data) {
+    for (let i = 0; i < data.length; i++) {
+      new Sign(sign, data[i].name, data[i].alpha, data[i].delta);
+      scene.add(sign[i].mesh);
+    };
+  };
+
 });
+
+// ----------水星をクリックした時の処理
+function toMercury() {
+  route.push("/mercury");
+};
+// ----------金星をクリックした時の処理
+function toVenus() {
+  route.push("/venus");
+};
+// ----------地球をクリックした時の処理
+function toEarth() {
+  route.push("/earth");
+  // camera.position.set(0, 5000, 100000);
+};
+
 
 </script>
 
