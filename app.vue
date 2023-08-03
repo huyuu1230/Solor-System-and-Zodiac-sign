@@ -11,18 +11,13 @@
 
 <script setup>
 import * as THREE from "three";
+import * as TWEEN from '@tweenjs/tween.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { toRad, toDeg, Sign, } from "assets/js/module"
 import { data_Aries, data_Taurus, data_Gemini, data_Cancer, data_Leo, data_Virgo, data_Libra, data_Scorpius, data_Sagittarius, data_Capriconus, data_Aquarius, data_Pisces } from 'assets/js/data_signs';
 const route = useRouter();
 
-// ----------度からラジアンに変換
-function toRad(deg) {
-  return (deg * Math.PI) / 180;
-};
-// ----------ラジアンから度に変換
-function toDeg(rad) {
-  return rad * (180 / Math.PI);
-};
 
 let scene, camera, renderer;
 let orbitControls;
@@ -63,6 +58,7 @@ const earthRotation = earthPhiSpeed * 360;
 
 onMounted(() => {
   const container = document.getElementById("index");
+
   // ----------惑星を生成するクラス
   class Planet {
     constructor(name, radius, orbitRadius, phiSpeed, rotation) {
@@ -126,26 +122,10 @@ onMounted(() => {
       this.planet.rotation.y = this.rotationY;
     };
   };
-  // ----------星座を作成するクラス
-  class Sign {
-    constructor(sign, name, alpha, delta) {
-      this.radius = 3000000;
-      this.alpha = (alpha * Math.PI) / 180;
-      this.delta = (delta * Math.PI) / 180;
-      this.x = this.radius * Math.cos(this.delta) * Math.cos(this.alpha);
-      this.y = this.radius * Math.sin(this.delta);
-      this.z = this.radius * Math.cos(this.delta) * Math.sin(this.alpha);
-      this.geometry = new THREE.SphereGeometry(5000, 50, 50);
-      this.material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true,
-      });
-      this.mesh = new THREE.Mesh(this.geometry, this.material);
-      this.mesh.position.set(this.x, this.y, this.z);
-      this.mesh.name = name;
-      sign.push(this);
-    };
-  };
+
+
+
+
   // --------------------様々な処理をここで実行
   function init() {
     setup();
@@ -154,6 +134,12 @@ onMounted(() => {
     rendering();
   }
   init();
+
+
+
+
+
+
   // --------------------Setup_scene , camera , rendererの設定
   function setup() {
     scene = new THREE.Scene();
@@ -174,6 +160,12 @@ onMounted(() => {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
   };
+
+
+
+
+
+
   // --------------------Three.jsにオブジェクトを作成
   function threeWorld() {
     // -----惑星
@@ -206,7 +198,10 @@ onMounted(() => {
     createSign(Capricornus, data_Capriconus);
     createSign(Aquarius, data_Aquarius);
     createSign(Pisces, data_Pisces);
+    // -----テキスト
+   
   };
+
 
   // --------------------コントロール関連
   // OrbitControl関連
@@ -255,9 +250,12 @@ onMounted(() => {
     };
   };
 
+
+
   // --------------------Rendering
   function rendering() {
     orbitControls.update();
+    TWEEN.update();
     // -----惑星
     Mercury.update();
     Venus.update();
@@ -317,21 +315,46 @@ onMounted(() => {
     };
   };
 
+
+
+
+  //-----FONTS
+  const fontLoader = new FontLoader();
+  console.log(fontLoader)
+  fontLoader.load("/fonts/helvetiker_regular.typeface.json",
+  function(font){
+    console.log(font)
+  })
+
 });
 
 // ----------水星をクリックした時の処理
 function toMercury() {
-  route.push("/mercury");
+  route.push("/planets/mercury");
+  animateCameraPos(Mercury.x + Mercury.r * 2 + 1000, Mercury.y, Mercury.z);
 };
 // ----------金星をクリックした時の処理
 function toVenus() {
-  route.push("/venus");
+  route.push("/planets/venus");
+  animateCameraPos(Venus.x + Venus.r * 2 + 1000, Venus.y, Venus.z);
 };
 // ----------地球をクリックした時の処理
 function toEarth() {
-  route.push("/earth");
-  // camera.position.set(0, 5000, 100000);
+  route.push("/planets/earth");
+  animateCameraPos(Earth.x + Earth.r * 2 + 1000, Earth.y, Earth.z);
 };
+
+// ----------指定の場所までカメラをアニメーションさせながら移動
+function animateCameraPos(x, y, z) {
+  const coords = camera.position;
+  const destinationVector = new THREE.Vector3(x, y, z);
+  const DURATION = 3000;
+  const tween = new TWEEN.Tween(coords)
+    .to(destinationVector, DURATION)
+    .easing(TWEEN.Easing.Cubic.Out)
+    .start();
+}
+
 
 
 </script>

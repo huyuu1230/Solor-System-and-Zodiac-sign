@@ -95,86 +95,86 @@ type HeaderLink = {
 const planets: HeaderLink[] = [
     {
         text: 'MERCURY',
-        path: '/mercury'
+        path: '/planets/mercury'
     },
     {
         text: 'VENUS',
-        path: '/venus'
+        path: '/planets/venus'
     },
     {
         text: 'EARTH',
-        path: '/earth'
+        path: '/planets/earth'
     },
     {
         text: 'MARS',
-        path: '/mars'
+        path: '/planets/mars'
     },
     {
         text: 'JUPITER',
-        path: '/jupiter'
+        path: '/planets/jupiter'
     },
     {
         text: 'SATURN',
-        path: '/saturn'
+        path: '/planets/saturn'
     },
     {
         text: 'URANUS',
-        path: '/uranus'
+        path: '/planets/uranus'
     },
     {
         text: 'NEPTUNE',
-        path: '/neptune'
+        path: '/planets/neptune'
     },
 ];
 // -----SIGNS
 const signs: HeaderLink[] = [
     {
         text: 'ARIES',
-        path: '/aries'
+        path: '/signs/aries'
     },
     {
         text: 'TAURUS',
-        path: '/taurus'
+        path: '/signs/taurus'
     },
     {
         text: 'GEMINI',
-        path: '/gemini'
+        path: '/signs/gemini'
     },
     {
         text: 'CANCER',
-        path: '/cancer'
+        path: '/signs/cancer'
     },
     {
         text: 'LEO',
-        path: '/leo'
+        path: '/signs/leo'
     },
     {
         text: 'VIRGO',
-        path: '/virgo'
+        path: '/signs/virgo'
     },
     {
         text: 'LIBRA',
-        path: '/libra'
+        path: '/signs/libra'
     },
     {
         text: 'SCORPIUS',
-        path: '/scorpius'
+        path: '/signs/scorpius'
     },
     {
         text: 'SAGITTARIUS',
-        path: '/sagittarius'
+        path: '/signs/sagittarius'
     },
     {
         text: 'CAPRICORNUS',
-        path: '/capricornus'
+        path: '/signs/capricornus'
     },
     {
         text: 'AQUARIUS',
-        path: '/aquarius'
+        path: '/signs/aquarius'
     },
     {
         text: 'PISCES',
-        path: '/pisces'
+        path: '/signs/pisces'
     }
 ];
 // -----ABOUT

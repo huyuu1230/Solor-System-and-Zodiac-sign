@@ -947,4 +947,4 @@ const data_Pisces = [
         delta: 5.38
     },
 ];
-export { data_Aries, data_Taurus, data_Gemini, data_Cancer, data_Leo, data_Virgo, data_Libra, data_Scorpius, data_Sagittarius, data_Capriconus, data_Aquarius, data_Pisces }
+export { data_Aries, data_Taurus, data_Gemini, data_Cancer, data_Leo, data_Virgo, data_Libra, data_Scorpius, data_Sagittarius, data_Capriconus, data_Aquarius, data_Pisces };
