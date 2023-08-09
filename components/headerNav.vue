@@ -181,27 +181,23 @@ const signs: HeaderLink[] = [
 const abouts: HeaderLink[] = [
     {
         text: 'GREETING',
-        path: '/greeting'
+        path: '/about/greeting'
     },
     {
         text: 'EXPLANTION',
-        path: '/explantion'
+        path: '/about/explanation'
     }
 ];
 // -----CONTACTS
 const contacts: HeaderLink[] = [
     {
         text: 'PROFILE',
-        path: '/profile'
+        path: '/contacts/profile'
     },
     {
         text: 'MAIL',
-        path: '/mail'
+        path: '/contacts/mail'
     },
-    {
-        text: 'SNS',
-        path: '/sns'
-    }
 ];
 
 const DefaultShuffleTextArray: string[] = [];
