@@ -46,6 +46,7 @@ let Gemini_Trajectory;
 let Taurus_Trajectory;
 let Cnacer_Trajectory;
 let Leo_Trajectory;
+let Virgo_Trajectory;
 
 // ----------倍率
 let zoomRatio = 1000;
@@ -195,7 +196,7 @@ function createSign(sign) {
 };
 function addSign(sign) {
   for (let key in sign) {
-    sign[key].add(scene)
+    sign[key].add(scene);
   };
 };
 function addTrajectory(trajectory) {
@@ -260,7 +261,7 @@ onMounted(() => {
       50,
       window.innerWidth / window.innerHeight,
       1,
-      au * 300
+      au * 1000
     );
     camera.position.set(0, 0, au * 50);
     scene.add(camera);
@@ -305,7 +306,7 @@ onMounted(() => {
     Uranus.orbit();
     Neptune = new Planet("neptune", 3.88, 30.0, 355.95, 163.8, 1);
     Neptune.orbit();
-  }
+  };
 
   // --------------------THREE_SIGNS
   function threeWorld_signs() {
@@ -343,7 +344,7 @@ onMounted(() => {
         new THREE.Vector3(Aries.Alpha.x, Aries.Alpha.y, Aries.Alpha.z),
         new THREE.Vector3(Aries.Beta.x, Aries.Beta.y, Aries.Beta.z),
         new THREE.Vector3(Aries.Gamma.x, Aries.Gamma.y, Aries.Gamma.z),
-        new THREE.Vector3(Aries.Delta.x, Aries.Delta.y, Aries.Delta.z)
+        new THREE.Vector3(Aries.Delta.x, Aries.Delta.y, Aries.Delta.z),
       ]),
     };
 
@@ -362,14 +363,14 @@ onMounted(() => {
         new THREE.Vector3(Taurus.Eta.x, Taurus.Eta.y, Taurus.Eta.z),
         new THREE.Vector3(Taurus.Number_5.x, Taurus.Number_5.y, Taurus.Number_5.z),
         new THREE.Vector3(Taurus.Xi.x, Taurus.Xi.y, Taurus.Xi.z),
-        new THREE.Vector3(Taurus.Omicron.x, Taurus.Omicron.y, Taurus.Omicron.z)
+        new THREE.Vector3(Taurus.Omicron.x, Taurus.Omicron.y, Taurus.Omicron.z),
       ]),
       Trajectory_2: new Trajectory([
         new THREE.Vector3(Taurus.Lambda.x, Taurus.Lambda.y, Taurus.Lambda.z),
         new THREE.Vector3(Taurus.Number_30.x, Taurus.Number_30.y, Taurus.Number_30.z),
         new THREE.Vector3(Taurus.Omicron.x, Taurus.Omicron.y, Taurus.Omicron.z),
         new THREE.Vector3(Taurus.Nu.x, Taurus.Nu.y, Taurus.Nu.z),
-        new THREE.Vector3(Taurus.Number_10.x, Taurus.Number_10.y, Taurus.Number_10.z)
+        new THREE.Vector3(Taurus.Number_10.x, Taurus.Number_10.y, Taurus.Number_10.z),
       ]),
       Trajectory_3: new Trajectory([
         new THREE.Vector3(Taurus.Epsilon.x, Taurus.Epsilon.y, Taurus.Epsilon.z),
@@ -396,15 +397,15 @@ onMounted(() => {
         new THREE.Vector3(Gemini.Delta.x, Gemini.Delta.y, Gemini.Delta.z),
         new THREE.Vector3(Gemini.Zehta.x, Gemini.Zehta.y, Gemini.Zehta.z),
         new THREE.Vector3(Gemini.Gamma.x, Gemini.Gamma.y, Gemini.Gamma.z),
-        new THREE.Vector3(Gemini.Xi.x, Gemini.Xi.y, Gemini.Xi.z)
+        new THREE.Vector3(Gemini.Xi.x, Gemini.Xi.y, Gemini.Xi.z),
       ]),
       Trajectory_2: new Trajectory([
         new THREE.Vector3(Gemini.Tau.x, Gemini.Tau.y, Gemini.Tau.z),
-        new THREE.Vector3(Gemini.Theta.x, Gemini.Theta.y, Gemini.Theta.z)
+        new THREE.Vector3(Gemini.Theta.x, Gemini.Theta.y, Gemini.Theta.z),
       ]),
       Trajectory_3: new Trajectory([
         new THREE.Vector3(Gemini.Delta.x, Gemini.Delta.y, Gemini.Delta.z),
-        new THREE.Vector3(Gemini.Lambda.x, Gemini.Lambda.y, Gemini.Lambda.z)
+        new THREE.Vector3(Gemini.Lambda.x, Gemini.Lambda.y, Gemini.Lambda.z),
       ]),
     };
 
@@ -437,37 +438,73 @@ onMounted(() => {
         new THREE.Vector3(Leo.Gamma.x, Leo.Gamma.y, Leo.Gamma.z),
         new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
       ]),
-      Trajectory_2:new Trajectory([
-        new THREE.Vector3(Leo.Eta.x,Leo.Eta.y,Leo.Eta.z),
-        new THREE.Vector3(Leo.Number_60.x,Leo.Number_60.y,Leo.Number_60.z),
-        new THREE.Vector3(Leo.Delta.x,Leo.Delta.y,Leo.Delta.z),
-        new THREE.Vector3(Leo.Beta.x,Leo.Beta.y,Leo.Beta.z),
-        new THREE.Vector3(Leo.Theta.x,Leo.Theta.y,Leo.Theta.z),
-        new THREE.Vector3(Leo.Alpha.x,Leo.Alpha.y,Leo.Alpha.z),
-        new THREE.Vector3(Leo.Eta.x,Leo.Eta.y,Leo.Eta.z),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
+        new THREE.Vector3(Leo.Number_60.x, Leo.Number_60.y, Leo.Number_60.z),
+        new THREE.Vector3(Leo.Delta.x, Leo.Delta.y, Leo.Delta.z),
+        new THREE.Vector3(Leo.Beta.x, Leo.Beta.y, Leo.Beta.z),
+        new THREE.Vector3(Leo.Theta.x, Leo.Theta.y, Leo.Theta.z),
+        new THREE.Vector3(Leo.Alpha.x, Leo.Alpha.y, Leo.Alpha.z),
+        new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
       ]),
-      Trajectory_3:new Trajectory([
-        new THREE.Vector3(Leo.Alpha.x,Leo.Alpha.y,Leo.Alpha.z),
-        new THREE.Vector3(Leo.Rho.x,Leo.Rho.y,Leo.Rho.z),
-        new THREE.Vector3(Leo.Number_31.x,Leo.Number_31.y,Leo.Number_31.z),
-        new THREE.Vector3(Leo.Omicron.x,Leo.Omicron.y,Leo.Omicron.z),
+      Trajectory_3: new Trajectory([
+        new THREE.Vector3(Leo.Alpha.x, Leo.Alpha.y, Leo.Alpha.z),
+        new THREE.Vector3(Leo.Rho.x, Leo.Rho.y, Leo.Rho.z),
+        new THREE.Vector3(Leo.Number_31.x, Leo.Number_31.y, Leo.Number_31.z),
+        new THREE.Vector3(Leo.Omicron.x, Leo.Omicron.y, Leo.Omicron.z),
       ]),
-      Trajectory_4:new Trajectory([
-        new THREE.Vector3(Leo.Theta.x,Leo.Theta.y,Leo.Theta.z),
-        new THREE.Vector3(Leo.M65.x,Leo.M65.y,Leo.M65.z),
-        new THREE.Vector3(Leo.M66.x,Leo.M66.y,Leo.M66.z),
-        new THREE.Vector3(Leo.Iota.x,Leo.Iota.y,Leo.Iota.z),
-        new THREE.Vector3(Leo.Sigma.x,Leo.Sigma.y,Leo.Sigma.z),
-        new THREE.Vector3(Leo.Tau.x,Leo.Tau.y,Leo.Tau.z),
-        new THREE.Vector3(Leo.Upsilon.x,Leo.Upsilon.y,Leo.Upsilon.z),
-      ])
-    }
+      Trajectory_4: new Trajectory([
+        new THREE.Vector3(Leo.Theta.x, Leo.Theta.y, Leo.Theta.z),
+        new THREE.Vector3(Leo.M65.x, Leo.M65.y, Leo.M65.z),
+        new THREE.Vector3(Leo.M66.x, Leo.M66.y, Leo.M66.z),
+        new THREE.Vector3(Leo.Iota.x, Leo.Iota.y, Leo.Iota.z),
+        new THREE.Vector3(Leo.Sigma.x, Leo.Sigma.y, Leo.Sigma.z),
+        new THREE.Vector3(Leo.Tau.x, Leo.Tau.y, Leo.Tau.z),
+        new THREE.Vector3(Leo.Upsilon.x, Leo.Upsilon.y, Leo.Upsilon.z),
+      ]),
+    };
+
+    Virgo_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Virgo.Beta.x, Virgo.Beta.y, Virgo.Beta.z),
+        new THREE.Vector3(Virgo.Eta.x, Virgo.Eta.y, Virgo.Eta.z),
+        new THREE.Vector3(Virgo.Gamma.x, Virgo.Gamma.y, Virgo.Gamma.z),
+        new THREE.Vector3(Virgo.Delta.x, Virgo.Delta.y, Virgo.Delta.z),
+        new THREE.Vector3(Virgo.Epsilon.x, Virgo.Epsilon.y, Virgo.Epsilon.z),
+        new THREE.Vector3(Virgo.Omicron.x, Virgo.Omicron.y, Virgo.Omicron.z),
+        new THREE.Vector3(Virgo.Nu.x, Virgo.Nu.y, Virgo.Nu.z),
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Virgo.Theta.x, Virgo.Theta.y, Virgo.Theta.z),
+        new THREE.Vector3(Virgo.Alpha.x, Virgo.Alpha.y, Virgo.Alpha.z),
+      ]),
+      Trajectory_3: new Trajectory([
+        new THREE.Vector3(Virgo.Theta.x, Virgo.Theta.y, Virgo.Theta.z),
+        new THREE.Vector3(Virgo.Kappa.x, Virgo.Kappa.y, Virgo.Kappa.z),
+      ]),
+      Trajectory_4: new Trajectory([
+        new THREE.Vector3(Virgo.Gamma.x, Virgo.Gamma.y, Virgo.Gamma.z),
+        new THREE.Vector3(Virgo.Theta.x, Virgo.Theta.y, Virgo.Theta.z),
+        new THREE.Vector3(Virgo.Iota.x, Virgo.Iota.y, Virgo.Iota.z),
+        new THREE.Vector3(Virgo.Mu.x, Virgo.Mu.y, Virgo.Mu.z),
+      ]),
+      Trajectory_5:new Trajectory([
+        new THREE.Vector3(Virgo.Delta.x,Virgo.Delta.y,Virgo.Delta.z),
+        new THREE.Vector3(Virgo.Zehta.x,Virgo.Zehta.y,Virgo.Zehta.z),
+      ]),
+      Trajectory_6:new Trajectory([
+        new THREE.Vector3(Virgo.Delta.x,Virgo.Delta.y,Virgo.Delta.z),
+        new THREE.Vector3(Virgo.Tau.x,Virgo.Tau.y,Virgo.Tau.z),
+        new THREE.Vector3(Virgo.Number_109.x,Virgo.Number_109.y,Virgo.Number_109.z)
+      ]),
+    };
 
     addTrajectory(Aries_Trajectory);
     addTrajectory(Taurus_Trajectory);
     addTrajectory(Gemini_Trajectory);
     addTrajectory(Cnacer_Trajectory);
     addTrajectory(Leo_Trajectory);
+    addTrajectory(Virgo_Trajectory);
   };
 
   // --------------------Three.jsにオブジェクトを作成
@@ -540,7 +577,7 @@ onMounted(() => {
         Neptune.orbitPoints[0].y,
         Neptune.orbitPoints[0].z,
       )
-    )
+    );
   }
 
   // --------------------コントロール関連
@@ -687,42 +724,42 @@ onMounted(() => {
 function toMercury() {
   route.push("/planets/mercury");
   animateCameraPos(Mercury.x * 1.5, Mercury.y * 1.5, Mercury.z * 1.5);
-}
+};
 // ----------金星をクリックした時の処理
 function toVenus() {
   route.push("/planets/venus");
   animateCameraPos(Venus.x * 1.5, Venus.y * 1.5, Venus.z * 1.5);
-}
+};
 // ----------地球をクリックした時の処理
 function toEarth() {
   route.push("/planets/earth");
   animateCameraPos(Earth.x * 1.5, Earth.y * 1.5, Earth.z * 1.5);
-}
+};
 // ----------火星をクリックした時の処理
 function toMars() {
   route.push("/planets/mars");
   animateCameraPos(Mars.x * 1.5, Mars.y * 1.5, Mars.z * 1.5);
-}
+};
 // ----------木星をクリックした時の処理
 function toJupiter() {
   route.push("/planets/jupiter");
   animateCameraPos(Jupiter.x * 1.5, Jupiter.y * 1.5, Jupiter.z * 1.5);
-}
+};
 // ----------土星をクリックした時の処理
 function toSaturn() {
   route.push("/planets/saturn");
   animateCameraPos(Saturn.x * 1.5, Saturn.y * 1.5, Saturn.z * 1.5);
-}
+};
 // ----------天王星をクリックした時の処理
 function toUranus() {
   route.push("/planets/uranus");
   animateCameraPos(Uranus.x * 1.5, Uranus.y * 1.5, Uranus.z * 1.5);
-}
+};
 // ----------海王星をクリックした時の処理
 function toNeptune() {
   route.push("/planets/neptune");
   animateCameraPos(Neptune.x * 1.5, Neptune.y * 1.5, Neptune.z * 1.5);
-}
+};
 // ----------指定の場所までカメラをアニメーションさせながら移動
 function animateCameraPos(x, y, z) {
   const coords = camera.position;
@@ -732,7 +769,7 @@ function animateCameraPos(x, y, z) {
     .to(destinationVector, DURATION)
     .easing(TWEEN.Easing.Cubic.Out)
     .start();
-}
+};
 
 
 </script>

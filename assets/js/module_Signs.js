@@ -149,3 +149,73 @@ const Cnacer_Trajectory = {
         new THREE.Vector3(Cancer.Iota.x, Cancer.Iota.y, Cancer.Iota.z),
     ]),
 };
+
+const Leo_Trajectory = {
+    Trajectory_1: new Trajectory([
+      new THREE.Vector3(Leo.Lambda.x, Leo.Lambda.y, Leo.Lambda.z),
+      new THREE.Vector3(Leo.Epsilon.x, Leo.Epsilon.y, Leo.Epsilon.z),
+      new THREE.Vector3(Leo.Mu.x, Leo.Mu.y, Leo.Mu.z),
+      new THREE.Vector3(Leo.Zehta.x, Leo.Zehta.y, Leo.Zehta.z),
+      new THREE.Vector3(Leo.Gamma.x, Leo.Gamma.y, Leo.Gamma.z),
+      new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
+    ]),
+    Trajectory_2: new Trajectory([
+      new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
+      new THREE.Vector3(Leo.Number_60.x, Leo.Number_60.y, Leo.Number_60.z),
+      new THREE.Vector3(Leo.Delta.x, Leo.Delta.y, Leo.Delta.z),
+      new THREE.Vector3(Leo.Beta.x, Leo.Beta.y, Leo.Beta.z),
+      new THREE.Vector3(Leo.Theta.x, Leo.Theta.y, Leo.Theta.z),
+      new THREE.Vector3(Leo.Alpha.x, Leo.Alpha.y, Leo.Alpha.z),
+      new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
+    ]),
+    Trajectory_3: new Trajectory([
+      new THREE.Vector3(Leo.Alpha.x, Leo.Alpha.y, Leo.Alpha.z),
+      new THREE.Vector3(Leo.Rho.x, Leo.Rho.y, Leo.Rho.z),
+      new THREE.Vector3(Leo.Number_31.x, Leo.Number_31.y, Leo.Number_31.z),
+      new THREE.Vector3(Leo.Omicron.x, Leo.Omicron.y, Leo.Omicron.z),
+    ]),
+    Trajectory_4: new Trajectory([
+      new THREE.Vector3(Leo.Theta.x, Leo.Theta.y, Leo.Theta.z),
+      new THREE.Vector3(Leo.M65.x, Leo.M65.y, Leo.M65.z),
+      new THREE.Vector3(Leo.M66.x, Leo.M66.y, Leo.M66.z),
+      new THREE.Vector3(Leo.Iota.x, Leo.Iota.y, Leo.Iota.z),
+      new THREE.Vector3(Leo.Sigma.x, Leo.Sigma.y, Leo.Sigma.z),
+      new THREE.Vector3(Leo.Tau.x, Leo.Tau.y, Leo.Tau.z),
+      new THREE.Vector3(Leo.Upsilon.x, Leo.Upsilon.y, Leo.Upsilon.z),
+    ]),
+  };
+
+  const Virgo_Trajectory = {
+    Trajectory_1: new Trajectory([
+      new THREE.Vector3(Virgo.Beta.x, Virgo.Beta.y, Virgo.Beta.z),
+      new THREE.Vector3(Virgo.Eta.x, Virgo.Eta.y, Virgo.Eta.z),
+      new THREE.Vector3(Virgo.Gamma.x, Virgo.Gamma.y, Virgo.Gamma.z),
+      new THREE.Vector3(Virgo.Delta.x, Virgo.Delta.y, Virgo.Delta.z),
+      new THREE.Vector3(Virgo.Epsilon.x, Virgo.Epsilon.y, Virgo.Epsilon.z),
+      new THREE.Vector3(Virgo.Omicron.x, Virgo.Omicron.y, Virgo.Omicron.z),
+      new THREE.Vector3(Virgo.Nu.x, Virgo.Nu.y, Virgo.Nu.z),
+    ]),
+    Trajectory_2: new Trajectory([
+      new THREE.Vector3(Virgo.Theta.x, Virgo.Theta.y, Virgo.Theta.z),
+      new THREE.Vector3(Virgo.Alpha.x, Virgo.Alpha.y, Virgo.Alpha.z),
+    ]),
+    Trajectory_3: new Trajectory([
+      new THREE.Vector3(Virgo.Theta.x, Virgo.Theta.y, Virgo.Theta.z),
+      new THREE.Vector3(Virgo.Kappa.x, Virgo.Kappa.y, Virgo.Kappa.z),
+    ]),
+    Trajectory_4: new Trajectory([
+      new THREE.Vector3(Virgo.Gamma.x, Virgo.Gamma.y, Virgo.Gamma.z),
+      new THREE.Vector3(Virgo.Theta.x, Virgo.Theta.y, Virgo.Theta.z),
+      new THREE.Vector3(Virgo.Iota.x, Virgo.Iota.y, Virgo.Iota.z),
+      new THREE.Vector3(Virgo.Mu.x, Virgo.Mu.y, Virgo.Mu.z),
+    ]),
+    Trajectory_5:new Trajectory([
+      new THREE.Vector3(Virgo.Delta.x,Virgo.Delta.y,Virgo.Delta.z),
+      new THREE.Vector3(Virgo.Zehta.x,Virgo.Zehta.y,Virgo.Zehta.z),
+    ]),
+    Trajectory_6:new Trajectory([
+      new THREE.Vector3(Virgo.Delta.x,Virgo.Delta.y,Virgo.Delta.z),
+      new THREE.Vector3(Virgo.Tau.x,Virgo.Tau.y,Virgo.Tau.z),
+      new THREE.Vector3(Virgo.Number_109.x,Virgo.Number_109.y,Virgo.Number_109.z)
+    ]),
+  };
