@@ -13,230 +13,235 @@
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+// import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { toRad } from "assets/js/module";
-import { Aries, Taurus, Gemini, Cancer, Leo, Virgo, Libra, Scorpius, Sagittarius, Capriconus, Aquarius, Pisces } from "assets/js/zodiacSigns";
+import { Aries, Taurus, Gemini, Cancer, Leo, Virgo, Libra, Scorpius, Sagittarius, Capriconus, Aquarius, Pisces } from "~/assets/js/data_Signs";
 
 const route = useRouter();
 const fontLoader = new FontLoader();
 let Font;
 
-// -----倍率
-let zoomRatio = 1000;
 
+// --------------------THREE_環境設定
 let scene, camera, renderer;
 let orbitControls;
+
+// --------------------THREE_クリックイベント
 let mouse;
 let raycaster;
 let clickFlg = false;
 let moveFlg = false;
 let currentOrbit;
-// ----------惑星の変数
-let Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune;
+
+// --------------------惑星の変数
+let sun;
 const orbits = [];
-let MercuryToSun,
-  VenusToSun,
-  EarthToSun,
-  MarsToSun,
-  JupiterToSun,
-  SaturnToSun,
-  UranusToSun,
-  NeptuneToSun;
+let Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune;
+let MercuryToSun, VenusToSun, EarthToSun, MarsToSun, JupiterToSun, SaturnToSun, UranusToSun, NeptuneToSun;
 
+// --------------------星座の軌跡
+let Aries_Trajectory;
+let Gemini_Trajectory;
+let Taurus_Trajectory;
+let Cnacer_Trajectory;
+let Leo_Trajectory;
 
-
-// -----規準となる地球の変数を定義
-// 地球の半径
+// ----------倍率
+let zoomRatio = 1000;
+// --------------------地球の半径
 const earthRaddius = 1000 / zoomRatio;
-// 1AU
+// ----------1AU
 const au = earthRaddius * 23533.69;
-// 1LY
+// ----------1LY
 const ly = au * 63241;
-// 緯度(方位角)の変化する値
-// 1 / 60 一秒に一度
+// ----------緯度(方位角)の変化する値
 const earthPhiSpeed = toRad(0.986 / 600);
-// 経度(仰角)の変化する値
+// ----------経度(仰角)の変化する値
 const earthThetaSpeed = toRad(1);
-// 自転の速度
-// earthPhiSpeedの360倍 -> 公転が毎秒一度の時に自転が360度で毎秒一周する
+// ----------自転の速度
 const earthRotation = earthPhiSpeed * 360;
-
 // ----------SUN
 const sunRaddius = earthRaddius * 219.08;
 
+// --------------------太陽を生成するクラス
+class Sun {
+  constructor(radius, width, height) {
+    this.r = radius;
+    this.w = width;
+    this.h = height;
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+    this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
+    this.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+    });
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.position.set(this.x, this.y, this.z);
+    this.mesh.name = "sun";
+    scene.add(this.mesh);
+  }
+};
+
+// --------------------惑星を生成するクラス
+class Planet {
+  constructor(name, radius, orbitRadius, phi, phiSpeed, rotation) {
+    this.r = earthRaddius * radius;
+    this.w = this.r / 10;
+    this.h = this.r / 10;
+    this.or = au * orbitRadius + sunRaddius;
+    this.phi = toRad(0) + toRad(phi);
+    this.theta = toRad(0);
+    this.phiSpeed = earthPhiSpeed / phiSpeed;
+    this.thetaSpeed = earthThetaSpeed;
+    this.x = this.or * Math.cos(this.phi) * Math.cos(this.theta);
+    this.y = this.or * Math.sin(this.theta);
+    this.z = this.or * Math.cos(this.theta) * Math.sin(this.phi);
+    this.rotationX = toRad(0);
+    this.rotationY = toRad(0);
+    this.rotationSpeed = earthRotation * rotation;
+    this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
+    this.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+    });
+    this.planet = new THREE.Mesh(this.geometry, this.material);
+    this.planet.position.set(this.x, this.y, this.z);
+    this.planet.name = name;
+    scene.add(this.planet);
+    orbits.push(this.planet);
+  }
+  // ----------軌道を生成するメソッド
+  orbit() {
+    this.orbitPoints = [];
+    this.orbitPointNum = 360;
+    for (let i = 0; i <= this.orbitPointNum; i++) {
+      const rad = toRad((360 / this.orbitPointNum) * i);
+      const x = this.or * Math.cos(rad);
+      const y = 0;
+      const z = this.or * Math.sin(rad);
+      const p = new THREE.Vector3(x, y, z);
+      this.orbitPoints.push(p);
+    }
+    this.orbitGeometry = new THREE.BufferGeometry().setFromPoints(
+      this.orbitPoints
+    );
+    this.orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.orbitMesh = new THREE.Line(this.orbitGeometry, this.orbitMaterial);
+    scene.add(this.orbitMesh);
+  }
+  // ----------惑星をアニメーションさせるメソッド
+  update() {
+    this.phi -= this.phiSpeed;
+    this.x = this.or * Math.cos(this.phi) * Math.cos(this.theta);
+    this.y = this.or * Math.sin(this.theta);
+    this.z = this.or * Math.cos(this.theta) * Math.sin(this.phi);
+    this.rotationY += this.rotationSpeed;
+    this.planet.position.set(this.x, this.y, this.z);
+    this.planet.rotation.y = this.rotationY;
+  }
+}
+
+// --------------------星座
+class Sign {
+  constructor(alpha, delta) {
+    this.r = sunRaddius * 5;
+    this.w = 100;
+    this.h = 100;
+    this.or = 100 * au;
+    this.alpha = alpha;
+    this.delta = delta;
+    this.alphaRad = (this.alpha * Math.PI) / 180;
+    this.deltaRad = (this.delta * Math.PI) / 180;
+    this.x = this.or * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
+    this.y = this.or * Math.sin(this.deltaRad);
+    this.z = this.or * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
+    this.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+    });
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.position.set(this.x, this.y, this.z);
+  };
+  add(scene) {
+    scene.add(this.mesh);
+  };
+};
+
+// --------------------星座の軌跡
+class Trajectory {
+  constructor(vectors) {
+    this.starsPoints = [];
+    for (let i = 0; i < vectors.length; i++) {
+      this.starsPoints.push(vectors[i]);
+    };
+    this.geometry = new THREE.BufferGeometry().setFromPoints(this.starsPoints);
+    this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.mesh = new THREE.Line(this.geometry, this.material);
+  };
+  add(scene) {
+    scene.add(this.mesh);
+  };
+};
+
+// --------------------星座の作成・表示
+function createSign(sign) {
+  for (let key in sign) {
+    sign[key] = new Sign(sign[key].alpha, sign[key].delta);
+  };
+};
+function addSign(sign) {
+  for (let key in sign) {
+    sign[key].add(scene)
+  };
+};
+function addTrajectory(trajectory) {
+  for (let key in trajectory) {
+    trajectory[key].add(scene);
+  };
+};
+
+// --------------------線を作成
+class Line {
+  constructor(startVector, endVector) {
+    this.points = [];
+    this.points.push(startVector);
+    this.points.push(endVector);
+    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.material = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+    });
+    this.line = new THREE.Line(this.geometry, this.material);
+    scene.add(this.line);
+  }
+  update(updateVector) {
+    scene.remove(this.line);
+    this.points.pop();
+    this.updateVector = updateVector;
+    this.points.push(this.updateVector);
+    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.material = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+    });
+    this.line = new THREE.Line(this.geometry, this.material);
+    scene.add(this.line);
+  };
+};
+
+// --------------------フォント
+// loadFont();
+// function onLoadFont(font) {
+//   Font = font;
+// }
+// function loadFont() {
+//   fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
+// }
+
 onMounted(() => {
   const container = document.getElementById("index");
-  // ----------太陽を生成するクラス
-  class Sun {
-    constructor(radius, width, height) {
-      this.r = radius;
-      this.w = width;
-      this.h = height;
-      this.x = 0;
-      this.y = 0;
-      this.z = 0;
-      this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
-      this.material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true,
-      });
-      this.mesh = new THREE.Mesh(this.geometry, this.material);
-      this.mesh.position.set(this.x, this.y, this.z);
-      this.mesh.name = "sun";
-      scene.add(this.mesh);
-    }
-  }
-
-  // ----------惑星を生成するクラス
-  class Planet {
-    constructor(name, radius, orbitRadius, phi, phiSpeed, rotation) {
-      this.r = earthRaddius * radius;
-      this.w = this.r / 10;
-      this.h = this.r / 10;
-      this.or = au * orbitRadius + sunRaddius;
-      this.phi = toRad(0) + toRad(phi);
-      this.theta = toRad(0);
-      this.phiSpeed = earthPhiSpeed / phiSpeed;
-      this.thetaSpeed = earthThetaSpeed;
-      this.x = this.or * Math.cos(this.phi) * Math.cos(this.theta);
-      this.y = this.or * Math.sin(this.theta);
-      this.z = this.or * Math.cos(this.theta) * Math.sin(this.phi);
-      this.rotationX = toRad(0);
-      this.rotationY = toRad(0);
-      this.rotationSpeed = earthRotation * rotation;
-      this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
-      this.material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true,
-      });
-      this.planet = new THREE.Mesh(this.geometry, this.material);
-      this.planet.position.set(this.x, this.y, this.z);
-      this.planet.name = name;
-      scene.add(this.planet);
-      orbits.push(this.planet);
-    }
-    // -----軌道を生成するメソッド
-    orbit() {
-      this.orbitPoints = [];
-      this.orbitPointNum = 360;
-      for (let i = 0; i <= this.orbitPointNum; i++) {
-        const rad = toRad((360 / this.orbitPointNum) * i);
-        const x = this.or * Math.cos(rad);
-        const y = 0;
-        const z = this.or * Math.sin(rad);
-        const p = new THREE.Vector3(x, y, z);
-        this.orbitPoints.push(p);
-      }
-      this.orbitGeometry = new THREE.BufferGeometry().setFromPoints(
-        this.orbitPoints
-      );
-      this.orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-      this.orbitMesh = new THREE.Line(this.orbitGeometry, this.orbitMaterial);
-      scene.add(this.orbitMesh);
-    }
-    // -----惑星をアニメーションさせるメソッド
-    update() {
-      this.phi -= this.phiSpeed;
-      this.x = this.or * Math.cos(this.phi) * Math.cos(this.theta);
-      this.y = this.or * Math.sin(this.theta);
-      this.z = this.or * Math.cos(this.theta) * Math.sin(this.phi);
-      this.rotationY += this.rotationSpeed;
-      this.planet.position.set(this.x, this.y, this.z);
-      this.planet.rotation.y = this.rotationY;
-    }
-  }
-
-  // --------------------星座
-  class Sign {
-    constructor(alpha, delta) {
-      this.r = sunRaddius * 5
-      this.w = 100;
-      this.h = 100;
-      this.or = 100 * au;
-      this.alpha = (alpha * Math.PI) / 180;
-      this.delta = (delta * Math.PI) / 180;
-      this.x = this.or * Math.cos(this.delta) * Math.cos(this.alpha);
-      this.y = this.or * Math.sin(this.delta);
-      this.z = this.or * Math.cos(this.delta) * Math.sin(this.alpha);
-      this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
-      this.material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true,
-      });
-      this.mesh = new THREE.Mesh(this.geometry, this.material);
-      this.mesh.position.set(this.x, this.y, this.z);
-    };
-    add(scene) {
-      scene.add(this.mesh);
-    };
-  };
-
-  // --------------------星座の軌跡
-  class Trajectory {
-    constructor(vectors) {
-      this.starsPoints = [];
-      for (let i = 0; i < vectors.length; i++) {
-        this.starsPoints.push(vectors[i]);
-      };
-      this.geometry = new THREE.BufferGeometry().setFromPoints(this.starsPoints);
-      this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
-      this.mesh = new THREE.Line(this.geometry, this.material);
-    };
-    add(scene){
-      scene.add(this.mesh);
-    };
-  };
-
-  // ----------星座の作成・表示
-
-  function createSign(sign) {
-    for (let key in sign) {
-      sign[key] = new Sign(sign[key].alpha, sign[key].delta);
-    };
-  };
-  function addSign(sign) {
-    for (let key in sign) {
-      sign[key].add(scene)
-    };
-  };
-
-
-
-  // --------------------フォント
-  loadFont();
-  function onLoadFont(font) {
-    Font = font;
-  }
-  function loadFont() {
-    fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
-  }
-
-  class Line {
-    constructor(startVector, endVector) {
-      this.points = [];
-      this.points.push(startVector);
-      this.points.push(endVector);
-      this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-      this.material = new THREE.LineBasicMaterial({
-        color: 0xffffff,
-      });
-      this.line = new THREE.Line(this.geometry, this.material);
-      scene.add(this.line);
-    }
-    update(updateVector) {
-      scene.remove(this.line);
-      this.points.pop();
-      this.updateVector = updateVector;
-      this.points.push(this.updateVector);
-      this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-      this.material = new THREE.LineBasicMaterial({
-        color: 0xffffff,
-      });
-      this.line = new THREE.Line(this.geometry, this.material);
-      scene.add(this.line);
-    }
-  }
 
   // --------------------様々な処理をここで実行
   function init() {
@@ -255,7 +260,7 @@ onMounted(() => {
       50,
       window.innerWidth / window.innerHeight,
       1,
-      au * 1000
+      au * 300
     );
     camera.position.set(0, 0, au * 50);
     scene.add(camera);
@@ -277,64 +282,12 @@ onMounted(() => {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
     }
-  }
-
-  function signs() {
-    // ----------星座の作成
-    createSign(Aries);
-    createSign(Taurus);
-    createSign(Gemini);
-    createSign(Cancer);
-    createSign(Leo);
-    createSign(Virgo);
-    createSign(Libra);
-    createSign(Scorpius);
-    createSign(Sagittarius);
-    createSign(Capriconus);
-    createSign(Aquarius);
-    createSign(Pisces);
-    // ----------星をシーンに追加
-    addSign(Aries);
-    addSign(Taurus);
-    addSign(Gemini);
-    addSign(Cancer);
-    addSign(Leo);
-    addSign(Virgo);
-    addSign(Libra);
-    addSign(Scorpius);
-    addSign(Sagittarius);
-    addSign(Capriconus);
-    addSign(Aquarius);
-    addSign(Pisces);
-
-    const Aries_line = new Trajectory([
-      new THREE.Vector3(Aries.Alpha.x, Aries.Alpha.y, Aries.Alpha.z),
-      new THREE.Vector3(Aries.Beta.x, Aries.Beta.y, Aries.Beta.z),
-      new THREE.Vector3(Aries.Gamma.x, Aries.Gamma.y, Aries.Gamma.z),
-      new THREE.Vector3(Aries.Delta.x, Aries.Delta.y, Aries.Delta.z)
-    ]);
-    Aries_line.add(scene);
-
-    const Gemini_Trajectory = new Trajectory([
-      new THREE.Vector3(Gemini.M35.x,Gemini.M35.y,Gemini.M35.z),
-      new THREE.Vector3(Gemini.Eta.x,Gemini.Eta.y,Gemini.Eta.z),
-      new THREE.Vector3(Gemini.Mu.x,Gemini.Mu.y,Gemini.Mu.z),
-      new THREE.Vector3(Gemini.Epsilon.x,Gemini.Epsilon.y,Gemini.Epsilon.z),
-      new THREE.Vector3(Gemini.Tau.x,Gemini.Tau.y,Gemini.Tau.z),
-      new THREE.Vector3(Gemini.Alpha.x,Gemini.Alpha.y,Gemini.Alpha.z),
-      new THREE.Vector3(Gemini.Beta.x,Gemini.Beta.y,Gemini.Beta.z),
-      new THREE.Vector3(Gemini.Delta.x,Gemini.Delta.y,Gemini.Delta.z),
-      new THREE.Vector3(Gemini.Zehta.x,Gemini.Zehta.y,Gemini.Zehta.z),
-      new THREE.Vector3(Gemini.Gamma.x,Gemini.Gamma.y,Gemini.Gamma.z),
-      new THREE.Vector3(Gemini.Xi.x,Gemini.Xi.y,Gemini.Xi.z)
-    ]);
-    Gemini_Trajectory.add(scene)
   };
 
-  // --------------------Three.jsにオブジェクトを作成
-  function threeWorld() {
+  // --------------------THREE_PLANETS
+  function threeWorld_planets() {
     // -----太陽
-    const sun = new Sun(sunRaddius, 100, 100);
+    sun = new Sun(sunRaddius, 100, 100);
     // -----惑星
     Mercury = new Planet("mercury", 0.38, 0.39, 262.07, 0.24, 1);
     Mercury.orbit();
@@ -352,8 +305,176 @@ onMounted(() => {
     Uranus.orbit();
     Neptune = new Planet("neptune", 3.88, 30.0, 355.95, 163.8, 1);
     Neptune.orbit();
+  }
 
-    signs();
+  // --------------------THREE_SIGNS
+  function threeWorld_signs() {
+    // ----------星座の作成
+    createSign(Aries);
+    createSign(Taurus);
+    createSign(Gemini);
+    createSign(Cancer);
+    createSign(Leo);
+    createSign(Virgo);
+    createSign(Libra);
+    createSign(Scorpius);
+    createSign(Sagittarius);
+    createSign(Capriconus);
+    createSign(Aquarius);
+    createSign(Pisces);
+
+    // ----------星をシーンに追加
+    addSign(Aries);
+    addSign(Taurus);
+    addSign(Gemini);
+    addSign(Cancer);
+    addSign(Leo);
+    addSign(Virgo);
+    addSign(Libra);
+    addSign(Scorpius);
+    addSign(Sagittarius);
+    addSign(Capriconus);
+    addSign(Aquarius);
+    addSign(Pisces);
+
+    // ----------星座の軌跡
+    Aries_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Aries.Alpha.x, Aries.Alpha.y, Aries.Alpha.z),
+        new THREE.Vector3(Aries.Beta.x, Aries.Beta.y, Aries.Beta.z),
+        new THREE.Vector3(Aries.Gamma.x, Aries.Gamma.y, Aries.Gamma.z),
+        new THREE.Vector3(Aries.Delta.x, Aries.Delta.y, Aries.Delta.z)
+      ]),
+    };
+
+    Taurus_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Taurus.Mu.x, Taurus.Mu.y, Taurus.Mu.z),
+        new THREE.Vector3(Taurus.Number_88.x, Taurus.Number_88.y, Taurus.Number_88.z),
+        new THREE.Vector3(Taurus.Number_90.x, Taurus.Number_90.y, Taurus.Number_90.z),
+        new THREE.Vector3(Taurus.Lambda.x, Taurus.Lambda.y, Taurus.Lambda.z),
+        new THREE.Vector3(Taurus.Gamma.x, Taurus.Gamma.y, Taurus.Gamma.z),
+        new THREE.Vector3(Taurus.Delta_1.x, Taurus.Delta_1.y, Taurus.Delta_1.z),
+        new THREE.Vector3(Taurus.Epsilon.x, Taurus.Epsilon.y, Taurus.Epsilon.z),
+        new THREE.Vector3(Taurus.Kappa.x, Taurus.Kappa.y, Taurus.Kappa.z),
+        new THREE.Vector3(Taurus.Number_37.x, Taurus.Number_37.y, Taurus.Number_37.z),
+        new THREE.Vector3(Taurus.Number_27.x, Taurus.Number_27.y, Taurus.Number_27.z),
+        new THREE.Vector3(Taurus.Eta.x, Taurus.Eta.y, Taurus.Eta.z),
+        new THREE.Vector3(Taurus.Number_5.x, Taurus.Number_5.y, Taurus.Number_5.z),
+        new THREE.Vector3(Taurus.Xi.x, Taurus.Xi.y, Taurus.Xi.z),
+        new THREE.Vector3(Taurus.Omicron.x, Taurus.Omicron.y, Taurus.Omicron.z)
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Taurus.Lambda.x, Taurus.Lambda.y, Taurus.Lambda.z),
+        new THREE.Vector3(Taurus.Number_30.x, Taurus.Number_30.y, Taurus.Number_30.z),
+        new THREE.Vector3(Taurus.Omicron.x, Taurus.Omicron.y, Taurus.Omicron.z),
+        new THREE.Vector3(Taurus.Nu.x, Taurus.Nu.y, Taurus.Nu.z),
+        new THREE.Vector3(Taurus.Number_10.x, Taurus.Number_10.y, Taurus.Number_10.z)
+      ]),
+      Trajectory_3: new Trajectory([
+        new THREE.Vector3(Taurus.Epsilon.x, Taurus.Epsilon.y, Taurus.Epsilon.z),
+        new THREE.Vector3(Taurus.Tau.x, Taurus.Tau.y, Taurus.Tau.z),
+        new THREE.Vector3(Taurus.Beta.x, Taurus.Beta.y, Taurus.Beta.z),
+      ]),
+      Trajectory_4: new Trajectory([
+        new THREE.Vector3(Taurus.Gamma.x, Taurus.Gamma.y, Taurus.Gamma.z),
+        new THREE.Vector3(Taurus.Theta_2.x, Taurus.Theta_2.y, Taurus.Theta_2.z),
+        new THREE.Vector3(Taurus.Alpha.x, Taurus.Alpha.y, Taurus.Alpha.z),
+        new THREE.Vector3(Taurus.Zehta.x, Taurus.Zehta.y, Taurus.Zehta.z),
+      ]),
+    };
+
+    Gemini_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Gemini.M35.x, Gemini.M35.y, Gemini.M35.z),
+        new THREE.Vector3(Gemini.Eta.x, Gemini.Eta.y, Gemini.Eta.z),
+        new THREE.Vector3(Gemini.Mu.x, Gemini.Mu.y, Gemini.Mu.z),
+        new THREE.Vector3(Gemini.Epsilon.x, Gemini.Epsilon.y, Gemini.Epsilon.z),
+        new THREE.Vector3(Gemini.Tau.x, Gemini.Tau.y, Gemini.Tau.z),
+        new THREE.Vector3(Gemini.Alpha.x, Gemini.Alpha.y, Gemini.Alpha.z),
+        new THREE.Vector3(Gemini.Beta.x, Gemini.Beta.y, Gemini.Beta.z),
+        new THREE.Vector3(Gemini.Delta.x, Gemini.Delta.y, Gemini.Delta.z),
+        new THREE.Vector3(Gemini.Zehta.x, Gemini.Zehta.y, Gemini.Zehta.z),
+        new THREE.Vector3(Gemini.Gamma.x, Gemini.Gamma.y, Gemini.Gamma.z),
+        new THREE.Vector3(Gemini.Xi.x, Gemini.Xi.y, Gemini.Xi.z)
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Gemini.Tau.x, Gemini.Tau.y, Gemini.Tau.z),
+        new THREE.Vector3(Gemini.Theta.x, Gemini.Theta.y, Gemini.Theta.z)
+      ]),
+      Trajectory_3: new Trajectory([
+        new THREE.Vector3(Gemini.Delta.x, Gemini.Delta.y, Gemini.Delta.z),
+        new THREE.Vector3(Gemini.Lambda.x, Gemini.Lambda.y, Gemini.Lambda.z)
+      ]),
+    };
+
+    Cnacer_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Cancer.Alpha.x, Cancer.Alpha.y, Cancer.Alpha.z),
+        new THREE.Vector3(Cancer.Delta.x, Cancer.Delta.y, Cancer.Delta.z),
+        new THREE.Vector3(Cancer.Epsilon.x, Cancer.Epsilon.y, Cancer.Epsilon.z),
+        new THREE.Vector3(Cancer.Gamma.x, Cancer.Gamma.y, Cancer.Gamma.z),
+        new THREE.Vector3(Cancer.Eta.x, Cancer.Eta.y, Cancer.Eta.z),
+        new THREE.Vector3(Cancer.Theta.x, Cancer.Theta.y, Cancer.Theta.z),
+        new THREE.Vector3(Cancer.Delta.x, Cancer.Delta.y, Cancer.Delta.z),
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Cancer.Theta.x, Cancer.Theta.y, Cancer.Theta.z),
+        new THREE.Vector3(Cancer.Beta.x, Cancer.Beta.y, Cancer.Beta.z),
+      ]),
+      Trajectory_3: new Trajectory([
+        new THREE.Vector3(Cancer.Gamma.x, Cancer.Gamma.y, Cancer.Gamma.z),
+        new THREE.Vector3(Cancer.Iota.x, Cancer.Iota.y, Cancer.Iota.z),
+      ]),
+    };
+
+    Leo_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Leo.Lambda.x, Leo.Lambda.y, Leo.Lambda.z),
+        new THREE.Vector3(Leo.Epsilon.x, Leo.Epsilon.y, Leo.Epsilon.z),
+        new THREE.Vector3(Leo.Mu.x, Leo.Mu.y, Leo.Mu.z),
+        new THREE.Vector3(Leo.Zehta.x, Leo.Zehta.y, Leo.Zehta.z),
+        new THREE.Vector3(Leo.Gamma.x, Leo.Gamma.y, Leo.Gamma.z),
+        new THREE.Vector3(Leo.Eta.x, Leo.Eta.y, Leo.Eta.z),
+      ]),
+      Trajectory_2:new Trajectory([
+        new THREE.Vector3(Leo.Eta.x,Leo.Eta.y,Leo.Eta.z),
+        new THREE.Vector3(Leo.Number_60.x,Leo.Number_60.y,Leo.Number_60.z),
+        new THREE.Vector3(Leo.Delta.x,Leo.Delta.y,Leo.Delta.z),
+        new THREE.Vector3(Leo.Beta.x,Leo.Beta.y,Leo.Beta.z),
+        new THREE.Vector3(Leo.Theta.x,Leo.Theta.y,Leo.Theta.z),
+        new THREE.Vector3(Leo.Alpha.x,Leo.Alpha.y,Leo.Alpha.z),
+        new THREE.Vector3(Leo.Eta.x,Leo.Eta.y,Leo.Eta.z),
+      ]),
+      Trajectory_3:new Trajectory([
+        new THREE.Vector3(Leo.Alpha.x,Leo.Alpha.y,Leo.Alpha.z),
+        new THREE.Vector3(Leo.Rho.x,Leo.Rho.y,Leo.Rho.z),
+        new THREE.Vector3(Leo.Number_31.x,Leo.Number_31.y,Leo.Number_31.z),
+        new THREE.Vector3(Leo.Omicron.x,Leo.Omicron.y,Leo.Omicron.z),
+      ]),
+      Trajectory_4:new Trajectory([
+        new THREE.Vector3(Leo.Theta.x,Leo.Theta.y,Leo.Theta.z),
+        new THREE.Vector3(Leo.M65.x,Leo.M65.y,Leo.M65.z),
+        new THREE.Vector3(Leo.M66.x,Leo.M66.y,Leo.M66.z),
+        new THREE.Vector3(Leo.Iota.x,Leo.Iota.y,Leo.Iota.z),
+        new THREE.Vector3(Leo.Sigma.x,Leo.Sigma.y,Leo.Sigma.z),
+        new THREE.Vector3(Leo.Tau.x,Leo.Tau.y,Leo.Tau.z),
+        new THREE.Vector3(Leo.Upsilon.x,Leo.Upsilon.y,Leo.Upsilon.z),
+      ])
+    }
+
+    addTrajectory(Aries_Trajectory);
+    addTrajectory(Taurus_Trajectory);
+    addTrajectory(Gemini_Trajectory);
+    addTrajectory(Cnacer_Trajectory);
+    addTrajectory(Leo_Trajectory);
+  };
+
+  // --------------------Three.jsにオブジェクトを作成
+  function threeWorld() {
+
+    threeWorld_planets();
+    threeWorld_signs();
 
     // -----線
     MercuryToSun = new Line(
@@ -490,14 +611,14 @@ onMounted(() => {
     Uranus.update();
     Neptune.update();
     // -----Distance
-    MercuryToSun.update(new THREE.Vector3(Mercury.x, Mercury.y, Mercury.z));
-    VenusToSun.update(new THREE.Vector3(Venus.x, Venus.y, Venus.z));
-    EarthToSun.update(new THREE.Vector3(Earth.x, Earth.y, Earth.z));
-    MarsToSun.update(new THREE.Vector3(Mars.x, Mars.y, Mars.z));
-    JupiterToSun.update(new THREE.Vector3(Jupiter.x, Jupiter.y, Jupiter.z));
-    SaturnToSun.update(new THREE.Vector3(Saturn.x, Saturn.y, Saturn.z));
-    UranusToSun.update(new THREE.Vector3(Uranus.x, Uranus.y, Uranus.z));
-    NeptuneToSun.update(new THREE.Vector3(Neptune.x, Neptune.y, Neptune.z));
+    // MercuryToSun.update(new THREE.Vector3(Mercury.x, Mercury.y, Mercury.z));
+    // VenusToSun.update(new THREE.Vector3(Venus.x, Venus.y, Venus.z));
+    // EarthToSun.update(new THREE.Vector3(Earth.x, Earth.y, Earth.z));
+    // MarsToSun.update(new THREE.Vector3(Mars.x, Mars.y, Mars.z));
+    // JupiterToSun.update(new THREE.Vector3(Jupiter.x, Jupiter.y, Jupiter.z));
+    // SaturnToSun.update(new THREE.Vector3(Saturn.x, Saturn.y, Saturn.z));
+    // UranusToSun.update(new THREE.Vector3(Uranus.x, Uranus.y, Uranus.z));
+    // NeptuneToSun.update(new THREE.Vector3(Neptune.x, Neptune.y, Neptune.z));
 
     // -----Three_Raycaster
     raycaster.setFromCamera(mouse, camera);
@@ -559,15 +680,13 @@ onMounted(() => {
     // -----レンダリング
     renderer.render(scene, camera);
     requestAnimationFrame(rendering);
-  }
-
-
+  };
 });
 
 // ----------水星をクリックした時の処理
 function toMercury() {
   route.push("/planets/mercury");
-  animateCameraPos(Mercury.x * 1.1, Mercury.y * 1.1, Mercury.z * 1.1);
+  animateCameraPos(Mercury.x * 1.5, Mercury.y * 1.5, Mercury.z * 1.5);
 }
 // ----------金星をクリックした時の処理
 function toVenus() {
