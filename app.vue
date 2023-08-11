@@ -47,6 +47,12 @@ let Taurus_Trajectory;
 let Cnacer_Trajectory;
 let Leo_Trajectory;
 let Virgo_Trajectory;
+let Libra_Trajectory;
+let Scorpius_Trajectory;
+let Sagittarius_Trajectory;
+let Capriconus_Trajectory;
+let Aquarius_Trajectory;
+let Pisces_Trajectory;
 
 // ----------倍率
 let zoomRatio = 1000;
@@ -488,14 +494,188 @@ onMounted(() => {
         new THREE.Vector3(Virgo.Iota.x, Virgo.Iota.y, Virgo.Iota.z),
         new THREE.Vector3(Virgo.Mu.x, Virgo.Mu.y, Virgo.Mu.z),
       ]),
+      Trajectory_5: new Trajectory([
+        new THREE.Vector3(Virgo.Delta.x, Virgo.Delta.y, Virgo.Delta.z),
+        new THREE.Vector3(Virgo.Zehta.x, Virgo.Zehta.y, Virgo.Zehta.z),
+      ]),
+      Trajectory_6: new Trajectory([
+        new THREE.Vector3(Virgo.Delta.x, Virgo.Delta.y, Virgo.Delta.z),
+        new THREE.Vector3(Virgo.Tau.x, Virgo.Tau.y, Virgo.Tau.z),
+        new THREE.Vector3(Virgo.Number_109.x, Virgo.Number_109.y, Virgo.Number_109.z),
+      ]),
+    };
+
+    Libra_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Libra.Alpha.x, Libra.Alpha.y, Libra.Alpha.z),
+        new THREE.Vector3(Libra.Beta.x, Libra.Beta.y, Libra.Beta.z),
+        new THREE.Vector3(Libra.Gamma.x, Libra.Gamma.y, Libra.Gamma.z),
+        new THREE.Vector3(Libra.Iota_1.x, Libra.Iota_1.y, Libra.Iota_1.z),
+        new THREE.Vector3(Libra.Alpha.x, Libra.Alpha.y, Libra.Alpha.z),
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Libra.Alpha.x, Libra.Alpha.y, Libra.Alpha.z),
+        new THREE.Vector3(Libra.Sigma.x, Libra.Sigma.y, Libra.Sigma.z),
+      ]),
+      Trajectory_3: new Trajectory([
+        new THREE.Vector3(Libra.Gamma.x, Libra.Gamma.y, Libra.Gamma.z),
+        new THREE.Vector3(Libra.Theta.x, Libra.Theta.y, Libra.Theta.z),
+      ]),
+    };
+
+    Scorpius_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Scorpius.Nu.x, Scorpius.Nu.y, Scorpius.Nu.z),
+        new THREE.Vector3(Scorpius.Beta_1.x, Scorpius.Beta_1.y, Scorpius.Beta_1.z),
+        new THREE.Vector3(Scorpius.Delta.x, Scorpius.Delta.y, Scorpius.Delta.z),
+        new THREE.Vector3(Scorpius.Pi.x, Scorpius.Pi.y, Scorpius.Pi.z),
+        new THREE.Vector3(Scorpius.Rho.x, Scorpius.Rho.y, Scorpius.Rho.z),
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Scorpius.Delta.x, Scorpius.Delta.y, Scorpius.Delta.z),
+        new THREE.Vector3(Scorpius.Sigma.x, Scorpius.Sigma.y, Scorpius.Sigma.z),
+        new THREE.Vector3(Scorpius.Alpha.x, Scorpius.Alpha.y, Scorpius.Alpha.z),
+        new THREE.Vector3(Scorpius.Tau.x, Scorpius.Tau.y, Scorpius.Tau.z),
+        new THREE.Vector3(Scorpius.Epsilon.x, Scorpius.Epsilon.y, Scorpius.Epsilon.z),
+        new THREE.Vector3(Scorpius.Mu.x, Scorpius.Mu.y, Scorpius.Mu.z),
+        new THREE.Vector3(Scorpius.Zehta_1.x, Scorpius.Zehta_1.y, Scorpius.Zehta_1.z),
+        new THREE.Vector3(Scorpius.Eta.x, Scorpius.Eta.y, Scorpius.Eta.z),
+        new THREE.Vector3(Scorpius.Theta.x, Scorpius.Theta.y, Scorpius.Theta.z),
+        new THREE.Vector3(Scorpius.Iota_1.x, Scorpius.Iota_1.y, Scorpius.Iota_1.z),
+        new THREE.Vector3(Scorpius.Upsilon.x, Scorpius.Upsilon.y, Scorpius.Upsilon.z),
+        new THREE.Vector3(Scorpius.Lambda.x, Scorpius.Lambda.y, Scorpius.Lambda.z),
+        new THREE.Vector3(Scorpius.Kappa.x, Scorpius.Kappa.y, Scorpius.Kappa.z),
+      ]),
+    };
+
+    Sagittarius_Trajectory = {
+      Trajectory_1: new Trajectory([
+        new THREE.Vector3(Sagittarius.Delta.x, Sagittarius.Delta.y, Sagittarius.Delta.z),
+        new THREE.Vector3(Sagittarius.Gamma_2.x, Sagittarius.Gamma_2.y, Sagittarius.Gamma_2.z),
+      ]),
+      Trajectory_2: new Trajectory([
+        new THREE.Vector3(Sagittarius.Mu.x, Sagittarius.Mu.y, Sagittarius.Mu.z),
+        new THREE.Vector3(Sagittarius.Lambda.x, Sagittarius.Lambda.y, Sagittarius.Lambda.z),
+        new THREE.Vector3(Sagittarius.Delta.x, Sagittarius.Delta.y, Sagittarius.Delta.z),
+        new THREE.Vector3(Sagittarius.Epsilon.x, Sagittarius.Epsilon.y, Sagittarius.Epsilon.z),
+        new THREE.Vector3(Sagittarius.Eta.x, Sagittarius.Eta.y, Sagittarius.Eta.z),
+      ]),
+      Trajectory_3:new Trajectory([
+        new THREE.Vector3(Sagittarius.Rho_1.x,Sagittarius.Rho_1.y,Sagittarius.Rho_1.z),
+        new THREE.Vector3(Sagittarius.Rho_2.x,Sagittarius.Rho_2.y,Sagittarius.Rho_2.z),
+        new THREE.Vector3(Sagittarius.Number_43.x,Sagittarius.Number_43.y,Sagittarius.Number_43.z),
+        new THREE.Vector3(Sagittarius.Pi.x,Sagittarius.Pi.y,Sagittarius.Pi.z),
+        new THREE.Vector3(Sagittarius.Omicron.x,Sagittarius.Omicron.y,Sagittarius.Omicron.z),
+        new THREE.Vector3(Sagittarius.Xi_2.x,Sagittarius.Xi_2.y,Sagittarius.Xi_2.z),
+        new THREE.Vector3(Sagittarius.Xi_1.x,Sagittarius.Xi_1.y,Sagittarius.Xi_1.z),
+      ]),
+      Trajectory_4:new Trajectory([
+        new THREE.Vector3(Sagittarius.Lambda.x,Sagittarius.Lambda.y,Sagittarius.Lambda.z),
+        new THREE.Vector3(Sagittarius.Phi.x,Sagittarius.Phi.y,Sagittarius.Phi.z),
+        new THREE.Vector3(Sagittarius.Sigma.x,Sagittarius.Sigma.y,Sagittarius.Sigma.z),
+        new THREE.Vector3(Sagittarius.Omicron.x,Sagittarius.Omicron.y,Sagittarius.Omicron.z),
+      ]),
       Trajectory_5:new Trajectory([
-        new THREE.Vector3(Virgo.Delta.x,Virgo.Delta.y,Virgo.Delta.z),
-        new THREE.Vector3(Virgo.Zehta.x,Virgo.Zehta.y,Virgo.Zehta.z),
+        new THREE.Vector3(Sagittarius.Sigma.x,Sagittarius.Sigma.y,Sagittarius.Sigma.z),
+        new THREE.Vector3(Sagittarius.Tau.x,Sagittarius.Tau.y,Sagittarius.Tau.z),
+        new THREE.Vector3(Sagittarius.Zehta.x,Sagittarius.Zehta.y,Sagittarius.Zehta.z),
+        new THREE.Vector3(Sagittarius.Alpha.x,Sagittarius.Alpha.y,Sagittarius.Alpha.z),
+        new THREE.Vector3(Sagittarius.Beta_1.x,Sagittarius.Beta_1.y,Sagittarius.Beta_1.z),
+        new THREE.Vector3(Sagittarius.Beta_2.x,Sagittarius.Beta_2.y,Sagittarius.Beta_2.z),
       ]),
       Trajectory_6:new Trajectory([
-        new THREE.Vector3(Virgo.Delta.x,Virgo.Delta.y,Virgo.Delta.z),
-        new THREE.Vector3(Virgo.Tau.x,Virgo.Tau.y,Virgo.Tau.z),
-        new THREE.Vector3(Virgo.Number_109.x,Virgo.Number_109.y,Virgo.Number_109.z)
+        new THREE.Vector3(Sagittarius.Tau.x,Sagittarius.Tau.y,Sagittarius.Tau.z),
+        new THREE.Vector3(Sagittarius.Omega.x,Sagittarius.Omega.y,Sagittarius.Omega.z),
+        new THREE.Vector3(Sagittarius.Theta_2.x,Sagittarius.Theta_2.y,Sagittarius.Theta_2.z),
+        new THREE.Vector3(Sagittarius.Theta_1.x,Sagittarius.Theta_1.y,Sagittarius.Theta_1.z),
+        new THREE.Vector3(Sagittarius.Iota.x,Sagittarius.Iota.y,Sagittarius.Iota.z),
+      ]),
+    };
+
+    Capriconus_Trajectory = {
+      Trajectory_1:new Trajectory([
+        new THREE.Vector3(Capriconus.Alpha_2.x,Capriconus.Alpha_2.y,Capriconus.Alpha_2.z),
+        new THREE.Vector3(Capriconus.Alpha_1.x,Capriconus.Alpha_1.y,Capriconus.Alpha_1.z),
+        new THREE.Vector3(Capriconus.Beta_1.x,Capriconus.Beta_1.y,Capriconus.Beta_1.z),
+        new THREE.Vector3(Capriconus.Theta.x,Capriconus.Theta.y,Capriconus.Theta.z),
+        new THREE.Vector3(Capriconus.Iota.x,Capriconus.Iota.y,Capriconus.Iota.z),
+        new THREE.Vector3(Capriconus.Gamma.x,Capriconus.Gamma.y,Capriconus.Gamma.z),
+        new THREE.Vector3(Capriconus.Delta.x,Capriconus.Delta.y,Capriconus.Delta.z),
+      ]),
+      Trajectory_2:new Trajectory([
+        new THREE.Vector3(Capriconus.Gamma.x,Capriconus.Gamma.y,Capriconus.Gamma.z),
+        new THREE.Vector3(Capriconus.Epsilon.x,Capriconus.Epsilon.y,Capriconus.Epsilon.z),
+        new THREE.Vector3(Capriconus.Zehta.x,Capriconus.Zehta.y,Capriconus.Zehta.z),
+        new THREE.Vector3(Capriconus.Number_24.x,Capriconus.Number_24.y,Capriconus.Number_24.z),
+        new THREE.Vector3(Capriconus.Omega.x,Capriconus.Omega.y,Capriconus.Omega.z),
+        new THREE.Vector3(Capriconus.Psi.x,Capriconus.Psi.y,Capriconus.Psi.z),
+        new THREE.Vector3(Capriconus.Omicron.x,Capriconus.Omicron.y,Capriconus.Omicron.z),
+        new THREE.Vector3(Capriconus.Rho.x,Capriconus.Rho.y,Capriconus.Rho.z),
+        new THREE.Vector3(Capriconus.Beta_1.x,Capriconus.Beta_1.y,Capriconus.Beta_1.z),
+      ]),
+    };
+
+    Aquarius_Trajectory = {
+      Trajectory_1:new Trajectory([
+        new THREE.Vector3(Aquarius.Epsilon.x,Aquarius.Epsilon.y,Aquarius.Epsilon.z),
+        new THREE.Vector3(Aquarius.Beta.x,Aquarius.Beta.y,Aquarius.Beta.z),
+        new THREE.Vector3(Aquarius.Alpha.x,Aquarius.Alpha.y,Aquarius.Alpha.z),
+        new THREE.Vector3(Aquarius.Theta.x,Aquarius.Theta.y,Aquarius.Theta.z),
+        new THREE.Vector3(Aquarius.Iota.x,Aquarius.Iota.y,Aquarius.Iota.z),
+      ]),
+      Trajectory_2:new Trajectory([
+        new THREE.Vector3(Aquarius.Alpha.x,Aquarius.Alpha.y,Aquarius.Alpha.z),
+        new THREE.Vector3(Aquarius.Gamma.x,Aquarius.Gamma.y,Aquarius.Gamma.z),
+        new THREE.Vector3(Aquarius.Zehta.x,Aquarius.Zehta.y,Aquarius.Zehta.z),
+        new THREE.Vector3(Aquarius.Eta.x,Aquarius.Eta.y,Aquarius.Eta.z),
+      ]),
+      Trajectory_3:new Trajectory([
+        new THREE.Vector3(Aquarius.Zehta.x,Aquarius.Zehta.y,Aquarius.Zehta.z),
+        new THREE.Vector3(Aquarius.Pi.x,Aquarius.Pi.y,Aquarius.Pi.z),
+      ]),
+      Trajectory_4:new Trajectory([
+        new THREE.Vector3(Aquarius.Zehta.x,Aquarius.Zehta.y,Aquarius.Zehta.z),
+        new THREE.Vector3(Aquarius.Kappa.x,Aquarius.Kappa.y,Aquarius.Kappa.z),
+        new THREE.Vector3(Aquarius.Lambda.x,Aquarius.Lambda.y,Aquarius.Lambda.z),
+        new THREE.Vector3(Aquarius.Delta.x,Aquarius.Delta.y,Aquarius.Delta.z),
+        new THREE.Vector3(Aquarius.C_2.x,Aquarius.C_2.y,Aquarius.C_2.z),
+        new THREE.Vector3(Aquarius.C_1.x,Aquarius.C_1.y,Aquarius.C_1.z),
+        new THREE.Vector3(Aquarius.A_Psa.x,Aquarius.A_Psa.y,Aquarius.A_Psa.z),
+      ]),
+      Trajectory_5:new Trajectory([
+        new THREE.Vector3(Aquarius.Zehta.x,Aquarius.Zehta.y,Aquarius.Zehta.z),
+        new THREE.Vector3(Aquarius.Phi.x,Aquarius.Phi.y,Aquarius.Phi.z),
+        new THREE.Vector3(Aquarius.Omega_2.x,Aquarius.Omega_2.y,Aquarius.Omega_2.z),
+        new THREE.Vector3(Aquarius.A_Psa.x,Aquarius.A_Psa.y,Aquarius.A_Psa.z),
+      ]),
+    };
+
+    Pisces_Trajectory = {
+      Trajectory_1:new Trajectory([
+        new THREE.Vector3(Pisces.Tau.x,Pisces.Tau.y,Pisces.Tau.z),
+        new THREE.Vector3(Pisces.Upsilon.x,Pisces.Upsilon.y,Pisces.Upsilon.z),
+        new THREE.Vector3(Pisces.Phi.x,Pisces.Phi.y,Pisces.Phi.z),
+        new THREE.Vector3(Pisces.Chi.x,Pisces.Chi.y,Pisces.Chi.z),
+        new THREE.Vector3(Pisces.Eta.x,Pisces.Eta.y,Pisces.Eta.z),
+        new THREE.Vector3(Pisces.Omicron.x,Pisces.Omicron.y,Pisces.Omicron.z),
+        new THREE.Vector3(Pisces.Alpha.x,Pisces.Alpha.y,Pisces.Alpha.z),
+        new THREE.Vector3(Pisces.Xi.x,Pisces.Xi.y,Pisces.Xi.z),
+        new THREE.Vector3(Pisces.Nu.x,Pisces.Nu.y,Pisces.Nu.z),
+        new THREE.Vector3(Pisces.Mu.x,Pisces.Mu.y,Pisces.Mu.z),
+        new THREE.Vector3(Pisces.Zehta.x,Pisces.Zehta.y,Pisces.Zehta.z),
+        new THREE.Vector3(Pisces.Epsilon.x,Pisces.Epsilon.y,Pisces.Epsilon.z),
+        new THREE.Vector3(Pisces.Delta.x,Pisces.Delta.y,Pisces.Delta.z),
+        new THREE.Vector3(Pisces.Omega.x,Pisces.Omega.y,Pisces.Omega.z),
+        new THREE.Vector3(Pisces.Iota.x,Pisces.Iota.y,Pisces.Iota.z),
+        new THREE.Vector3(Pisces.Theta.x,Pisces.Theta.y,Pisces.Theta.z),
+        new THREE.Vector3(Pisces.Gamma.x,Pisces.Gamma.y,Pisces.Gamma.z),
+        new THREE.Vector3(Pisces.Kappa.x,Pisces.Kappa.y,Pisces.Kappa.z),
+        new THREE.Vector3(Pisces.Lambda.x,Pisces.Lambda.y,Pisces.Lambda.z),
+        new THREE.Vector3(Pisces.Omega.x,Pisces.Omega.y,Pisces.Omega.z),
+      ]),
+      Trajectory_2:new Trajectory([
+      new THREE.Vector3(Pisces.Gamma.x,Pisces.Gamma.y,Pisces.Gamma.z),
+      new THREE.Vector3(Pisces.Beta.x,Pisces.Beta.y,Pisces.Beta.z),
       ]),
     };
 
@@ -505,6 +685,12 @@ onMounted(() => {
     addTrajectory(Cnacer_Trajectory);
     addTrajectory(Leo_Trajectory);
     addTrajectory(Virgo_Trajectory);
+    addTrajectory(Libra_Trajectory);
+    addTrajectory(Scorpius_Trajectory);
+    addTrajectory(Sagittarius_Trajectory);
+    addTrajectory(Capriconus_Trajectory);
+    addTrajectory(Aquarius_Trajectory);
+    addTrajectory(Pisces_Trajectory);
   };
 
   // --------------------Three.jsにオブジェクトを作成

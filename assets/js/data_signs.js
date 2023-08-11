@@ -351,10 +351,6 @@ export const Libra = {
         alpha: 233.88,
         delta: -14.78,
     },
-    Delta:{
-        alpha: 226.01,
-        delta: -25.28,
-    },
     Theta:{
         alpha: 238.45,
         delta: -16.72,
@@ -362,6 +358,10 @@ export const Libra = {
     Iota_1:{
         alpha: 228.05,
         delta: -19.79,
+    },
+    Sigma:{
+        alpha: 226.01,
+        delta: -25.28,
     },
 };
 export const Scorpius = {
@@ -433,10 +433,10 @@ export const Scorpius = {
         alpha: 262.69,
         delta: -37.29,
     },
-    G:{
-        alpha: 267.46,
-        delta: -37.04,
-    },
+    // G:{
+    //     alpha: 267.46,
+    //     delta: -37.04,
+    // },
 };
 export const Sagittarius = {
     Alpha:{
@@ -573,10 +573,10 @@ export const Capriconus = {
         alpha: 320.56,
         delta: -16.83,
     },
-    Nu:{
-        alpha: 305.16,
-        delta: -12.75,
-    },
+    // Nu:{
+    //     alpha: 305.16,
+    //     delta: -12.75,
+    // },
     Omicron:{
         alpha: 307.47,
         delta: -18.58,
@@ -585,10 +585,10 @@ export const Capriconus = {
         alpha: 307.21,
         delta: -17.81, 
     },
-    Tau:{
-        alpha: 309.81,
-        delta: -14.95,
-    },
+    // Tau:{
+    //     alpha: 309.81,
+    //     delta: -14.95,
+    // },
     Psi:{
         alpha: 311.52,
         delta: -25.27,
@@ -623,6 +623,10 @@ export const Aquarius = {
         alpha: 311.91,
         delta: -9.49,
     },
+    Zehta:{
+        alpha: 337.20,
+        delta: 0.01,
+    },
     Eta:{
         alpha: 338.83,
         delta: 0.11,
@@ -643,10 +647,6 @@ export const Aquarius = {
         alpha: 343.15,
         delta: -7.57,
     },
-    Xi:{
-        alpha: 337.20,
-        delta: 0.01,
-    },
     Pi:{
         alpha: 336.31,
         delta: 1.37,
@@ -656,7 +656,7 @@ export const Aquarius = {
         delta: -6.04,
     },
     Omega_2:{
-        alpha: 348.58,
+        alpha: 355.68,
         delta: -14.54,
     },
     C_1:{
@@ -753,8 +753,8 @@ export const Pisces = {
         alpha: 359.82,
         delta: 6.86,
     },
-    B:{
-        alpha: 350.08,
-        delta: 5.38,
-    },
+    // B:{
+    //     alpha: 350.08,
+    //     delta: 5.38,
+    // },
 };
