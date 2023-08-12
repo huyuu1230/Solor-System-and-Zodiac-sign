@@ -2,8 +2,8 @@ import * as THREE from "three";
 
 // --------------------星座
 class Sign {
-    constructor(alpha, delta) {
-        this.r = sunRaddius * 5;
+    constructor(raddius, alpha, delta) {
+        this.r = raddius;
         this.w = 100;
         this.h = 100;
         this.or = 100 * au;
@@ -60,6 +60,8 @@ function addTrajectory(trajectory) {
         trajectory[key].add(scene);
     };
 };
+
+
 
 // --------------------星座の軌跡配列
 const Aries_Trajectory = {
