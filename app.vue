@@ -13,9 +13,9 @@
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-// import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { toRad, Planet, Orbit, Sign, Trajectory, } from "assets/js/module";
+import { toRad, Planet, Orbit, Sign, Trajectory, PlanetText } from "assets/js/module";
 import { Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune } from "assets/js/data_planets";
 import { Aries, Taurus, Gemini, Cancer, Leo, Virgo, Libra, Scorpius, Sagittarius, Capriconus, Aquarius, Pisces } from "assets/js/data_Signs";
 
@@ -41,7 +41,14 @@ let currentTarget;
 let sun;
 const Planets = [];
 let MercuryToSun, VenusToSun, EarthToSun, MarsToSun, JupiterToSun, SaturnToSun, UranusToSun, NeptuneToSun;
-
+let MercuryInfo = {};
+let VenusInfo = {};
+let EarthInfo = {};
+let MarsInfo = {};
+let JupiterInfo = {};
+let SaturnInfo = {};
+let UranusInfo = {};
+let NeptuneInfo = {};
 // --------------------星座の軌跡
 let Aries_Trajectory;
 let Gemini_Trajectory;
@@ -97,7 +104,7 @@ class Sun {
     this.mesh.position.set(this.x, this.y, this.z);
     this.mesh.name = "sun";
     scene.add(this.mesh);
-  }
+  };
 };
 
 // --------------------惑星の作成
@@ -143,7 +150,7 @@ function addOrbit(planet) {
 function createSign(sign) {
   const radius = sunRadius * 5;
   for (let key in sign) {
-    sign[key] = new Sign(radius, au, sign[key].alpha, sign[key].delta);
+    sign[key] = new Sign(radius, au * 10, sign[key].alpha, sign[key].delta);
   };
 };
 // --------------------星座の表示
@@ -169,6 +176,31 @@ function pushPlanets() {
   Planets.push(Saturn.Planet.mesh);
   Planets.push(Uranus.Planet.mesh);
   Planets.push(Neptune.Planet.mesh);
+};
+
+// --------------------テキストの作成
+function createText(obj, data, text) {
+  obj.Title = new PlanetText(
+    text,
+    Font,
+    1000,
+    100,
+    data.Planet.x + data.Planet.r * 3,
+    data.Planet.y + data.Planet.r * 3,
+    data.Planet.z + data.Planet.r * 3,
+  );
+};
+// --------------------テキストの表示
+function addText(obj){
+  obj.Title.add(scene)
+};
+// --------------------テキストのアニメーション
+function updateText(obj,data){
+  obj.Title.update(
+    data.Planet.x + data.Planet.r * 3,
+    data.Planet.y + data.Planet.r * 3,
+    data.Planet.z + data.Planet.r * 3,
+    );
 };
 
 // --------------------線を作成
@@ -198,16 +230,6 @@ class Line {
   };
 };
 
-// --------------------フォント
-// loadFont();
-// function onLoadFont(font) {
-//   Font = font;
-//   console.log(Font)
-// }
-// function loadFont() {
-//   fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
-// }
-
 onMounted(() => {
   const container = document.getElementById("index");
 
@@ -228,7 +250,7 @@ onMounted(() => {
       50,
       window.innerWidth / window.innerHeight,
       1,
-      au * 1000
+      ly
     );
     camera.position.set(0, 0, au * 50);
     scene.add(camera);
@@ -256,7 +278,7 @@ onMounted(() => {
   function threeWorld_planets() {
 
     // ----------太陽
-    sun = new Sun(sunRadius, 100, 100);
+    sun = new Sun(sunRadius, 10, 10);
 
     // ----------惑星の作成
     createPlanet(Mercury);
@@ -749,10 +771,21 @@ onMounted(() => {
     );
   };
 
+  // --------------------フォント
+  function onLoadFont(font) {
+    Font = font;
+    createText(MercuryInfo,Mercury,'Mercury');
+    addText(MercuryInfo);
+  };
+  function loadFont() {
+    fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
+  };
+
   // --------------------Three.jsにオブジェクトを作成
   function threeWorld() {
     threeWorld_planets();
     threeWorld_signs();
+    loadFont();
   };
 
   // --------------------コントロール関連
@@ -813,6 +846,7 @@ onMounted(() => {
 
   // --------------------THREE_RENDERING
   function rendering() {
+
     TWEEN.update();
     orbitControls.update();
     // ----------惑星
@@ -825,6 +859,12 @@ onMounted(() => {
     updatePlanet(Uranus);
     updatePlanet(Neptune);
 
+    // ----------惑星のテキスト
+    if (Font) {
+      updateText(MercuryInfo,Mercury);
+    };
+
+    // ----------カメラがオブジェクトを追尾するアニメーション
     cameraTargetObject();
 
     // -----Three_Raycaster
@@ -890,9 +930,6 @@ onMounted(() => {
   };
 });
 
-
-
-
 function cameraTargetObject() {
   if (currentTarget == 'Mercury') {
     orbitControls.target.set(Mercury.Planet.x, Mercury.Planet.y, Mercury.Planet.z);
@@ -909,18 +946,17 @@ function cameraTargetObject() {
   } else if (currentTarget == 'Jupiter') {
     orbitControls.target.set(Jupiter.Planet.x, Jupiter.Planet.y, Jupiter.Planet.z);
     animateCameraPos(Jupiter.Planet.x + Jupiter.Planet.r * 5, Jupiter.Planet.y + Jupiter.Planet.r * 5, Jupiter.Planet.z + Jupiter.Planet.r * 5,);
-  } else if(currentTarget == 'Saturn'){
-    orbitControls.target.set(Saturn.Planet.x,Saturn.Planet.y,Saturn.Planet.z);
-    animateCameraPos(Saturn.Planet.x + Saturn.Planet.r * 5,Saturn.Planet.y + Saturn.Planet.r * 5,Saturn.Planet.z + Saturn.Planet.r * 5,);
-  } else if(currentTarget == 'Uranus'){
-    orbitControls.target.set(Uranus.Planet.x,Uranus.Planet.y,Uranus.Planet.z,);
-    animateCameraPos(Uranus.Planet.x + Uranus.Planet.r * 5,Uranus.Planet.y + Uranus.Planet.r * 5,Uranus.Planet.z + Uranus.Planet.r * 5,);
-  } else if(currentTarget == 'Neptune'){
-    orbitControls.target.set(Neptune.Planet.x,Neptune.Planet.y,Neptune.Planet.z,);
-    animateCameraPos(Neptune.Planet.x + Neptune.Planet.r * 5,Neptune.Planet.y + Neptune.Planet.r * 5,Neptune.Planet.z + Neptune.Planet.r * 5,);
+  } else if (currentTarget == 'Saturn') {
+    orbitControls.target.set(Saturn.Planet.x, Saturn.Planet.y, Saturn.Planet.z);
+    animateCameraPos(Saturn.Planet.x + Saturn.Planet.r * 5, Saturn.Planet.y + Saturn.Planet.r * 5, Saturn.Planet.z + Saturn.Planet.r * 5,);
+  } else if (currentTarget == 'Uranus') {
+    orbitControls.target.set(Uranus.Planet.x, Uranus.Planet.y, Uranus.Planet.z,);
+    animateCameraPos(Uranus.Planet.x + Uranus.Planet.r * 5, Uranus.Planet.y + Uranus.Planet.r * 5, Uranus.Planet.z + Uranus.Planet.r * 5,);
+  } else if (currentTarget == 'Neptune') {
+    orbitControls.target.set(Neptune.Planet.x, Neptune.Planet.y, Neptune.Planet.z,);
+    animateCameraPos(Neptune.Planet.x + Neptune.Planet.r * 5, Neptune.Planet.y + Neptune.Planet.r * 5, Neptune.Planet.z + Neptune.Planet.r * 5,);
   }
-}
-
+};
 // ----------水星をクリックした時の処理
 function toMercury() {
   route.push("/planets/mercury");
@@ -971,7 +1007,6 @@ function animateCameraPos(x, y, z) {
     .easing(TWEEN.Easing.Cubic.Out)
     .start();
 };
-
 
 </script>
 

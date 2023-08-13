@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 // ----------度からラジアンに変換
 export function toRad(deg) {
@@ -63,8 +64,8 @@ export class Planet {
 };
 
 // ------------------------------軌道
-export class Orbit{
-    constructor(sunRadius,au,distance){
+export class Orbit {
+    constructor(sunRadius, au, distance) {
         this.distance = au * distance + sunRadius;
         this.orbitPoints = [];
         this.orbitPointNum = 360;
@@ -82,7 +83,7 @@ export class Orbit{
         this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
         this.mesh = new THREE.Line(this.geometry, this.material);
     };
-    add(scene){
+    add(scene) {
         scene.add(this.mesh);
     };
 };
@@ -127,5 +128,33 @@ export class Trajectory {
     };
     add(scene) {
         scene.add(this.mesh);
+    };
+};
+
+// ------------------------------テキスト
+export class PlanetText {
+    constructor(text, font, size, height, x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.geometry = new TextGeometry(text, {
+            font: font,
+            size: size,
+            height: height,
+        });
+        this.material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.position.set(this.x, this.y, this.z);
+    };
+    add(scene) {
+        scene.add(this.mesh);
+    };
+    update(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.mesh.position.set(this.x, this.y, this.z);
     };
 };
