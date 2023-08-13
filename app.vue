@@ -35,6 +35,7 @@ let raycaster;
 let clickFlg = false;
 let moveFlg = false;
 let currentOrbit;
+let currentTarget;
 
 // --------------------惑星の変数
 let sun;
@@ -99,10 +100,6 @@ class Sun {
   }
 };
 
-
-//     orbits.push(this.planet);
-
-
 // --------------------惑星の作成
 function createPlanet(planet) {
   planet.Planet = new Planet(
@@ -163,7 +160,7 @@ function addTrajectory(trajectory) {
 };
 
 // --------------------惑星をクリックイベントオブジェクトに追加
-function pushPlanets(){
+function pushPlanets() {
   Planets.push(Mercury.Planet.mesh);
   Planets.push(Venus.Planet.mesh);
   Planets.push(Earth.Planet.mesh);
@@ -220,12 +217,6 @@ onMounted(() => {
     setControll();
     threeWorld();
     rendering();
-    
-    // setTimeout(() => {
-    //   console.log(Mercury.Planet)
-    //   orbitControls.target.set(Mercury.Planet.x,Mercury.Planet.y,Mercury.Planet.z)
-    //   animateCameraPos(Mercury.Planet.x + 10000,Mercury.Planet.y  + 10000,Mercury.Planet.z + 10000)
-    // }, 1000);
   }
   init();
 
@@ -306,6 +297,9 @@ onMounted(() => {
     addOrbit(Saturn);
     addOrbit(Uranus);
     addOrbit(Neptune);
+
+    // ----------惑星をクリックイベント配列に追加
+    pushPlanets();
   };
   // --------------------THREE_SIGNS
   function threeWorld_signs() {
@@ -753,13 +747,13 @@ onMounted(() => {
         Neptune.orbitPoints[0].z,
       )
     );
-  }
+  };
 
   // --------------------Three.jsにオブジェクトを作成
   function threeWorld() {
     threeWorld_planets();
-    // threeWorld_signs();
-  }
+    threeWorld_signs();
+  };
 
   // --------------------コントロール関連
   function setControll() {
@@ -789,6 +783,8 @@ onMounted(() => {
       const h = element.offsetHeight;
       mouse.x = (x / w) * 2 - 1;
       mouse.y = -(y / h) * 2 + 1;
+      // ------------------------------重要:マウスを動かしたらカメラのターゲットをリセット
+      currentTarget = ''
     };
     // ----------HandleClick_Three.js用のクリックイベント
     container.addEventListener("click", handleClick);
@@ -829,18 +825,7 @@ onMounted(() => {
     updatePlanet(Uranus);
     updatePlanet(Neptune);
 
-    // orbitControls.target.set(Mercury.Planet.x,Mercury.Planet.y,Mercury.Planet.z)
-    //   animateCameraPos(Mercury.Planet.x + 1000,Mercury.Planet.y  + 1000,Mercury.Planet.z + 1000)
-
-    // -----Distance
-    // MercuryToSun.update(new THREE.Vector3(Mercury.x, Mercury.y, Mercury.z));
-    // VenusToSun.update(new THREE.Vector3(Venus.x, Venus.y, Venus.z));
-    // EarthToSun.update(new THREE.Vector3(Earth.x, Earth.y, Earth.z));
-    // MarsToSun.update(new THREE.Vector3(Mars.x, Mars.y, Mars.z));
-    // JupiterToSun.update(new THREE.Vector3(Jupiter.x, Jupiter.y, Jupiter.z));
-    // SaturnToSun.update(new THREE.Vector3(Saturn.x, Saturn.y, Saturn.z));
-    // UranusToSun.update(new THREE.Vector3(Uranus.x, Uranus.y, Uranus.z));
-    // NeptuneToSun.update(new THREE.Vector3(Neptune.x, Neptune.y, Neptune.z));
+    cameraTargetObject();
 
     // -----Three_Raycaster
     raycaster.setFromCamera(mouse, camera);
@@ -905,45 +890,76 @@ onMounted(() => {
   };
 });
 
+
+
+
+function cameraTargetObject() {
+  if (currentTarget == 'Mercury') {
+    orbitControls.target.set(Mercury.Planet.x, Mercury.Planet.y, Mercury.Planet.z);
+    animateCameraPos(Mercury.Planet.x + Mercury.Planet.r * 5, Mercury.Planet.y + Mercury.Planet.r * 5, Mercury.Planet.z + Mercury.Planet.r * 5,);
+  } else if (currentTarget == 'Venus') {
+    orbitControls.target.set(Venus.Planet.x, Venus.Planet.y, Venus.Planet.z);
+    animateCameraPos(Venus.Planet.x + Venus.Planet.r * 5, Venus.Planet.y + Venus.Planet.r * 5, Venus.Planet.z + Venus.Planet.r * 5,);
+  } else if (currentTarget == 'Earth') {
+    orbitControls.target.set(Earth.Planet.x, Earth.Planet.y, Earth.Planet.z);
+    animateCameraPos(Earth.Planet.x + Earth.Planet.r * 5, Earth.Planet.y + Earth.Planet.r * 5, Earth.Planet.z + Earth.Planet.r * 5,);
+  } else if (currentTarget == 'Mars') {
+    orbitControls.target.set(Mars.Planet.x, Mars.Planet.y, Mars.Planet.z);
+    animateCameraPos(Mars.Planet.x + Mars.Planet.r * 5, Mars.Planet.y + Mars.Planet.r * 5, Mars.Planet.z + Mars.Planet.r * 5,);
+  } else if (currentTarget == 'Jupiter') {
+    orbitControls.target.set(Jupiter.Planet.x, Jupiter.Planet.y, Jupiter.Planet.z);
+    animateCameraPos(Jupiter.Planet.x + Jupiter.Planet.r * 5, Jupiter.Planet.y + Jupiter.Planet.r * 5, Jupiter.Planet.z + Jupiter.Planet.r * 5,);
+  } else if(currentTarget == 'Saturn'){
+    orbitControls.target.set(Saturn.Planet.x,Saturn.Planet.y,Saturn.Planet.z);
+    animateCameraPos(Saturn.Planet.x + Saturn.Planet.r * 5,Saturn.Planet.y + Saturn.Planet.r * 5,Saturn.Planet.z + Saturn.Planet.r * 5,);
+  } else if(currentTarget == 'Uranus'){
+    orbitControls.target.set(Uranus.Planet.x,Uranus.Planet.y,Uranus.Planet.z,);
+    animateCameraPos(Uranus.Planet.x + Uranus.Planet.r * 5,Uranus.Planet.y + Uranus.Planet.r * 5,Uranus.Planet.z + Uranus.Planet.r * 5,);
+  } else if(currentTarget == 'Neptune'){
+    orbitControls.target.set(Neptune.Planet.x,Neptune.Planet.y,Neptune.Planet.z,);
+    animateCameraPos(Neptune.Planet.x + Neptune.Planet.r * 5,Neptune.Planet.y + Neptune.Planet.r * 5,Neptune.Planet.z + Neptune.Planet.r * 5,);
+  }
+}
+
 // ----------水星をクリックした時の処理
 function toMercury() {
   route.push("/planets/mercury");
-  console.log('mercury')
+  currentTarget = 'Mercury';
 };
 // ----------金星をクリックした時の処理
 function toVenus() {
   route.push("/planets/venus");
-  animateCameraPos(Venus.x * 1.5, Venus.y * 1.5, Venus.z * 1.5);
+  currentTarget = 'Venus';
 };
 // ----------地球をクリックした時の処理
 function toEarth() {
   route.push("/planets/earth");
-  animateCameraPos(Earth.x * 1.5, Earth.y * 1.5, Earth.z * 1.5);
+  currentTarget = 'Earth';
 };
 // ----------火星をクリックした時の処理
 function toMars() {
   route.push("/planets/mars");
-  animateCameraPos(Mars.x * 1.5, Mars.y * 1.5, Mars.z * 1.5);
+  currentTarget = 'Maras';
 };
 // ----------木星をクリックした時の処理
 function toJupiter() {
   route.push("/planets/jupiter");
-  animateCameraPos(Jupiter.x * 1.5, Jupiter.y * 1.5, Jupiter.z * 1.5);
+  currentTarget = 'Jupiter';
 };
 // ----------土星をクリックした時の処理
 function toSaturn() {
   route.push("/planets/saturn");
-  animateCameraPos(Saturn.x * 1.5, Saturn.y * 1.5, Saturn.z * 1.5);
+  currentTarget = 'Saturn';
 };
 // ----------天王星をクリックした時の処理
 function toUranus() {
   route.push("/planets/uranus");
-  animateCameraPos(Uranus.x * 1.5, Uranus.y * 1.5, Uranus.z * 1.5);
+  currentTarget = 'Uranus';
 };
 // ----------海王星をクリックした時の処理
 function toNeptune() {
   route.push("/planets/neptune");
-  animateCameraPos(Neptune.x * 1.5, Neptune.y * 1.5, Neptune.z * 1.5);
+  currentTarget = 'Neptune';
 };
 // ----------指定の場所までカメラをアニメーションさせながら移動
 function animateCameraPos(x, y, z) {

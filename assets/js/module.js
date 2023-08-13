@@ -18,8 +18,8 @@ export class Planet {
         this.rotation = rotation;
         // -----大きさ
         this.r = earthRadius * radius;
-        this.w = this.r / 10;
-        this.h = this.r / 10;
+        this.w = 10;
+        this.h = 10;
         // -----座標
         this.or = au * distance + sunRadius;
         this.alpha = alpha;
@@ -91,8 +91,8 @@ export class Orbit{
 export class Sign {
     constructor(raddius, au, alpha, delta) {
         this.r = raddius;
-        this.w = 100;
-        this.h = 100;
+        this.w = 10;
+        this.h = 10;
         this.or = 100 * au;
         this.alpha = alpha;
         this.delta = delta;
