@@ -4,6 +4,18 @@
     <headerNav />
     <div>
       <canvas id="index"></canvas>
+      <h1 id="test_camera" v-on:click="checkCamera">CAMERA</h1>
+      <ul id="planet-nav">
+        <li v-on:click="toHome">HOME</li>
+        <li v-on:click="toMercury">Mercury</li>
+        <li v-on:click="toVenus">Venus</li>
+        <li v-on:click="toEarth">Earth</li>
+        <li v-on:click="toMars">Mars</li>
+        <li v-on:click="toJupiter">Jupiter</li>
+        <li v-on:click="toSaturn">Saturn</li>
+        <li v-on:click="toUranus">Uranus</li>
+        <li v-on:click="toNeptune">Neptune</li>
+      </ul>
     </div>
     <NuxtPage />
   </div>
@@ -41,6 +53,7 @@ let currentTarget;
 let sun;
 const Planets = [];
 let MercuryToSun, VenusToSun, EarthToSun, MarsToSun, JupiterToSun, SaturnToSun, UranusToSun, NeptuneToSun;
+// --------------------惑星のテキスト
 let MercuryInfo = {};
 let VenusInfo = {};
 let EarthInfo = {};
@@ -49,6 +62,48 @@ let JupiterInfo = {};
 let SaturnInfo = {};
 let UranusInfo = {};
 let NeptuneInfo = {};
+// --------------------TEST
+// ============================================================================================================================================
+// ============================================================================================================================================
+// ============================================================================================================================================
+let MercuryNav;
+let VenusNav;
+let EarthNav;
+let MarsNav;
+let JupiterNav;
+let SaturnNav;
+let UranusNav;
+let NeptuneNav;
+class Test_nav {
+  constructor(scene, data, font, text, deg) {
+    // ----------LINE
+    this.deg = deg
+    this.points = [];
+    this.startPoints = new THREE.Vector3(data.Orbit.orbitPoints[this.deg].x, data.Orbit.orbitPoints[this.deg].y, data.Orbit.orbitPoints[this.deg].z);
+    this.endPoints = new THREE.Vector3(data.Orbit.orbitPoints[this.deg].x + 450000, data.Orbit.orbitPoints[this.deg].y + 450000, data.Orbit.orbitPoints[this.deg].z);
+    this.points.push(this.startPoints);
+    this.points.push(this.endPoints);
+    this.lineGeometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.lineMesh = new THREE.Line(this.lineGeometry, this.lineMaterial);
+    scene.add(this.lineMesh);
+    // ----------TEXT
+    this.textGeometry = new TextGeometry(text, {
+      font: font,
+      size: 50000,
+      height: 1,
+    });
+    this.textMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+    });
+    this.textMesh = new THREE.Mesh(this.textGeometry, this.textMaterial);
+    this.textMesh.position.set(data.Orbit.orbitPoints[this.deg].x + 500000, data.Orbit.orbitPoints[this.deg].y + 500000, data.Orbit.orbitPoints[this.deg].z);
+    scene.add(this.textMesh);
+  };
+}
+// ============================================================================================================================================
+// ============================================================================================================================================
+// ============================================================================================================================================
 // --------------------星座の軌跡
 let Aries_Trajectory;
 let Gemini_Trajectory;
@@ -64,24 +119,24 @@ let Aquarius_Trajectory;
 let Pisces_Trajectory;
 
 // ----------倍率
-let zoomRatio = 1;
+let zoomRatio = 100;
 
 // --------------------地球
 // ----------半径
 const earthRadius = 1000 / zoomRatio;
-// ----------公転速度---Alpha
-const earthRevolutionAlpha = toRad(0.986 / 600);
+// ----------公転速度---Alpha---0.986
+const earthRevolutionAlpha = toRad(1 / 6000);
 // ----------公転速度---Delta
 const earthRevolutionDelta = toRad(1);
 // ----------自転の速度
 const earthRotation = earthRevolutionAlpha * 360;
 
 // --------------------太陽---219.08
-const sunRadius = earthRadius * 20;
+const sunRadius = earthRadius * 219.08;
 
 // --------------------距離
 // ----------1AU---23533.69
-const au = earthRadius * 100;
+const au = earthRadius * 23533.69;
 // ----------1LY
 const ly = au * 63241;
 
@@ -148,9 +203,9 @@ function addOrbit(planet) {
 
 // --------------------星座の作成
 function createSign(sign) {
-  const radius = sunRadius * 5;
+  const radius = sunRadius;
   for (let key in sign) {
-    sign[key] = new Sign(radius, au * 10, sign[key].alpha, sign[key].delta);
+    sign[key] = new Sign(radius, au, sign[key].alpha, sign[key].delta);
   };
 };
 // --------------------星座の表示
@@ -183,26 +238,30 @@ function createText(obj, data, text) {
   obj.Title = new PlanetText(
     text,
     Font,
-    1000,
-    100,
-    data.Planet.x + data.Planet.r * 3,
-    data.Planet.y + data.Planet.r * 3,
-    data.Planet.z + data.Planet.r * 3,
+    0.1,
+    data.Planet.x + data.Planet.r * 10,
+    data.Planet.y + data.Planet.r * 10,
+    data.Planet.z + data.Planet.r * 10,
   );
 };
 // --------------------テキストの表示
-function addText(obj){
+function addText(obj) {
   obj.Title.add(scene)
 };
 // --------------------テキストのアニメーション
-function updateText(obj,data){
+function updateText(obj, data) {
   obj.Title.update(
     data.Planet.x + data.Planet.r * 3,
     data.Planet.y + data.Planet.r * 3,
     data.Planet.z + data.Planet.r * 3,
-    );
+    camera,
+  );
 };
-
+function checkCamera() {
+  console.log('x : ' + camera.position.x);
+  console.log('y : ' + camera.position.y);
+  console.log('z : ' + camera.position.z);
+}
 // --------------------線を作成
 class Line {
   constructor(startVector, endVector) {
@@ -233,12 +292,15 @@ class Line {
 onMounted(() => {
   const container = document.getElementById("index");
 
+
+
   // --------------------THREE_INIT
   function init() {
     setup();
     setControll();
     threeWorld();
     rendering();
+    
   }
   init();
 
@@ -249,10 +311,10 @@ onMounted(() => {
     camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
-      1,
-      ly
+      0.1,
+      au * 1000
     );
-    camera.position.set(0, 0, au * 50);
+    camera.position.set(0, au*25, au * 50);
     scene.add(camera);
     // ----------Renderer
     renderer = new THREE.WebGLRenderer({
@@ -774,8 +836,23 @@ onMounted(() => {
   // --------------------フォント
   function onLoadFont(font) {
     Font = font;
-    createText(MercuryInfo,Mercury,'Mercury');
+    createText(MercuryInfo, Mercury, 'Mercury');
     addText(MercuryInfo);
+    // -----TEST___ORBIT_TEXT
+    // ============================================================================================================================================
+    // ============================================================================================================================================
+    // ============================================================================================================================================
+    MercuryNav = new Test_nav(scene, Mercury, font, 'Mercury', 0,);
+    VenusNav = new Test_nav(scene,Venus,font,'Venus',900);
+    EarthNav = new Test_nav(scene,Earth,font,'Earth',1800);
+    MarsNav = new Test_nav(scene,Mars,font,'Mars',2700);
+    JupiterNav = new Test_nav(scene,Jupiter,font,'Jupiter',0);
+    SaturnNav = new Test_nav(scene,Saturn,font,'Saturn',0);
+    UranusNav  = new Test_nav(scene,Uranus,font,'Uranus',0);
+    NeptuneNav = new Test_nav(scene,Neptune,font,'Neptune',0);
+    // ============================================================================================================================================
+    // ============================================================================================================================================
+    // ============================================================================================================================================
   };
   function loadFont() {
     fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
@@ -816,8 +893,6 @@ onMounted(() => {
       const h = element.offsetHeight;
       mouse.x = (x / w) * 2 - 1;
       mouse.y = -(y / h) * 2 + 1;
-      // ------------------------------重要:マウスを動かしたらカメラのターゲットをリセット
-      currentTarget = ''
     };
     // ----------HandleClick_Three.js用のクリックイベント
     container.addEventListener("click", handleClick);
@@ -847,6 +922,8 @@ onMounted(() => {
   // --------------------THREE_RENDERING
   function rendering() {
 
+
+
     TWEEN.update();
     orbitControls.update();
     // ----------惑星
@@ -861,7 +938,15 @@ onMounted(() => {
 
     // ----------惑星のテキスト
     if (Font) {
-      updateText(MercuryInfo,Mercury);
+      updateText(MercuryInfo, Mercury);
+
+      function calculateTextScale(camera, textPosition) {
+        const distance = camera.position.distanceTo(textPosition);
+        const scale = distance * 0.1;
+        return scale;
+      }
+      const ttt = calculateTextScale(camera, new THREE.Vector3(MercuryInfo.Title.x, MercuryInfo.Title.y, MercuryInfo.Title.z))
+      MercuryInfo.Title.mesh.scale.set(ttt, ttt, 1)
     };
 
     // ----------カメラがオブジェクトを追尾するアニメーション
@@ -957,6 +1042,13 @@ function cameraTargetObject() {
     animateCameraPos(Neptune.Planet.x + Neptune.Planet.r * 5, Neptune.Planet.y + Neptune.Planet.r * 5, Neptune.Planet.z + Neptune.Planet.r * 5,);
   }
 };
+// ----------カメラをホームポジションに戻す
+function toHome(){
+  route.push("/");
+  currentTarget = '';
+  orbitControls.target.set(0,0,0);
+  animateCameraPos(0,au * 25,au*50);
+};
 // ----------水星をクリックした時の処理
 function toMercury() {
   route.push("/planets/mercury");
@@ -1001,7 +1093,7 @@ function toNeptune() {
 function animateCameraPos(x, y, z) {
   const coords = camera.position;
   const destinationVector = new THREE.Vector3(x, y, z);
-  const DURATION = 3000;
+  const DURATION = 1000;
   const tween = new TWEEN.Tween(coords)
     .to(destinationVector, DURATION)
     .easing(TWEEN.Easing.Cubic.Out)
@@ -1081,5 +1173,25 @@ body::-webkit-scrollbar {
   top: 0;
   left: 0;
   z-index: -1000;
+}
+
+#test_camera {
+  position: fixed;
+  bottom: 100px;
+  left: 100px;
+  border: 1px solid #ffffff;
+}
+#planet-nav{
+  position: fixed;
+  top: 50%;
+  left: 50px;
+  transform: translate(0,-50%);
+  li{
+    border: 1px solid #ffffff;
+    padding: 0 10px;
+  }
+  li:not(:first-child){
+    margin: 10px 0 0 0;
+  }
 }
 </style>

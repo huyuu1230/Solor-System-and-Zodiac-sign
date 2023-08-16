@@ -36,7 +36,7 @@ export class Planet {
         // -----自転
         this.rotationX = (0 * Math.PI) / 180;
         this.rotationY = (0 * Math.PI) / 180;
-        this.rotationSpeed = earthRotation * rotation;
+        this.rotationSpeed = earthRotation / rotation;
         this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
         this.material = new THREE.MeshBasicMaterial({
             color: 0xffffff,
@@ -68,7 +68,7 @@ export class Orbit {
     constructor(sunRadius, au, distance) {
         this.distance = au * distance + sunRadius;
         this.orbitPoints = [];
-        this.orbitPointNum = 360;
+        this.orbitPointNum = 3600;
         for (let i = 0; i <= this.orbitPointNum; i++) {
             const rad = ((360 / this.orbitPointNum) * i * Math.PI) / 180;
             const x = this.distance * Math.cos(rad);
@@ -133,14 +133,14 @@ export class Trajectory {
 
 // ------------------------------テキスト
 export class PlanetText {
-    constructor(text, font, size, height, x, y, z) {
+    constructor(text, font, size, x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.geometry = new TextGeometry(text, {
             font: font,
             size: size,
-            height: height,
+            height: 1,
         });
         this.material = new THREE.MeshBasicMaterial({
             color: 0xffffff,
@@ -151,10 +151,11 @@ export class PlanetText {
     add(scene) {
         scene.add(this.mesh);
     };
-    update(x, y, z) {
+    update(x, y, z,camera) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.mesh.position.set(this.x, this.y, this.z);
+        this.mesh.quaternion.copy(camera.quaternion);
     };
 };
