@@ -3,8 +3,9 @@
   <div>
     <headerNav />
     <div>
-      <canvas id="index"></canvas>
-      <h1 id="test_camera" v-on:click="checkCamera">CAMERA</h1>
+      <div id="webgl-canvas">
+
+      </div>
       <ul id="planet-nav">
         <li v-on:click="toHome">HOME</li>
         <li v-on:click="toMercury">Mercury</li>
@@ -16,95 +17,115 @@
         <li v-on:click="toUranus">Uranus</li>
         <li v-on:click="toNeptune">Neptune</li>
       </ul>
+
+      <p class="data">
+        {{ planetX }} <br>
+        {{ planetY }} <br>
+        {{ planetZ }}
+      </p>
+
+      <div id="control" v-on:click="controlSwitch">
+        <h6>Controls</h6>
+      </div>
+
+
+
     </div>
+    <div v-on:click="toMercury" id="mercury" class="planet"></div>
+    <div v-on:click="toVenus" id="venus" class="planet"></div>
+    <div v-on:click="toEarth" id="earth" class="planet"></div>
+    <div v-on:click="toMars" id="mars" class="planet"></div>
+    <div v-on:click="toJupiter" id="jupiter" class="planet"></div>
+    <div v-on:click="toSaturn" id="saturn" class="planet"></div>
+    <div v-on:click="toUranus" id="uranus" class="planet"></div>
+    <div v-on:click="toNeptune" id="neptune" class="planet"></div>
+
     <NuxtPage />
   </div>
 </template>
 
 <script setup>
 import * as THREE from "three";
-import * as TWEEN from "@tweenjs/tween.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { toRad, Planet, Orbit, Sign, Trajectory, PlanetText } from "assets/js/module";
-import { Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune } from "assets/js/data_planets";
-import { Aries, Taurus, Gemini, Cancer, Leo, Virgo, Libra, Scorpius, Sagittarius, Capriconus, Aquarius, Pisces } from "assets/js/data_Signs";
+
+import * as PLANET from "assets/js/data_planets";
+import * as SIGN from "assets/js/data_Signs";
 
 
-
+// ==================================================
+// 変数 : 設定関連
+// ==================================================
 const route = useRouter();
 const fontLoader = new FontLoader();
-let Font;
-
-// --------------------THREE_環境設定
-let scene, camera, renderer;
-let orbitControls;
-
-// --------------------THREE_クリックイベント
-let mouse;
+let container;
+let webgl;
 let raycaster;
-let clickFlg = false;
-let moveFlg = false;
-let currentOrbit;
-let currentTarget;
-
-// --------------------惑星の変数
-let sun;
+let Font;
 const Planets = [];
-let MercuryToSun, VenusToSun, EarthToSun, MarsToSun, JupiterToSun, SaturnToSun, UranusToSun, NeptuneToSun;
-// --------------------惑星のテキスト
-let MercuryInfo = {};
-let VenusInfo = {};
-let EarthInfo = {};
-let MarsInfo = {};
-let JupiterInfo = {};
-let SaturnInfo = {};
-let UranusInfo = {};
-let NeptuneInfo = {};
-// --------------------TEST
-// ============================================================================================================================================
-// ============================================================================================================================================
-// ============================================================================================================================================
-let MercuryNav;
-let VenusNav;
-let EarthNav;
-let MarsNav;
-let JupiterNav;
-let SaturnNav;
-let UranusNav;
-let NeptuneNav;
-class Test_nav {
-  constructor(scene, data, font, text, deg) {
-    // ----------LINE
-    this.deg = deg
-    this.points = [];
-    this.startPoints = new THREE.Vector3(data.Orbit.orbitPoints[this.deg].x, data.Orbit.orbitPoints[this.deg].y, data.Orbit.orbitPoints[this.deg].z);
-    this.endPoints = new THREE.Vector3(data.Orbit.orbitPoints[this.deg].x + 450000, data.Orbit.orbitPoints[this.deg].y + 450000, data.Orbit.orbitPoints[this.deg].z);
-    this.points.push(this.startPoints);
-    this.points.push(this.endPoints);
-    this.lineGeometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-    this.lineMesh = new THREE.Line(this.lineGeometry, this.lineMaterial);
-    scene.add(this.lineMesh);
-    // ----------TEXT
-    this.textGeometry = new TextGeometry(text, {
-      font: font,
-      size: 50000,
-      height: 1,
-    });
-    this.textMaterial = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-    });
-    this.textMesh = new THREE.Mesh(this.textGeometry, this.textMaterial);
-    this.textMesh.position.set(data.Orbit.orbitPoints[this.deg].x + 500000, data.Orbit.orbitPoints[this.deg].y + 500000, data.Orbit.orbitPoints[this.deg].z);
-    scene.add(this.textMesh);
-  };
-}
-// ============================================================================================================================================
-// ============================================================================================================================================
-// ============================================================================================================================================
-// --------------------星座の軌跡
+let planetX = ref('');
+let planetY = ref('');
+let planetZ = ref('');
+// ==================================================
+// 変数 : 半径・距離・公転・自転に関する変数
+// ==================================================
+let earthRadius = 1000;
+let earthDiameter = earthRadius * 2;
+let earthRevolution = toRad(360 / 365 / 60);
+let earthRotation = toRad(360 / 60);
+let sunRadius = earthRadius * 219.08;
+let au = earthRadius * 23533.69;
+let ly = au * 63241;
+let pc = ly * 3.26;
+// ==================================================
+// 変数 : カメラ制御
+// ==================================================
+let currentTarget;
+let duration = 0.005;
+let durationLook = 0.005;
+let control = false;
+// ==================================================
+// 変数 : 惑星
+// ==================================================
+let Sun;
+let Mercury;
+let Venus;
+let Earth;
+let Mars;
+let Jupiter;
+let Saturn;
+let Uranus;
+let Neptune;
+// ==================================================
+// 変数 : 惑星の軌道
+// ==================================================
+let MercuryOrbit;
+let VenusOrbit;
+let EarthOrbit;
+let MarsOrbit;
+let JupiterOrbit;
+let SaturnOrbit;
+let UranusOrbit;
+let NeptuneOrbit;
+// ==================================================
+// 変数 : 星座
+// ==================================================
+let Aries = SIGN.Aries;
+let Taurus = SIGN.Taurus;
+let Gemini = SIGN.Gemini;
+let Cancer = SIGN.Cancer;
+let Leo = SIGN.Leo;
+let Virgo = SIGN.Virgo;
+let Libra = SIGN.Libra;
+let Scorpius = SIGN.Scorpius;
+let Sagittarius = SIGN.Sagittarius;
+let Capriconus = SIGN.Capriconus;
+let Aquarius = SIGN.Aquarius;
+let Pisces = SIGN.Pisces;
+// ==================================================
+// 変数 : 星座の軌跡
+// ==================================================
 let Aries_Trajectory;
 let Gemini_Trajectory;
 let Taurus_Trajectory;
@@ -117,40 +138,216 @@ let Sagittarius_Trajectory;
 let Capriconus_Trajectory;
 let Aquarius_Trajectory;
 let Pisces_Trajectory;
-
-// ----------倍率
-let zoomRatio = 100;
-
-// --------------------地球
-// ----------半径
-const earthRadius = 1000 / zoomRatio;
-// ----------公転速度---Alpha---0.986
-const earthRevolutionAlpha = toRad(1 / 6000);
-// ----------公転速度---Delta
-const earthRevolutionDelta = toRad(1);
-// ----------自転の速度
-const earthRotation = earthRevolutionAlpha * 360;
-
-// --------------------太陽---219.08
-const sunRadius = earthRadius * 219.08;
-
-// --------------------距離
-// ----------1AU---23533.69
-const au = earthRadius * 23533.69;
-// ----------1LY
-const ly = au * 63241;
-
-
-// --------------------太陽を生成するクラス
-class Sun {
-  constructor(radius, width, height) {
-    this.r = radius;
-    this.w = width;
-    this.h = height;
+// ==================================================
+// function 計算用
+// ==================================================
+// -----乱数生成
+function random(min, max) {
+  return Math.floor(Math.random() * (max + 1 - min)) + min;
+};
+// -----リープ関数・線形補完
+function lerp(x, y, a) {
+  return (1 - a) * x + a * y;
+};
+// -----度からラジアンに変換
+function toRad(deg) {
+  return (deg * Math.PI) / 180;
+};
+// -----ラジアンから度に変換
+function toDeg(rad) {
+  return rad * (180 / Math.PI);
+};
+// -----function ease in out イージングを計算する関数
+function easeInOutQuart(x) {
+  return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+};
+// ==================================================
+// Class
+// ==================================================
+// -----class WebGL
+class WebGL {
+  constructor(webgl) {
+    this.webgl = webgl;
+    this.scene = new THREE.Scene();
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setClearColor(new THREE.Color(0x222222));
+    this.renderer.setSize(this.width, this.height);
+    this.init();
+  };
+  init() {
+    this.#setting_webgl();
+    this.#setting_camera();
+    this.#setting_controls();
+  };
+  // Private DOM要素にWebGLを追加
+  #setting_webgl() {
+    this.webgl.appendChild(this.renderer.domElement);
+  };
+  // Private カメラの設定
+  #setting_camera() {
+    this.fov = 45;
+    this.camera = new THREE.PerspectiveCamera(
+      this.fov,
+      this.width / this.height,
+      0.1,
+      pc / 2,
+    );
+    this.camera.position.set(0, au * 25, au * 50);
+  };
+  // Private コントロールの設定
+  #setting_controls() {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+  };
+  // ※必要ないかも Private タッチムーブイベントの初期化
+  #setting_touch() {
+    document.addEventListener("touchmove", (e) => { e.preventDefault(); }, { passive: false });
+  };
+  // Public リサイズ
+  onResize() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  };
+  // Public アニメーション用
+  onUpdate() {
+    this.renderer.render(this.scene, this.camera);
+    this.controls.update();
+  };
+};
+// -----class Raycaster
+class Raycaster {
+  constructor(webgl) {
+    this.webgl = webgl;
+    this.target = '';
+    this.moveFlg = false;
+    this.clickFlg = false;
+    this.mouse = new THREE.Vector2();
+    this.raycaster = new THREE.Raycaster();
+  };
+  init() {
+    this.mouseMove();
+    this.mouseClick();
+  };
+  mouseMove() {
+    this.webgl.addEventListener("mousemove", (e) => {
+      this.moveFlg = true;
+      const element = e.currentTarget;
+      const x = e.clientX - element.offsetLeft;
+      const y = e.clientY - element.offsetTop;
+      const w = element.offsetWidth;
+      const h = element.offsetHeight;
+      mouse.x = (x / w) * 2 - 1;
+      mouse.y = -(y / h) * 2 + 1;
+    });
+  };
+  mouseClick() {
+    this.webgl.addEventListener("click", (e) => {
+      if (this.clickFlg) {
+        if (this.target == 'mercury') {
+          console.log('click to mercury');
+        } else if (this.target == 'venus') {
+          console.log('click to venus');
+        } else if (this.target == 'earth') {
+          console.log('click to earth');
+        } else if (this.target == 'mars') {
+          console.log('click to mars');
+        } else if (this.target == 'jupiter') {
+          console.log('click to jupiter');
+        } else if (this.target == 'saturn') {
+          console.log('click to saturn');
+        } else if (this.target == 'uranus') {
+          console.log('click to uranus');
+        } else if (this.target == 'neptune') {
+          console.log('click to neptune');
+        };
+      };
+    });
+  };
+  update() {
+    this.raycaster.setFromCamera(this.mouse, webgl.camera);
+    this.intersects = this.raycaster.intersectObjects(Planets);
+    if (this.intersects.length > 0) {
+      const obj = this.intersects[0].object;
+      if (obj.name == 'mercury') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'mercury';
+        };
+      } else if (obj.name == 'venus') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'venus';
+        };
+      } else if (obj.name == 'earth') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'earth';
+        };
+      } else if (obj.name == 'mars') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'mars';
+        };
+      } else if (obj.name == 'jupiter') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'jupiter';
+        };
+      } else if (obj.name == 'saturn') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'saturn';
+        };
+      } else if (obj.name == 'uranus') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'uranus';
+        };
+      } else if (obj.name == 'neptune') {
+        if (moveFlg) {
+          this.clickFlg = true;
+          this.target = 'neptune';
+        };
+      } else {
+        this.clickFlg = false;
+      };
+    } else {
+      this.clickFlg = false;
+    };
+    // -----cssを変更
+    if (this.clickFlg) {
+      this.webgl.style.cursor = 'pointer';
+    } else {
+      this.webgl.style.cursor = 'grab';
+    };
+  };
+};
+// -----class Sun
+class Planet_Sun {
+  constructor() {
+    this.radius = sunRadius;
+    this.width = 10;
+    this.height = 10;
+    this.init();
+  }
+  init() {
+    this.compute();
+    this.create();
+  }
+  compute() {
     this.x = 0;
     this.y = 0;
     this.z = 0;
-    this.geometry = new THREE.SphereGeometry(this.r, this.w, this.h);
+  }
+  create() {
+    this.geometry = new THREE.SphereGeometry(this.radius, this.width, this.height);
     this.material = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       wireframe: true,
@@ -158,69 +355,155 @@ class Sun {
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.mesh.position.set(this.x, this.y, this.z);
     this.mesh.name = "sun";
-    scene.add(this.mesh);
+  }
+};
+// -----class Planet
+class Planet {
+  constructor(name, radius, distance, revolution, rotation, alpha, delta) {
+    this.name = name;
+    this.radius = radius;
+    this.distance = distance;
+    this.revolution = revolution;
+    this.rotation = rotation;
+    this.alpha = alpha;
+    this.delta = delta;
+    this.width = 10;
+    this.height = 10;
+    this.init();
+  };
+  init() {
+    this.compute();
+    this.create();
+  };
+  compute() {
+    this.computeRadius = earthRadius * this.radius;
+    this.computeDistance = sunRadius + au * this.distance;
+    this.computeRevolution = earthRevolution / this.revolution;
+    this.computeRotation = earthRotation / this.rotation;
+    this.alphaRad = (this.alpha * Math.PI) / 180;
+    this.deltaRad = (this.delta * Math.PI) / 180;
+    this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
+    this.y = this.computeDistance * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+  };
+  create() {
+    this.geometry = new THREE.SphereGeometry(this.computeRadius, this.width, this.height);
+    this.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+    });
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.position.set(this.x, this.y, this.z);
+    this.mesh.name = this.name;
+  };
+  update() {
+    // -----Revolution
+    this.alphaRad -= this.computeRevolution;
+    this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
+    this.y = this.computeDistance * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    this.mesh.position.set(this.x, this.y, this.z);
+    // -----Rotation
+    this.mesh.rotation.y += this.computeRotation;
   };
 };
+// -----class Orbit
+class Orbit {
+  constructor(distance) {
+    this.distance = distance;
+    this.orbitPoints = [];
+    this.orbitPointNum = 3600;
+    this.init();
+  };
+  init() {
+    this.compute();
+    this.create();
+  }
+  compute() {
+    this.computeDistance = sunRadius + au * this.distance;
+    for (let i = 0; i <= this.orbitPointNum; i++) {
+      const rad = ((360 / this.orbitPointNum) * i * Math.PI) / 180;
+      const x = this.computeDistance * Math.cos(rad);
+      const y = 0;
+      const z = this.computeDistance * Math.sin(rad);
+      const p = new THREE.Vector3(x, y, z);
+      this.orbitPoints.push(p);
+    };
+  };
+  create() {
+    this.geometry = new THREE.BufferGeometry().setFromPoints(
+      this.orbitPoints
+    );
+    this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.mesh = new THREE.Line(this.geometry, this.material);
+  };
+};
+// -----class Sign
+class Sign {
+  constructor(alpha, delta) {
+    this.alpha = alpha;
+    this.delta = delta;
+    this.radius = sunRadius * 100;
+    this.w = 10;
+    this.h = 10;
+    this.init();
+  };
+  init() {
+    this.compute();
+    this.create();
+  }
+  compute() {
+    this.computeDistance = au * 1000;
+    this.alphaRad = (this.alpha * Math.PI) / 180;
+    this.deltaRad = (this.delta * Math.PI) / 180;
+    this.x = this.computeDistance * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
+    this.y = this.computeDistance * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+  };
+  create() {
+    this.geometry = new THREE.SphereGeometry(this.radius, this.w, this.h);
+    this.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+    });
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.position.set(this.x, this.y, this.z);
+  };
+};
+// -----class Trajectory
+class Trajectory {
+  constructor(vectors) {
+    this.vectors = vectors;
+    this.points = [];
+    this.init();
+  };
+  init() {
+    this.compute();
+    this.create();
+  }
+  compute() {
+    for (let i = 0; i < this.vectors.length; i++) {
+      this.points.push(this.vectors[i]);
+    };
+  };
+  create() {
+    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.mesh = new THREE.Line(this.geometry, this.material);
+  };
+};
+// ==================================================
+// Class Test
+// ==================================================
 
-// --------------------惑星の作成
-function createPlanet(planet) {
-  planet.Planet = new Planet(
-    earthRadius,
-    earthRevolutionAlpha,
-    earthRevolutionDelta,
-    earthRotation,
-    sunRadius,
-    au,
-    planet.Data.name,
-    planet.Data.radius,
-    planet.Data.distance,
-    planet.Data.alpha,
-    planet.Data.delta,
-    planet.Data.revolution,
-    planet.Data.rotation,
-  );
-};
-// --------------------惑星の表示
-function addPlanet(planet) {
-  planet.Planet.add(scene);
-};
-// --------------------惑星のアニメーション
-function updatePlanet(planet) {
-  planet.Planet.update();
-};
-// --------------------軌道の作成
-function createOrbit(planet) {
-  planet.Orbit = new Orbit(
-    sunRadius,
-    au,
-    planet.Data.distance,
-  );
-};
-// --------------------軌道の表示
-function addOrbit(planet) {
-  planet.Orbit.add(scene);
-};
 
-// --------------------星座の作成
-function createSign(sign) {
-  const radius = sunRadius;
-  for (let key in sign) {
-    sign[key] = new Sign(radius, au, sign[key].alpha, sign[key].delta);
-  };
-};
-// --------------------星座の表示
-function addSign(sign) {
-  for (let key in sign) {
-    sign[key].add(scene);
-  };
-};
+
 // --------------------星座の軌跡の表示
 function addTrajectory(trajectory) {
   for (let key in trajectory) {
     trajectory[key].add(scene);
   };
 };
-
 // --------------------惑星をクリックイベントオブジェクトに追加
 function pushPlanets() {
   Planets.push(Mercury.Planet.mesh);
@@ -232,7 +515,6 @@ function pushPlanets() {
   Planets.push(Uranus.Planet.mesh);
   Planets.push(Neptune.Planet.mesh);
 };
-
 // --------------------テキストの作成
 function createText(obj, data, text) {
   obj.Title = new PlanetText(
@@ -257,11 +539,7 @@ function updateText(obj, data) {
     camera,
   );
 };
-function checkCamera() {
-  console.log('x : ' + camera.position.x);
-  console.log('y : ' + camera.position.y);
-  console.log('z : ' + camera.position.z);
-}
+
 // --------------------線を作成
 class Line {
   constructor(startVector, endVector) {
@@ -290,104 +568,74 @@ class Line {
 };
 
 onMounted(() => {
-  const container = document.getElementById("index");
+  container = document.getElementById("webgl-canvas");
+  webgl = new WebGL(container);
+  raycaster = new Raycaster(container);
 
-
-
-  // --------------------THREE_INIT
   function init() {
-    setup();
-    setControll();
-    threeWorld();
+    three_planet();
+    three_orbit();
+    three_sign();
+
     rendering();
-    
-  }
+  };
   init();
 
-  // --------------------THREE_SETUP
-  function setup() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x222222);
-    camera = new THREE.PerspectiveCamera(
-      50,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      au * 1000
-    );
-    camera.position.set(0, au*25, au * 50);
-    scene.add(camera);
-    // ----------Renderer
-    renderer = new THREE.WebGLRenderer({
-      canvas: document.querySelector("#index"),
-      antialias: true,
-    });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    // ----------Resize
-    window.addEventListener("resize", onResize);
-    onResize();
-    function onResize() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    }
+  // ==================================================
+  // オブジェクトのインスタンス化 + シーンに追加
+  // ==================================================
+
+  // ----------惑星のインスタンス化 + 惑星をシーンに追加
+  function three_planet() {
+    // -----惑星のインスタンスを作成
+    Sun = new Planet_Sun();
+    Mercury = createPlanet(PLANET.Mercury);
+    Venus = createPlanet(PLANET.Venus);
+    Earth = createPlanet(PLANET.Earth);
+    Mars = createPlanet(PLANET.Mars);
+    Jupiter = createPlanet(PLANET.Jupiter);
+    Saturn = createPlanet(PLANET.Saturn);
+    Uranus = createPlanet(PLANET.Uranus);
+    Neptune = createPlanet(PLANET.Neptune);
+    // -----惑星をシーンに追加
+    webgl.scene.add(Sun.mesh);
+    webgl.scene.add(Mercury.mesh);
+    webgl.scene.add(Venus.mesh);
+    webgl.scene.add(Earth.mesh);
+    webgl.scene.add(Mars.mesh);
+    webgl.scene.add(Jupiter.mesh);
+    webgl.scene.add(Saturn.mesh);
+    webgl.scene.add(Uranus.mesh);
+    webgl.scene.add(Neptune.mesh);
+    // -----function 惑星のインスタンスを作成する関数
+    function createPlanet(data) {
+      return new Planet(data.name, data.radius, data.distance, data.revolution, data.rotation, data.alpha, data.delta);
+    };
   };
-
-  // --------------------THREE_PLANETS
-  function threeWorld_planets() {
-
-    // ----------太陽
-    sun = new Sun(sunRadius, 10, 10);
-
-    // ----------惑星の作成
-    createPlanet(Mercury);
-    createPlanet(Venus);
-    createPlanet(Earth);
-    createPlanet(Mars);
-    createPlanet(Jupiter);
-    createPlanet(Saturn);
-    createPlanet(Uranus);
-    createPlanet(Neptune);
-
-    // ----------惑星の軌道の作成
-    createOrbit(Mercury);
-    createOrbit(Venus);
-    createOrbit(Earth);
-    createOrbit(Mars);
-    createOrbit(Jupiter);
-    createOrbit(Saturn);
-    createOrbit(Uranus);
-    createOrbit(Neptune);
-
-    // ----------惑星の表示
-    addPlanet(Mercury);
-    addPlanet(Venus);
-    addPlanet(Earth);
-    addPlanet(Mars);
-    addPlanet(Jupiter);
-    addPlanet(Saturn);
-    addPlanet(Uranus);
-    addPlanet(Neptune);
-
-    // ----------惑星の軌道を表示
-    addOrbit(Mercury);
-    addOrbit(Venus);
-    addOrbit(Earth);
-    addOrbit(Mars);
-    addOrbit(Jupiter);
-    addOrbit(Saturn);
-    addOrbit(Uranus);
-    addOrbit(Neptune);
-
-    // ----------惑星をクリックイベント配列に追加
-    pushPlanets();
+  // ----------惑星の軌道のインスタンス化 + 惑星の軌道をシーンに追加
+  function three_orbit() {
+    // -----惑星の軌道のインスタンス化
+    MercuryOrbit = new Orbit(PLANET.Mercury.distance);
+    VenusOrbit = new Orbit(PLANET.Venus.distance);
+    EarthOrbit = new Orbit(PLANET.Earth.distance);
+    MarsOrbit = new Orbit(PLANET.Mars.distance);
+    JupiterOrbit = new Orbit(PLANET.Jupiter.distance);
+    SaturnOrbit = new Orbit(PLANET.Saturn.distance);
+    UranusOrbit = new Orbit(PLANET.Uranus.distance);
+    NeptuneOrbit = new Orbit(PLANET.Neptune.distance);
+    // -----惑星の軌道をシーンに追加
+    webgl.scene.add(MercuryOrbit.mesh);
+    webgl.scene.add(VenusOrbit.mesh);
+    webgl.scene.add(EarthOrbit.mesh);
+    webgl.scene.add(MarsOrbit.mesh);
+    webgl.scene.add(JupiterOrbit.mesh);
+    webgl.scene.add(SaturnOrbit.mesh);
+    webgl.scene.add(UranusOrbit.mesh);
+    webgl.scene.add(NeptuneOrbit.mesh);
   };
-  // --------------------THREE_SIGNS
-  function threeWorld_signs() {
-    // ----------星座の作成
+  // ----------星座のインスタンス化 + 星座をシーンに追加
+  function three_sign() {
+    // -----星座のインスタンスを作成
     createSign(Aries);
     createSign(Taurus);
     createSign(Gemini);
@@ -400,8 +648,7 @@ onMounted(() => {
     createSign(Capriconus);
     createSign(Aquarius);
     createSign(Pisces);
-
-    // ----------星をシーンに追加
+    // -----星座をシーンに追加
     addSign(Aries);
     addSign(Taurus);
     addSign(Gemini);
@@ -414,7 +661,84 @@ onMounted(() => {
     addSign(Capriconus);
     addSign(Aquarius);
     addSign(Pisces);
+    // -----function 星座のインスタンスを作成する関数
+    function createSign(sign) {
+      for (let key in sign) {
+        sign[key] = new Sign(sign[key].alpha, sign[key].delta);
+      };
+    };
+    // -----function 星座をシーンに追加する関数
+    function addSign(sign) {
+      for (let key in sign) {
+        webgl.scene.add(sign[key].mesh)
+      };
+    };
+  };
 
+  // ==================================================
+  // Resize
+  // ==================================================
+  window.addEventListener('resize', () => {
+    webgl.onResize();
+  });
+  // ==================================================
+  // Rendering
+  // ==================================================
+  function rendering() {
+    webgl.onUpdate();
+    raycaster.update();
+
+    // -----惑星のアニメーション
+    Mercury.update();
+    Venus.update();
+    Earth.update();
+    Mars.update();
+    Jupiter.update();
+    Saturn.update();
+    Uranus.update();
+    Neptune.update();
+
+    if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) < au * 20) {
+      view('mercury');
+      view('venus');
+      view('earth');
+      view('mars');
+      view('jupiter');
+      view('saturn');
+      view('uranus');
+      view('neptune');
+    } else if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) > au * 25) {
+      hide('mercury');
+      hide('venus');
+      hide('earth');
+      hide('mars');
+      view('jupiter');
+      view('saturn');
+      view('uranus');
+      view('neptune');
+    }
+
+    check('mercury', Mercury);
+    check('venus', Venus);
+    check('earth', Earth);
+    check('mars', Mars);
+    check('jupiter', Jupiter);
+    check('saturn', Saturn);
+    check('uranus', Uranus);
+    check('neptune', Neptune);
+
+    if (control) {
+
+    } else {
+      cameraTargetObject();
+    };
+
+    requestAnimationFrame(rendering);
+  };
+
+
+  // --------------------THREE_SIGNS
+  function threeWorld_signs() {
     // ----------星座の軌跡の座標を設定
     Aries_Trajectory = {
       Trajectory_1: new Trajectory([
@@ -765,339 +1089,239 @@ onMounted(() => {
     // addTrajectory(Pisces_Trajectory);
   };
 
-  function threeWorld_infos() {
-    // -----線
-    MercuryToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Mercury.orbitPoints[0].x,
-        Mercury.orbitPoints[0].y,
-        Mercury.orbitPoints[0].z,
-      )
-    );
-    VenusToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Venus.orbitPoints[0].x,
-        Venus.orbitPoints[0].y,
-        Venus.orbitPoints[0].z,
-      )
-    );
-    EarthToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Earth.orbitPoints[0].x,
-        Earth.orbitPoints[0].y,
-        Earth.orbitPoints[0].z,
-      )
-    );
-    MarsToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Mars.orbitPoints[0].x,
-        Mars.orbitPoints[0].y,
-        Mars.orbitPoints[0].z,
-      )
-    );
-    JupiterToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Jupiter.orbitPoints[0].x,
-        Jupiter.orbitPoints[0].y,
-        Jupiter.orbitPoints[0].z,
-      )
-    );
-    SaturnToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Saturn.orbitPoints[0].x,
-        Saturn.orbitPoints[0].y,
-        Saturn.orbitPoints[0].z,
-      )
-    );
-    UranusToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Uranus.orbitPoints[0].x,
-        Uranus.orbitPoints[0].y,
-        Uranus.orbitPoints[0].z,
-      )
-    );
-    NeptuneToSun = new Line(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(
-        Neptune.orbitPoints[0].x,
-        Neptune.orbitPoints[0].y,
-        Neptune.orbitPoints[0].z,
-      )
-    );
-  };
-
   // --------------------フォント
   function onLoadFont(font) {
     Font = font;
-    createText(MercuryInfo, Mercury, 'Mercury');
-    addText(MercuryInfo);
-    // -----TEST___ORBIT_TEXT
-    // ============================================================================================================================================
-    // ============================================================================================================================================
-    // ============================================================================================================================================
-    MercuryNav = new Test_nav(scene, Mercury, font, 'Mercury', 0,);
-    VenusNav = new Test_nav(scene,Venus,font,'Venus',900);
-    EarthNav = new Test_nav(scene,Earth,font,'Earth',1800);
-    MarsNav = new Test_nav(scene,Mars,font,'Mars',2700);
-    JupiterNav = new Test_nav(scene,Jupiter,font,'Jupiter',0);
-    SaturnNav = new Test_nav(scene,Saturn,font,'Saturn',0);
-    UranusNav  = new Test_nav(scene,Uranus,font,'Uranus',0);
-    NeptuneNav = new Test_nav(scene,Neptune,font,'Neptune',0);
-    // ============================================================================================================================================
-    // ============================================================================================================================================
-    // ============================================================================================================================================
   };
   function loadFont() {
     fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
   };
 
-  // --------------------Three.jsにオブジェクトを作成
-  function threeWorld() {
-    threeWorld_planets();
-    threeWorld_signs();
-    loadFont();
-  };
-
-  // --------------------コントロール関連
-  function setControll() {
-    // ----------TouchMove_タッチムーブイベントの初期化
-    document.addEventListener(
-      "touchmove",
-      function (e) {
-        e.preventDefault();
-      },
-      { passive: false }
-    );
-    // ----------OrbitControls関連
-    orbitControls = new OrbitControls(camera, renderer.domElement);
-    orbitControls.target.set(0, 0, 0);
-    orbitControls.enableDamping = true;
-    // ----------Three.js Raycaster関連
-    mouse = new THREE.Vector2();
-    raycaster = new THREE.Raycaster();
-    // ----------MouseMove_マウスが動いたときに発火するイベント
-    container.addEventListener("mousemove", handleMouseMove);
-    function handleMouseMove(event) {
-      moveFlg = true;
-      const element = event.currentTarget;
-      const x = event.clientX - element.offsetLeft;
-      const y = event.clientY - element.offsetTop;
-      const w = element.offsetWidth;
-      const h = element.offsetHeight;
-      mouse.x = (x / w) * 2 - 1;
-      mouse.y = -(y / h) * 2 + 1;
-    };
-    // ----------HandleClick_Three.js用のクリックイベント
-    container.addEventListener("click", handleClick);
-    function handleClick(event) {
-      if (clickFlg) {
-        if (currentOrbit == "mercury") {
-          toMercury();
-        } else if (currentOrbit == "venus") {
-          toVenus();
-        } else if (currentOrbit == "earth") {
-          toEarth();
-        } else if (currentOrbit == "mars") {
-          toMars();
-        } else if (currentOrbit == "jupiter") {
-          toJupiter();
-        } else if (currentOrbit == "saturn") {
-          toSaturn();
-        } else if (currentOrbit == "uranus") {
-          toUranus();
-        } else if (currentOrbit == "neptune") {
-          toNeptune();
-        }
-      };
-    };
-  };
-
-  // --------------------THREE_RENDERING
-  function rendering() {
-
-
-
-    TWEEN.update();
-    orbitControls.update();
-    // ----------惑星
-    updatePlanet(Mercury);
-    updatePlanet(Venus);
-    updatePlanet(Earth);
-    updatePlanet(Mars);
-    updatePlanet(Jupiter);
-    updatePlanet(Saturn);
-    updatePlanet(Uranus);
-    updatePlanet(Neptune);
-
-    // ----------惑星のテキスト
-    if (Font) {
-      updateText(MercuryInfo, Mercury);
-
-      function calculateTextScale(camera, textPosition) {
-        const distance = camera.position.distanceTo(textPosition);
-        const scale = distance * 0.1;
-        return scale;
-      }
-      const ttt = calculateTextScale(camera, new THREE.Vector3(MercuryInfo.Title.x, MercuryInfo.Title.y, MercuryInfo.Title.z))
-      MercuryInfo.Title.mesh.scale.set(ttt, ttt, 1)
-    };
-
-    // ----------カメラがオブジェクトを追尾するアニメーション
-    cameraTargetObject();
-
-    // -----Three_Raycaster
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(Planets, false);
-    // -----Three_ClickEvent
-    if (intersects.length > 0) {
-      const obj = intersects[0].object;
-      if (obj.name == "mercury") {
-        if (moveFlg) {
-          currentOrbit = "mercury";
-          clickFlg = true;
-        }
-      } else if (obj.name == "venus") {
-        if (moveFlg) {
-          currentOrbit = "venus";
-          clickFlg = true;
-        }
-      } else if (obj.name == "earth") {
-        if (moveFlg) {
-          currentOrbit = "earth";
-          clickFlg = true;
-        }
-      } else if (obj.name == "mars") {
-        if (moveFlg) {
-          currentOrbit = "mars";
-          clickFlg = true;
-        }
-      } else if (obj.name == "jupiter") {
-        if (moveFlg) {
-          currentOrbit = "jupiter";
-          clickFlg = true;
-        }
-      } else if (obj.name == "saturn") {
-        if (moveFlg) {
-          currentOrbit = "saturn";
-          clickFlg = true;
-        }
-      } else if (obj.name == "uranus") {
-        if (moveFlg) {
-          currentOrbit = "uranus";
-          clickFlg = true;
-        }
-      } else if (obj.name == "neptune") {
-        if (moveFlg) {
-          currentOrbit = "neptune";
-          clickFlg = true;
-        }
-      } else {
-        clickFlg = false;
-      }
-    } else {
-      clickFlg = false;
-    }
-    if (clickFlg) {
-      container.style.cursor = "pointer";
-    } else {
-      container.style.cursor = "grab";
-    }
-    // -----レンダリング
-    renderer.render(scene, camera);
-    requestAnimationFrame(rendering);
-  };
+  setInterval(() => {
+    planetX.value = String(Earth.x);
+    planetY.value = String(Earth.y);
+    planetZ.value = String(Earth.z);
+    // distanceToCenter()
+  }, 500);
 });
 
-function cameraTargetObject() {
-  if (currentTarget == 'Mercury') {
-    orbitControls.target.set(Mercury.Planet.x, Mercury.Planet.y, Mercury.Planet.z);
-    animateCameraPos(Mercury.Planet.x + Mercury.Planet.r * 5, Mercury.Planet.y + Mercury.Planet.r * 5, Mercury.Planet.z + Mercury.Planet.r * 5,);
-  } else if (currentTarget == 'Venus') {
-    orbitControls.target.set(Venus.Planet.x, Venus.Planet.y, Venus.Planet.z);
-    animateCameraPos(Venus.Planet.x + Venus.Planet.r * 5, Venus.Planet.y + Venus.Planet.r * 5, Venus.Planet.z + Venus.Planet.r * 5,);
-  } else if (currentTarget == 'Earth') {
-    orbitControls.target.set(Earth.Planet.x, Earth.Planet.y, Earth.Planet.z);
-    animateCameraPos(Earth.Planet.x + Earth.Planet.r * 5, Earth.Planet.y + Earth.Planet.r * 5, Earth.Planet.z + Earth.Planet.r * 5,);
-  } else if (currentTarget == 'Mars') {
-    orbitControls.target.set(Mars.Planet.x, Mars.Planet.y, Mars.Planet.z);
-    animateCameraPos(Mars.Planet.x + Mars.Planet.r * 5, Mars.Planet.y + Mars.Planet.r * 5, Mars.Planet.z + Mars.Planet.r * 5,);
-  } else if (currentTarget == 'Jupiter') {
-    orbitControls.target.set(Jupiter.Planet.x, Jupiter.Planet.y, Jupiter.Planet.z);
-    animateCameraPos(Jupiter.Planet.x + Jupiter.Planet.r * 5, Jupiter.Planet.y + Jupiter.Planet.r * 5, Jupiter.Planet.z + Jupiter.Planet.r * 5,);
-  } else if (currentTarget == 'Saturn') {
-    orbitControls.target.set(Saturn.Planet.x, Saturn.Planet.y, Saturn.Planet.z);
-    animateCameraPos(Saturn.Planet.x + Saturn.Planet.r * 5, Saturn.Planet.y + Saturn.Planet.r * 5, Saturn.Planet.z + Saturn.Planet.r * 5,);
-  } else if (currentTarget == 'Uranus') {
-    orbitControls.target.set(Uranus.Planet.x, Uranus.Planet.y, Uranus.Planet.z,);
-    animateCameraPos(Uranus.Planet.x + Uranus.Planet.r * 5, Uranus.Planet.y + Uranus.Planet.r * 5, Uranus.Planet.z + Uranus.Planet.r * 5,);
-  } else if (currentTarget == 'Neptune') {
-    orbitControls.target.set(Neptune.Planet.x, Neptune.Planet.y, Neptune.Planet.z,);
-    animateCameraPos(Neptune.Planet.x + Neptune.Planet.r * 5, Neptune.Planet.y + Neptune.Planet.r * 5, Neptune.Planet.z + Neptune.Planet.r * 5,);
-  }
-};
+// ==================================================
+// Function ページ遷移 & オブジェクト選択
+// ==================================================
 // ----------カメラをホームポジションに戻す
-function toHome(){
+function toHome() {
   route.push("/");
   currentTarget = '';
-  orbitControls.target.set(0,0,0);
-  animateCameraPos(0,au * 25,au*50);
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------水星をクリックした時の処理
 function toMercury() {
   route.push("/planets/mercury");
   currentTarget = 'Mercury';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------金星をクリックした時の処理
 function toVenus() {
   route.push("/planets/venus");
   currentTarget = 'Venus';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------地球をクリックした時の処理
 function toEarth() {
   route.push("/planets/earth");
   currentTarget = 'Earth';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------火星をクリックした時の処理
 function toMars() {
   route.push("/planets/mars");
-  currentTarget = 'Maras';
+  currentTarget = 'Mars';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------木星をクリックした時の処理
 function toJupiter() {
   route.push("/planets/jupiter");
   currentTarget = 'Jupiter';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------土星をクリックした時の処理
 function toSaturn() {
   route.push("/planets/saturn");
   currentTarget = 'Saturn';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------天王星をクリックした時の処理
 function toUranus() {
   route.push("/planets/uranus");
   currentTarget = 'Uranus';
+  duration = 0.005;
+  durationLook = 0.005;
 };
 // ----------海王星をクリックした時の処理
 function toNeptune() {
   route.push("/planets/neptune");
   currentTarget = 'Neptune';
+  duration = 0.005;
+  durationLook = 0.005;
 };
-// ----------指定の場所までカメラをアニメーションさせながら移動
-function animateCameraPos(x, y, z) {
-  const coords = camera.position;
-  const destinationVector = new THREE.Vector3(x, y, z);
-  const DURATION = 1000;
-  const tween = new TWEEN.Tween(coords)
-    .to(destinationVector, DURATION)
-    .easing(TWEEN.Easing.Cubic.Out)
-    .start();
+
+// ==================================================
+// Function カメラ制御
+// ==================================================
+// ----------function 現在選択されているオブジェクトをカメラが追尾するアニメーションを行う関数
+function cameraTargetObject() {
+  if (currentTarget == 'Mercury') {
+    lerpCamera(Mercury);
+  } else if (currentTarget == 'Venus') {
+    lerpCamera(Venus);
+  } else if (currentTarget == 'Earth') {
+    lerpCamera(Earth);
+  } else if (currentTarget == 'Mars') {
+    lerpCamera(Mars);
+  } else if (currentTarget == 'Jupiter') {
+    lerpCamera(Jupiter);
+  } else if (currentTarget == 'Saturn') {
+    lerpCamera(Saturn);
+  } else if (currentTarget == 'Uranus') {
+    lerpCamera(Uranus);
+  } else if (currentTarget == 'Neptune') {
+    lerpCamera(Neptune);
+  } else {
+    resetCamera();
+  };
+};
+// -----function 指定した座標までカメラをアニメーションさせる関数
+function lerpCamera(target) {
+  // -----変化する速度
+  if (duration <= 1) {
+    duration += 0.002;
+  };
+  if (durationLook <= 1) {
+    durationLook += 0.003;
+  };
+  // -----ターゲットの位置
+  const targetRadius = target.computeRadius;
+  const targetPosition = target.mesh.position.clone();
+  // -----カメラの位置
+  const currentPosition = webgl.camera.position.clone();
+  const newPosition = new THREE.Vector3();
+  newPosition.x = lerp(currentPosition.x, targetPosition.x + targetRadius * 5, easeInOutQuart(duration));
+  newPosition.y = lerp(currentPosition.y, targetPosition.y + targetRadius * 5, easeInOutQuart(duration));
+  newPosition.z = lerp(currentPosition.z, targetPosition.z + targetRadius * 5, easeInOutQuart(duration));
+  webgl.camera.position.copy(newPosition);
+  // -----カメラの方向
+  const currentLook = webgl.controls.target.clone();
+  const newLook = new THREE.Vector3();
+  newLook.x = lerp(currentLook.x, targetPosition.x, easeInOutQuart(durationLook));
+  newLook.y = lerp(currentLook.y, targetPosition.y, easeInOutQuart(durationLook));
+  newLook.z = lerp(currentLook.z, targetPosition.z, easeInOutQuart(durationLook));
+  webgl.controls.target.copy(newLook);
+};
+// -----function カメラの方向・位置を初期に設定
+function resetCamera() {
+  if (duration <= 1) {
+    duration += 0.002;
+  };
+  if (durationLook <= 1) {
+    durationLook += 0.003;
+  };
+
+  const targetPosition = new THREE.Vector3(0, au * 25, au * 50);
+  const currentPosition = webgl.camera.position.clone();
+
+  const newPosition = new THREE.Vector3();
+  newPosition.x = lerp(currentPosition.x, targetPosition.x, easeInOutQuart(duration));
+  newPosition.y = lerp(currentPosition.y, targetPosition.y, easeInOutQuart(duration));
+  newPosition.z = lerp(currentPosition.z, targetPosition.z, easeInOutQuart(duration));
+  webgl.camera.position.copy(newPosition);
+
+  const targetLook = new THREE.Vector3(0, 0, 0);
+  const currentLook = webgl.controls.target;
+
+  const newLook = new THREE.Vector3();
+  newLook.x = lerp(currentLook.x, targetLook.x, easeInOutQuart(duration));
+  newLook.y = lerp(currentLook.y, targetLook.y, easeInOutQuart(duration));
+  newLook.z = lerp(currentLook.z, targetLook.z, easeInOutQuart(duration));
+  webgl.controls.target.copy(newLook);
+};
+// -----function コントロールを切り替える
+function controlSwitch() {
+  route.push("/");
+  if (control) {
+    control = false;
+    console.log('control : off');
+  } else {
+    control = true;
+    console.log('control : on');
+  };
+};
+
+function check(dom, data) {
+  const elem = document.getElementById(dom);
+  const object3D = data.mesh;
+  const width = webgl.width;
+  const height = webgl.height;
+  const worldPosition = object3D.getWorldPosition(new THREE.Vector3());
+  const projection = worldPosition.project(webgl.camera);
+  const sx = (width / 2) * (+projection.x + 1.0);
+  const sy = (height / 2) * (-projection.y + 1.0);
+  elem.style.top = sy + 'px';
+  elem.style.left = sx + 'px';
+};
+
+function view(dom) {
+  const elem = document.getElementById(dom);
+  elem.style.display = 'block';
+};
+
+function hide(dom) {
+  const elem = document.getElementById(dom);
+  elem.style.display = 'none';
+};
+
+function distanceToCenter() {
+  console.log(webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)));
+};
+
+class PlanetNav {
+  constructor(dom, mesh) {
+    this.dom = document.querySelector(dom);
+    this.mesh = mesh;
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    init();
+  };
+  init() {
+    this.compute();
+    this.style();
+  };
+  compute() {
+    this.worldPosition = this.mesh.getWorldPosition(new THREE.Vector3());
+    this.projection = this.worldPosition.project(webgl.camera);
+    this.sx = (this.width / 2) * (+this.projection.x + 1.0);
+    this.sy = (this.height / 2) * (-this.projection.y + 1.0);
+  };
+  style() {
+    this.dom.style.top = this.sy + 'px';
+    this.dom.style.left = this.sx + 'px';
+  };
+  on(){
+    this.dom.style.display = 'block';
+  };
+  off(){
+    this.dom.style.display = 'none';
+  };
+  update() {
+    this.compute();
+    this.style();
+  };
 };
 
 </script>
@@ -1137,6 +1361,7 @@ li {
 body {
   color: #ffffff;
   font-size: 16px;
+  font-family: 'Cormorant Garamond', serif;
   letter-spacing: 0.25em;
 }
 
@@ -1168,30 +1393,70 @@ body::-webkit-scrollbar {
   filter: blur(1rem);
 }
 
-#index {
+#webgl-canvas {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -1000;
+  z-index: -1;
 }
 
-#test_camera {
+
+#planet-nav {
   position: fixed;
-  bottom: 100px;
-  left: 100px;
-  border: 1px solid #ffffff;
-}
-#planet-nav{
-  position: fixed;
-  top: 50%;
+  bottom: 50px;
   left: 50px;
-  transform: translate(0,-50%);
-  li{
+
+  li {
     border: 1px solid #ffffff;
     padding: 0 10px;
+    cursor: pointer;
   }
-  li:not(:first-child){
+
+  li:not(:first-child) {
     margin: 10px 0 0 0;
   }
+}
+
+.data {
+  position: fixed;
+  top: 10%;
+  right: 5%;
+  font-size: 24px;
+  text-align: right;
+}
+
+#control {
+  position: fixed;
+  left: 50%;
+  bottom: 50px;
+  transform: translate(-50%, 0);
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+
+  h6 {
+    font-size: 24px;
+  }
+}
+
+.planet {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.view {
+  display: block;
+}
+
+.hide {
+  display: none;
 }
 </style>

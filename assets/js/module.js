@@ -151,11 +151,16 @@ export class PlanetText {
     add(scene) {
         scene.add(this.mesh);
     };
-    update(x, y, z,camera) {
+    update(x, y, z, camera) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.mesh.position.set(this.x, this.y, this.z);
         this.mesh.quaternion.copy(camera.quaternion);
+
+        // scale_mome
+        const distanceToText = camera.position.distanceTo(textMesh.position);
+        const scaleFactor = 1 / distanceToText; // カメラの距離に応じて補正
+        textMesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
     };
 };
