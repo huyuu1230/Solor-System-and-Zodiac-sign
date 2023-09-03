@@ -1,17 +1,24 @@
 <template>
     <div class="orbit">
-        <!-- <h2>Mras / 火星</h2>
-        <ul class="orbit-status">
-            <li>太陽からの距離 : 5790万km / 0.39AU</li>
-            <li>直径 : 4,879km / 0.38 (地球に対する倍率)</li>
-            <li>公転速度 : 0.24年 (47.4km/s)</li>
-            <li>自転速度 : 58.65日</li>
-            <li>表面積 : 74,800,000km²</li>
-            <li>平均表面温度 : 440K / 166.85℃</li>
-            <li>年齢 : 45億300万 / 450,300,000,0</li>
-        </ul>
-        <p>
-            テキスト-テキスト-テキスト-テキスト-テキストテキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキストテキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキストテキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキストテキスト-テキスト-テキスト-テキスト-テキスト-テキスト-テキスト
-        </p> -->
+        <div class="orbit-title">
+            <h1>MARS</h1>
+            <div class="line"></div>
+            <h6>diameter of the planet / magnification of the mars</h6>
+        </div>
+        
+        <div class="orbit-params">
+            <!--公転速度 / Revolution-->
+            <div class="revolution">
+                <h2>revolution speed</h2>
+                <p>1.88year ( 24.1km/s )</p>
+            </div>
+            <!--自転速度 / Rotation-->
+            <div class="rotation">
+                <h2>rotation speed</h2>
+                <p>24.62hour</p>
+            </div>
+            
+        </div>
+
     </div>
 </template>

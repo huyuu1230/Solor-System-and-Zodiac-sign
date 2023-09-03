@@ -18,11 +18,7 @@
         <li v-on:click="toNeptune">Neptune</li>
       </ul>
 
-      <p class="data">
-        {{ planetX }} <br>
-        {{ planetY }} <br>
-        {{ planetZ }}
-      </p>
+
 
       <div id="control" v-on:click="controlSwitch">
         <h6>Controls</h6>
@@ -81,8 +77,10 @@ let pc = ly * 3.26;
 // ==================================================
 // 変数 : カメラ制御
 // ==================================================
-let currentTarget;
-let duration = 0.005;
+let currentTarget = '';
+let currentPosition = new THREE.Vector3(0, au * 25, au * 50);
+let currentLook = new THREE.Vector3(0, 0, 0);
+let durationPosition = 0.005;
 let durationLook = 0.005;
 let control = false;
 // ==================================================
@@ -382,9 +380,9 @@ class Planet {
     this.computeRotation = earthRotation / this.rotation;
     this.alphaRad = (this.alpha * Math.PI) / 180;
     this.deltaRad = (this.delta * Math.PI) / 180;
-    this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
-    this.y = this.computeDistance * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
+    this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.cos(this.alphaRad);
   };
   create() {
     this.geometry = new THREE.SphereGeometry(this.computeRadius, this.width, this.height);
@@ -398,10 +396,10 @@ class Planet {
   };
   update() {
     // -----Revolution
-    this.alphaRad -= this.computeRevolution;
-    this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
-    this.y = this.computeDistance * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    this.alphaRad += this.computeRevolution;
+    this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
+    this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.cos(this.alphaRad);
     this.mesh.position.set(this.x, this.y, this.z);
     // -----Rotation
     this.mesh.rotation.y += this.computeRotation;
@@ -443,7 +441,7 @@ class Sign {
   constructor(alpha, delta) {
     this.alpha = alpha;
     this.delta = delta;
-    this.radius = sunRadius * 100;
+    this.radius = sunRadius * 50;
     this.w = 10;
     this.h = 10;
     this.init();
@@ -453,12 +451,12 @@ class Sign {
     this.create();
   }
   compute() {
-    this.computeDistance = au * 1000;
+    this.computeDistance = au * 500;
     this.alphaRad = (this.alpha * Math.PI) / 180;
     this.deltaRad = (this.delta * Math.PI) / 180;
-    this.x = this.computeDistance * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
-    this.y = this.computeDistance * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
+    this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.cos(this.alphaRad);
   };
   create() {
     this.geometry = new THREE.SphereGeometry(this.radius, this.w, this.h);
@@ -567,6 +565,35 @@ class Line {
   };
 };
 
+let currentPage = useRoute().name;
+
+watch(
+  () => currentPage = useRoute().name,
+  () => {
+    durationPosition = 0.005;
+    durationLook = 0.005;
+    if (currentPage == 'planets-mercury') {
+      currentTarget = 'mercury';
+    } else if (currentPage == 'planets-venus') {
+      currentTarget = 'venus';
+    } else if (currentPage == 'planets-earth') {
+      currentTarget = 'earth';
+    } else if (currentPage == 'planets-mars') {
+      currentTarget = 'mars';
+    } else if (currentPage == 'planets-jupiter') {
+      currentTarget = 'jupiter';
+    } else if (currentPage == 'planets-saturn') {
+      currentTarget = 'saturn';
+    } else if (currentPage == 'planets-uranus') {
+      currentTarget = 'uranus';
+    } else if (currentPage == 'planets-neptune') {
+      currentTarget = 'neptune';
+    } else {
+      currentTarget = ''
+    }
+  },
+);
+
 onMounted(() => {
   container = document.getElementById("webgl-canvas");
   webgl = new WebGL(container);
@@ -576,7 +603,6 @@ onMounted(() => {
     three_planet();
     three_orbit();
     three_sign();
-
     rendering();
   };
   init();
@@ -698,26 +724,6 @@ onMounted(() => {
     Uranus.update();
     Neptune.update();
 
-    if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) < au * 20) {
-      view('mercury');
-      view('venus');
-      view('earth');
-      view('mars');
-      view('jupiter');
-      view('saturn');
-      view('uranus');
-      view('neptune');
-    } else if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) > au * 25) {
-      hide('mercury');
-      hide('venus');
-      hide('earth');
-      hide('mars');
-      view('jupiter');
-      view('saturn');
-      view('uranus');
-      view('neptune');
-    }
-
     check('mercury', Mercury);
     check('venus', Venus);
     check('earth', Earth);
@@ -728,9 +734,8 @@ onMounted(() => {
     check('neptune', Neptune);
 
     if (control) {
-
     } else {
-      cameraTargetObject();
+      cameraTarget();
     };
 
     requestAnimationFrame(rendering);
@@ -1096,13 +1101,6 @@ onMounted(() => {
   function loadFont() {
     fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
   };
-
-  setInterval(() => {
-    planetX.value = String(Earth.x);
-    planetY.value = String(Earth.y);
-    planetZ.value = String(Earth.z);
-    // distanceToCenter()
-  }, 500);
 });
 
 // ==================================================
@@ -1110,159 +1108,153 @@ onMounted(() => {
 // ==================================================
 // ----------カメラをホームポジションに戻す
 function toHome() {
-  route.push("/");
-  currentTarget = '';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/', '')
 };
 // ----------水星をクリックした時の処理
 function toMercury() {
-  route.push("/planets/mercury");
-  currentTarget = 'Mercury';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/mercury', 'mercury');
 };
 // ----------金星をクリックした時の処理
 function toVenus() {
-  route.push("/planets/venus");
-  currentTarget = 'Venus';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/venus', 'venus');
 };
 // ----------地球をクリックした時の処理
 function toEarth() {
-  route.push("/planets/earth");
-  currentTarget = 'Earth';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/earth', 'earth');
 };
 // ----------火星をクリックした時の処理
 function toMars() {
-  route.push("/planets/mars");
-  currentTarget = 'Mars';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/mars', 'mars');
 };
 // ----------木星をクリックした時の処理
 function toJupiter() {
-  route.push("/planets/jupiter");
-  currentTarget = 'Jupiter';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/jupiter', 'jupiter');
 };
 // ----------土星をクリックした時の処理
 function toSaturn() {
-  route.push("/planets/saturn");
-  currentTarget = 'Saturn';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/saturn', 'saturn');
 };
 // ----------天王星をクリックした時の処理
 function toUranus() {
-  route.push("/planets/uranus");
-  currentTarget = 'Uranus';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/uranus', 'uranus');
 };
 // ----------海王星をクリックした時の処理
 function toNeptune() {
-  route.push("/planets/neptune");
-  currentTarget = 'Neptune';
-  duration = 0.005;
-  durationLook = 0.005;
+  toPlanet('/planets/neptune', 'neptune');
 };
+
+function toPlanet(path, name) {
+  route.push(path);
+  currentTarget = name;
+  durationPosition = 0.005;
+  durationLook = 0.005;
+}
+
+function cameraTarget() {
+  if (currentTarget == 'mercury') {
+    cameraLerpPosition(Mercury.mesh.position.x + Mercury.computeRadius * 5, Mercury.mesh.position.y + Mercury.computeRadius * 5, Mercury.mesh.position.z + Mercury.computeRadius * 5);
+    cameraLerpLook(Mercury.mesh.position.x, Mercury.mesh.position.y, Mercury.mesh.position.z);
+  } else if (currentTarget == 'venus') {
+    cameraLerpPosition(Venus.mesh.position.x + Venus.computeRadius * 5, Venus.mesh.position.y + Venus.computeRadius * 5, Venus.mesh.position.z + Venus.computeRadius * 5);
+    cameraLerpLook(Venus.mesh.position.x, Venus.mesh.position.y, Venus.mesh.position.z);
+  } else if (currentTarget == 'earth') {
+    cameraLerpPosition(Earth.mesh.position.x + Earth.computeRadius * 5, Earth.mesh.position.y + Earth.computeRadius * 5, Earth.mesh.position.z + Earth.computeRadius * 5);
+    cameraLerpLook(Earth.mesh.position.x, Earth.mesh.position.y, Earth.mesh.position.z);
+  } else if (currentTarget == 'mars') {
+    cameraLerpPosition(Mars.mesh.position.x + Mars.computeRadius * 5, Mars.mesh.position.y + Mars.computeRadius * 5, Mars.mesh.position.z + Mars.computeRadius * 5);
+    cameraLerpLook(Mars.mesh.position.x, Mars.mesh.position.y, Mars.mesh.position.z);
+  } else if (currentTarget == 'jupiter') {
+    cameraLerpPosition(Jupiter.mesh.position.x + Jupiter.computeRadius * 5, Jupiter.mesh.position.y + Jupiter.computeRadius * 5, Jupiter.mesh.position.z + Jupiter.computeRadius * 5);
+    cameraLerpLook(Jupiter.mesh.position.x, Jupiter.mesh.position.y, Jupiter.mesh.position.z);
+  } else if (currentTarget == 'saturn') {
+    cameraLerpPosition(Saturn.mesh.position.x + Saturn.computeRadius * 5, Saturn.mesh.position.y + Saturn.computeRadius * 5, Saturn.mesh.position.z + Saturn.computeRadius * 5);
+    cameraLerpLook(Saturn.mesh.position.x, Saturn.mesh.position.y, Saturn.mesh.position.z);
+  } else if (currentTarget == 'uranus') {
+    cameraLerpPosition(Uranus.mesh.position.x + Uranus.computeRadius * 5, Uranus.mesh.position.y + Uranus.computeRadius * 5, Uranus.mesh.position.z + Uranus.computeRadius * 5);
+    cameraLerpLook(Uranus.mesh.position.x, Uranus.mesh.position.y, Uranus.mesh.position.z);
+  } else if (currentTarget == 'neptune') {
+    cameraLerpPosition(Neptune.mesh.position.x + Neptune.computeRadius * 5, Neptune.mesh.position.y + Neptune.computeRadius * 5, Neptune.mesh.position.z + Neptune.computeRadius * 5);
+    cameraLerpLook(Neptune.mesh.position.x, Neptune.mesh.position.y, Neptune.mesh.position.z);
+  } else {
+    cameraLerpPosition(0, au * 25, au * 50);
+    cameraLerpLook(0, 0, 0);
+  }
+}
 
 // ==================================================
 // Function カメラ制御
 // ==================================================
-// ----------function 現在選択されているオブジェクトをカメラが追尾するアニメーションを行う関数
-function cameraTargetObject() {
-  if (currentTarget == 'Mercury') {
-    lerpCamera(Mercury);
-  } else if (currentTarget == 'Venus') {
-    lerpCamera(Venus);
-  } else if (currentTarget == 'Earth') {
-    lerpCamera(Earth);
-  } else if (currentTarget == 'Mars') {
-    lerpCamera(Mars);
-  } else if (currentTarget == 'Jupiter') {
-    lerpCamera(Jupiter);
-  } else if (currentTarget == 'Saturn') {
-    lerpCamera(Saturn);
-  } else if (currentTarget == 'Uranus') {
-    lerpCamera(Uranus);
-  } else if (currentTarget == 'Neptune') {
-    lerpCamera(Neptune);
-  } else {
-    resetCamera();
-  };
-};
-// -----function 指定した座標までカメラをアニメーションさせる関数
-function lerpCamera(target) {
-  // -----変化する速度
-  if (duration <= 1) {
-    duration += 0.002;
-  };
-  if (durationLook <= 1) {
-    durationLook += 0.003;
-  };
-  // -----ターゲットの位置
-  const targetRadius = target.computeRadius;
-  const targetPosition = target.mesh.position.clone();
-  // -----カメラの位置
-  const currentPosition = webgl.camera.position.clone();
-  const newPosition = new THREE.Vector3();
-  newPosition.x = lerp(currentPosition.x, targetPosition.x + targetRadius * 5, easeInOutQuart(duration));
-  newPosition.y = lerp(currentPosition.y, targetPosition.y + targetRadius * 5, easeInOutQuart(duration));
-  newPosition.z = lerp(currentPosition.z, targetPosition.z + targetRadius * 5, easeInOutQuart(duration));
-  webgl.camera.position.copy(newPosition);
-  // -----カメラの方向
-  const currentLook = webgl.controls.target.clone();
-  const newLook = new THREE.Vector3();
-  newLook.x = lerp(currentLook.x, targetPosition.x, easeInOutQuart(durationLook));
-  newLook.y = lerp(currentLook.y, targetPosition.y, easeInOutQuart(durationLook));
-  newLook.z = lerp(currentLook.z, targetPosition.z, easeInOutQuart(durationLook));
-  webgl.controls.target.copy(newLook);
-};
 // -----function カメラの方向・位置を初期に設定
-function resetCamera() {
-  if (duration <= 1) {
-    duration += 0.002;
-  };
-  if (durationLook <= 1) {
-    durationLook += 0.003;
-  };
 
-  const targetPosition = new THREE.Vector3(0, au * 25, au * 50);
-  const currentPosition = webgl.camera.position.clone();
-
-  const newPosition = new THREE.Vector3();
-  newPosition.x = lerp(currentPosition.x, targetPosition.x, easeInOutQuart(duration));
-  newPosition.y = lerp(currentPosition.y, targetPosition.y, easeInOutQuart(duration));
-  newPosition.z = lerp(currentPosition.z, targetPosition.z, easeInOutQuart(duration));
-  webgl.camera.position.copy(newPosition);
-
-  const targetLook = new THREE.Vector3(0, 0, 0);
-  const currentLook = webgl.controls.target;
-
-  const newLook = new THREE.Vector3();
-  newLook.x = lerp(currentLook.x, targetLook.x, easeInOutQuart(duration));
-  newLook.y = lerp(currentLook.y, targetLook.y, easeInOutQuart(duration));
-  newLook.z = lerp(currentLook.z, targetLook.z, easeInOutQuart(duration));
-  webgl.controls.target.copy(newLook);
-};
 // -----function コントロールを切り替える
 function controlSwitch() {
   route.push("/");
   if (control) {
     control = false;
-    console.log('control : off');
+    toPlanet('/', '');
   } else {
     control = true;
-    console.log('control : on');
   };
 };
 
+
+function cameraLerpPosition(x, y, z) {
+  if (durationPosition <= 1) {
+    durationPosition += 0.002;
+  };
+
+  const startPosition = webgl.camera.position.clone();
+  const endPosition = new THREE.Vector3(x, y, z);
+
+  const newPosition = new THREE.Vector3();
+  newPosition.x = lerp(startPosition.x, endPosition.x, easeInOutQuart(durationPosition));
+  newPosition.y = lerp(startPosition.y, endPosition.y, easeInOutQuart(durationPosition));
+  newPosition.z = lerp(startPosition.z, endPosition.z, easeInOutQuart(durationPosition));
+
+  webgl.camera.position.copy(newPosition);
+};
+function cameraLerpLook(x, y, z) {
+
+  if (durationLook <= 1) {
+    durationLook += 0.003;
+  };
+
+  const startLook = webgl.controls.target.clone();
+  const endLook = new THREE.Vector3(x, y, z);
+
+  const newLook = new THREE.Vector3();
+  newLook.x = lerp(startLook.x, endLook.x, easeInOutQuart(durationLook));
+  newLook.y = lerp(startLook.y, endLook.y, easeInOutQuart(durationLook));
+  newLook.z = lerp(startLook.z, endLook.z, easeInOutQuart(durationLook));
+
+  webgl.controls.target.copy(newLook);
+};
+
+
+// ==================================================
+// Function Navigation
+// ==================================================
+function distance() {
+  if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) < au * 20) {
+    view('mercury');
+    view('venus');
+    view('earth');
+    view('mars');
+    view('jupiter');
+    view('saturn');
+    view('uranus');
+    view('neptune');
+  } else if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) > au * 25) {
+    hide('mercury');
+    hide('venus');
+    hide('earth');
+    hide('mars');
+    view('jupiter');
+    view('saturn');
+    view('uranus');
+    view('neptune');
+  }
+};
 function check(dom, data) {
   const elem = document.getElementById(dom);
   const object3D = data.mesh;
@@ -1275,55 +1267,14 @@ function check(dom, data) {
   elem.style.top = sy + 'px';
   elem.style.left = sx + 'px';
 };
-
 function view(dom) {
   const elem = document.getElementById(dom);
   elem.style.display = 'block';
 };
-
 function hide(dom) {
   const elem = document.getElementById(dom);
   elem.style.display = 'none';
 };
-
-function distanceToCenter() {
-  console.log(webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)));
-};
-
-class PlanetNav {
-  constructor(dom, mesh) {
-    this.dom = document.querySelector(dom);
-    this.mesh = mesh;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    init();
-  };
-  init() {
-    this.compute();
-    this.style();
-  };
-  compute() {
-    this.worldPosition = this.mesh.getWorldPosition(new THREE.Vector3());
-    this.projection = this.worldPosition.project(webgl.camera);
-    this.sx = (this.width / 2) * (+this.projection.x + 1.0);
-    this.sy = (this.height / 2) * (-this.projection.y + 1.0);
-  };
-  style() {
-    this.dom.style.top = this.sy + 'px';
-    this.dom.style.left = this.sx + 'px';
-  };
-  on(){
-    this.dom.style.display = 'block';
-  };
-  off(){
-    this.dom.style.display = 'none';
-  };
-  update() {
-    this.compute();
-    this.style();
-  };
-};
-
 </script>
 
 
@@ -1450,13 +1401,5 @@ body::-webkit-scrollbar {
   border: 1px solid #ffffff;
   z-index: 10;
   cursor: pointer;
-}
-
-.view {
-  display: block;
-}
-
-.hide {
-  display: none;
 }
 </style>
