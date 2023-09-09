@@ -1,5 +1,35 @@
 <template>
-    <div>
-        <h1>cancer</h1>
+    <div class="sign">
+        <div class="sign-title">
+            <h1>CANCER</h1>
+            <div class="line"></div>
+            <h6>zodiacal constellations / cancer</h6>
+            <p>
+                かに座は、黄道十二星座の4番目に位置する星座であり、ラテン語で「Cancer（キャンサー）」と呼ばれ、カニを象徴しています。この星座の由来は、ギリシャ神話に基づいており、大いなるヘラクレスの12の難行の一つで、巨大なカニによって追い詰められるヘラクレスとの戦いが物語の一部とされています。<br>
+                かに座の人々は、感情豊かで家族や友人に対する献身的な愛情を大切にします。彼らは感受性が高く、思いやりがあり、直感的な洞察力を持つことが多いです。また、安定感や忠実さもかに座の特徴とされています。一方で、感情的になりやすい傾向があり、時には過度に保護的になることもあります。<br>
+                占星術的には、かに座は家庭や感情、安定、セキュリティに焦点を当てることがあり、家族や人間関係において大きな役割を果たすと考えられています。かに座は6月21日から7月22日までの期間に太陽が通過する星座であり、この期間に生まれた人々はかに座の特徴を強調された個性を持つとされています。
+            </p>
+        </div>
+
+
+        <div class="sign-fixed">
+            <h2>Fixed Stars</h2>
+            <ul>
+                <li v-for="(item, key) in cancer" :key=key>
+                    {{ key }}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import * as SIGN from "assets/js/data_Signs";
+interface Sign {
+    [key: string]: {
+        alpha: number,
+        delta: number,
+    },
+};
+const cancer: Sign = SIGN.Cancer;
+</script>

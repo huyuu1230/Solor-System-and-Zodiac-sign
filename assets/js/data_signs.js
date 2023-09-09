@@ -536,7 +536,7 @@ export const Sagittarius = {
         delta: -18.95,
     },
 };
-export const Capriconus = {
+export const Capricornus = {
     Alpha_1:{
         alpha: 304.41,
         delta: -12.50,

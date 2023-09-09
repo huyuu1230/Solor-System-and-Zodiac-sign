@@ -1,5 +1,34 @@
 <template>
-    <div>
-        <h1>aquarius</h1>
+    <div class="sign">
+        <div class="sign-title">
+            <h1>AQUARIUS</h1>
+            <div class="line"></div>
+            <h6>zodiacal constellations / aquarius</h6>
+            <p>
+                みずがめ座は、黄道十二星座の11番目に位置する星座であり、ラテン語で「Aquarius（アクエリウス）」と呼ばれ、水瓶を象徴しています。この星座は、古代ギリシャの神話において、水をもたらす水瓶を持つ若者ガニュメデスと関連付けられています。<br>
+                みずがめ座の人々は、独創的で非常に知識欲が旺盛な個性を持っています。彼らは社会的な正義や人道主義に関心を寄せ、進歩的なアイデアや革新的な考えに開かれています。友情に価値を置き、他人と協力することを好みます。一方で、時には個性主義的で受け入れがたいアイデアを持つこともあります。<br>
+                占星術的には、みずがめ座は社会的な進化、人道主義、友情、革新に焦点を当て、集団やコミュニティに貢献することや、個人的な自由を尊重することが強調されます。みずがめ座は1月20日から2月18日までの期間に太陽が通過する星座であり、この期間に生まれた人々はみずがめ座の特徴を強調された個性を持つとされています。
+            </p>
+        </div>
+
+        <div class="sign-fixed">
+            <h2>Fixed Stars</h2>
+            <ul>
+                <li v-for="(item,key) in aquarius" :key=key>
+                    {{ key }}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import * as SIGN from "assets/js/data_Signs";
+interface Sign {
+    [key: string]: {
+        alpha: number,
+        delta: number,
+    },
+};
+const aquarius: Sign = SIGN.Aquarius;
+</script>

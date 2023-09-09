@@ -1,5 +1,33 @@
 <template>
-    <div>
-        <h1>scorpius</h1>
+    <div class="sign">
+        <div class="sign-title">
+            <h1>SCORPIUS</h1>
+            <div class="line"></div>
+            <h6>zodiacal constellations / scorpius</h6>
+            <p>
+                さそり座は、黄道十二星座の8番目に位置する星座であり、ラテン語で「Scorpio（スコルピオ）」と呼ばれ、サソリを象徴しています。この星座は、古代エジプトやギリシャの神話において、死と再生、変容と復活を象徴するものとされています。<br>
+                さそり座の人々は、情熱的で強固な意志を持っており、深い感情と洞察力を持っています。彼らは秘密に関心を抱き、独自の内面の世界を持つことが多く、探求心が旺盛です。一方で、時には嫉妬深く執着心が強い一面もあります。<br>
+                占星術的には、さそり座は変革、深層心理、パワー、セクシュアリティに焦点を当て、個人の内面や変化に対する探求を強調します。さそり座は10月23日から11月21日までの期間に太陽が通過する星座であり、この期間に生まれた人々はさそり座の特徴を強調された個性を持つとされています。
+            </p>
+        </div>
+        <div class="sign-fixed">
+            <h2>Fixed Stars</h2>
+            <ul>
+                <li v-for="(item,key) in scorpius" :key=key>
+                    {{ key }}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import * as SIGN from "assets/js/data_Signs";
+interface Sign {
+    [key: string]: {
+        alpha: number,
+        delta: number,
+    },
+};
+const scorpius: Sign = SIGN.Scorpius;
+</script>

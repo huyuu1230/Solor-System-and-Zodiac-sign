@@ -3,39 +3,24 @@
   <div>
     <headerNav />
     <div>
-      <div id="webgl-canvas">
-
-      </div>
-      <ul id="planet-nav">
-        <li v-on:click="toHome">HOME</li>
-        <li v-on:click="toMercury">Mercury</li>
-        <li v-on:click="toVenus">Venus</li>
-        <li v-on:click="toEarth">Earth</li>
-        <li v-on:click="toMars">Mars</li>
-        <li v-on:click="toJupiter">Jupiter</li>
-        <li v-on:click="toSaturn">Saturn</li>
-        <li v-on:click="toUranus">Uranus</li>
-        <li v-on:click="toNeptune">Neptune</li>
-      </ul>
-
-
-
+      <!--Canvas-->
+      <div id="webgl-canvas"></div>
+      <!--Control-->
       <div id="control" v-on:click="controlSwitch">
         <h6>Controls</h6>
       </div>
-
-
-
     </div>
-    <div v-on:click="toMercury" id="mercury" class="planet"></div>
-    <div v-on:click="toVenus" id="venus" class="planet"></div>
-    <div v-on:click="toEarth" id="earth" class="planet"></div>
-    <div v-on:click="toMars" id="mars" class="planet"></div>
-    <div v-on:click="toJupiter" id="jupiter" class="planet"></div>
-    <div v-on:click="toSaturn" id="saturn" class="planet"></div>
-    <div v-on:click="toUranus" id="uranus" class="planet"></div>
-    <div v-on:click="toNeptune" id="neptune" class="planet"></div>
-
+    <!--three.jsの惑星の座標-->
+    <ul>
+      <div v-on:click="toMercury" id="mercury" class="planet"></div>
+      <div v-on:click="toVenus" id="venus" class="planet"></div>
+      <div v-on:click="toEarth" id="earth" class="planet"></div>
+      <div v-on:click="toMars" id="mars" class="planet"></div>
+      <div v-on:click="toJupiter" id="jupiter" class="planet"></div>
+      <div v-on:click="toSaturn" id="saturn" class="planet"></div>
+      <div v-on:click="toUranus" id="uranus" class="planet"></div>
+      <div v-on:click="toNeptune" id="neptune" class="planet"></div>
+    </ul>
     <NuxtPage />
   </div>
 </template>
@@ -60,9 +45,6 @@ let webgl;
 let raycaster;
 let Font;
 const Planets = [];
-let planetX = ref('');
-let planetY = ref('');
-let planetZ = ref('');
 // ==================================================
 // 変数 : 半径・距離・公転・自転に関する変数
 // ==================================================
@@ -118,7 +100,7 @@ let Virgo = SIGN.Virgo;
 let Libra = SIGN.Libra;
 let Scorpius = SIGN.Scorpius;
 let Sagittarius = SIGN.Sagittarius;
-let Capriconus = SIGN.Capriconus;
+let Capricornus = SIGN.Capricornus;
 let Aquarius = SIGN.Aquarius;
 let Pisces = SIGN.Pisces;
 // ==================================================
@@ -133,7 +115,7 @@ let Virgo_Trajectory;
 let Libra_Trajectory;
 let Scorpius_Trajectory;
 let Sagittarius_Trajectory;
-let Capriconus_Trajectory;
+let Capricornus_Trajectory;
 let Aquarius_Trajectory;
 let Pisces_Trajectory;
 // ==================================================
@@ -490,16 +472,10 @@ class Trajectory {
     this.mesh = new THREE.Line(this.geometry, this.material);
   };
 };
-// ==================================================
-// Class Test
-// ==================================================
-
-
-
 // --------------------星座の軌跡の表示
 function addTrajectory(trajectory) {
   for (let key in trajectory) {
-    trajectory[key].add(scene);
+    webgl.scene.add(trajectory[key].mesh);
   };
 };
 // --------------------惑星をクリックイベントオブジェクトに追加
@@ -566,32 +542,57 @@ class Line {
 };
 
 let currentPage = useRoute().name;
+function changePage() {
+  durationPosition = 0.005;
+  durationLook = 0.005;
+  if (currentPage == 'planets-mercury') {
+    currentTarget = 'mercury';
+  } else if (currentPage == 'planets-venus') {
+    currentTarget = 'venus';
+  } else if (currentPage == 'planets-earth') {
+    currentTarget = 'earth';
+  } else if (currentPage == 'planets-mars') {
+    currentTarget = 'mars';
+  } else if (currentPage == 'planets-jupiter') {
+    currentTarget = 'jupiter';
+  } else if (currentPage == 'planets-saturn') {
+    currentTarget = 'saturn';
+  } else if (currentPage == 'planets-uranus') {
+    currentTarget = 'uranus';
+  } else if (currentPage == 'planets-neptune') {
+    currentTarget = 'neptune';
+  } else if (currentPage == 'signs-aries') {
+    currentTarget = 'aries';
+  } else if (currentPage == 'signs-taurus') {
+    currentTarget = 'taurus';
+  } else if (currentPage == 'signs-gemini') {
+    currentTarget = 'gemini';
+  } else if (currentPage == 'signs-cancer') {
+    currentTarget = 'cancer';
+  } else if (currentPage == 'signs-leo') {
+    currentTarget = 'leo';
+  } else if (currentPage == 'signs-virgo') {
+    currentTarget = 'virgo';
+  } else if (currentPage == 'signs-libra') {
+    currentTarget = 'libra';
+  } else if (currentPage == 'signs-scorpius') {
+    currentTarget = 'scorpius';
+  } else if (currentPage == 'signs-sagittarius') {
+    currentTarget = 'sagittarius';
+  } else if (currentPage == 'signs-capricornus') {
+    currentTarget = 'capricornus';
+  } else if (currentPage == 'signs-aquarius') {
+    currentTarget = 'aquarius';
+  } else if (currentPage == 'signs-pisces') {
+    currentTarget = 'pisces';
+  } else {
+    currentTarget = ''
+  }
+}
 
 watch(
   () => currentPage = useRoute().name,
-  () => {
-    durationPosition = 0.005;
-    durationLook = 0.005;
-    if (currentPage == 'planets-mercury') {
-      currentTarget = 'mercury';
-    } else if (currentPage == 'planets-venus') {
-      currentTarget = 'venus';
-    } else if (currentPage == 'planets-earth') {
-      currentTarget = 'earth';
-    } else if (currentPage == 'planets-mars') {
-      currentTarget = 'mars';
-    } else if (currentPage == 'planets-jupiter') {
-      currentTarget = 'jupiter';
-    } else if (currentPage == 'planets-saturn') {
-      currentTarget = 'saturn';
-    } else if (currentPage == 'planets-uranus') {
-      currentTarget = 'uranus';
-    } else if (currentPage == 'planets-neptune') {
-      currentTarget = 'neptune';
-    } else {
-      currentTarget = ''
-    }
-  },
+  () => { changePage(); },
 );
 
 onMounted(() => {
@@ -604,6 +605,7 @@ onMounted(() => {
     three_orbit();
     three_sign();
     rendering();
+    changePage();
   };
   init();
 
@@ -671,7 +673,7 @@ onMounted(() => {
     createSign(Libra);
     createSign(Scorpius);
     createSign(Sagittarius);
-    createSign(Capriconus);
+    createSign(Capricornus);
     createSign(Aquarius);
     createSign(Pisces);
     // -----星座をシーンに追加
@@ -684,7 +686,7 @@ onMounted(() => {
     addSign(Libra);
     addSign(Scorpius);
     addSign(Sagittarius);
-    addSign(Capriconus);
+    addSign(Capricornus);
     addSign(Aquarius);
     addSign(Pisces);
     // -----function 星座のインスタンスを作成する関数
@@ -733,10 +735,9 @@ onMounted(() => {
     check('uranus', Uranus);
     check('neptune', Neptune);
 
-    if (control) {
-    } else {
-      cameraTarget();
-    };
+
+    cameraTarget();
+
 
     requestAnimationFrame(rendering);
   };
@@ -992,26 +993,26 @@ onMounted(() => {
       ]),
     };
 
-    Capriconus_Trajectory = {
+    Capricornus_Trajectory = {
       Trajectory_1: new Trajectory([
-        new THREE.Vector3(Capriconus.Alpha_2.x, Capriconus.Alpha_2.y, Capriconus.Alpha_2.z),
-        new THREE.Vector3(Capriconus.Alpha_1.x, Capriconus.Alpha_1.y, Capriconus.Alpha_1.z),
-        new THREE.Vector3(Capriconus.Beta_1.x, Capriconus.Beta_1.y, Capriconus.Beta_1.z),
-        new THREE.Vector3(Capriconus.Theta.x, Capriconus.Theta.y, Capriconus.Theta.z),
-        new THREE.Vector3(Capriconus.Iota.x, Capriconus.Iota.y, Capriconus.Iota.z),
-        new THREE.Vector3(Capriconus.Gamma.x, Capriconus.Gamma.y, Capriconus.Gamma.z),
-        new THREE.Vector3(Capriconus.Delta.x, Capriconus.Delta.y, Capriconus.Delta.z),
+        new THREE.Vector3(Capricornus.Alpha_2.x, Capricornus.Alpha_2.y, Capricornus.Alpha_2.z),
+        new THREE.Vector3(Capricornus.Alpha_1.x, Capricornus.Alpha_1.y, Capricornus.Alpha_1.z),
+        new THREE.Vector3(Capricornus.Beta_1.x, Capricornus.Beta_1.y, Capricornus.Beta_1.z),
+        new THREE.Vector3(Capricornus.Theta.x, Capricornus.Theta.y, Capricornus.Theta.z),
+        new THREE.Vector3(Capricornus.Iota.x, Capricornus.Iota.y, Capricornus.Iota.z),
+        new THREE.Vector3(Capricornus.Gamma.x, Capricornus.Gamma.y, Capricornus.Gamma.z),
+        new THREE.Vector3(Capricornus.Delta.x, Capricornus.Delta.y, Capricornus.Delta.z),
       ]),
       Trajectory_2: new Trajectory([
-        new THREE.Vector3(Capriconus.Gamma.x, Capriconus.Gamma.y, Capriconus.Gamma.z),
-        new THREE.Vector3(Capriconus.Epsilon.x, Capriconus.Epsilon.y, Capriconus.Epsilon.z),
-        new THREE.Vector3(Capriconus.Zehta.x, Capriconus.Zehta.y, Capriconus.Zehta.z),
-        new THREE.Vector3(Capriconus.Number_24.x, Capriconus.Number_24.y, Capriconus.Number_24.z),
-        new THREE.Vector3(Capriconus.Omega.x, Capriconus.Omega.y, Capriconus.Omega.z),
-        new THREE.Vector3(Capriconus.Psi.x, Capriconus.Psi.y, Capriconus.Psi.z),
-        new THREE.Vector3(Capriconus.Omicron.x, Capriconus.Omicron.y, Capriconus.Omicron.z),
-        new THREE.Vector3(Capriconus.Rho.x, Capriconus.Rho.y, Capriconus.Rho.z),
-        new THREE.Vector3(Capriconus.Beta_1.x, Capriconus.Beta_1.y, Capriconus.Beta_1.z),
+        new THREE.Vector3(Capricornus.Gamma.x, Capricornus.Gamma.y, Capricornus.Gamma.z),
+        new THREE.Vector3(Capricornus.Epsilon.x, Capricornus.Epsilon.y, Capricornus.Epsilon.z),
+        new THREE.Vector3(Capricornus.Zehta.x, Capricornus.Zehta.y, Capricornus.Zehta.z),
+        new THREE.Vector3(Capricornus.Number_24.x, Capricornus.Number_24.y, Capricornus.Number_24.z),
+        new THREE.Vector3(Capricornus.Omega.x, Capricornus.Omega.y, Capricornus.Omega.z),
+        new THREE.Vector3(Capricornus.Psi.x, Capricornus.Psi.y, Capricornus.Psi.z),
+        new THREE.Vector3(Capricornus.Omicron.x, Capricornus.Omicron.y, Capricornus.Omicron.z),
+        new THREE.Vector3(Capricornus.Rho.x, Capricornus.Rho.y, Capricornus.Rho.z),
+        new THREE.Vector3(Capricornus.Beta_1.x, Capricornus.Beta_1.y, Capricornus.Beta_1.z),
       ]),
     };
 
@@ -1089,7 +1090,7 @@ onMounted(() => {
     // addTrajectory(Libra_Trajectory);
     // addTrajectory(Scorpius_Trajectory);
     // addTrajectory(Sagittarius_Trajectory);
-    // addTrajectory(Capriconus_Trajectory);
+    // addTrajectory(Capricornus_Trajectory);
     // addTrajectory(Aquarius_Trajectory);
     // addTrajectory(Pisces_Trajectory);
   };
@@ -1106,50 +1107,55 @@ onMounted(() => {
 // ==================================================
 // Function ページ遷移 & オブジェクト選択
 // ==================================================
-// ----------カメラをホームポジションに戻す
-function toHome() {
-  toPlanet('/', '')
-};
 // ----------水星をクリックした時の処理
 function toMercury() {
-  toPlanet('/planets/mercury', 'mercury');
+  route.push('/planets/mercury');
 };
 // ----------金星をクリックした時の処理
 function toVenus() {
-  toPlanet('/planets/venus', 'venus');
+  route.push('/planets/venus');
 };
 // ----------地球をクリックした時の処理
 function toEarth() {
-  toPlanet('/planets/earth', 'earth');
+  route.push('/planets/earth');
 };
 // ----------火星をクリックした時の処理
 function toMars() {
-  toPlanet('/planets/mars', 'mars');
+  route.push('/planets/mars');
 };
 // ----------木星をクリックした時の処理
 function toJupiter() {
-  toPlanet('/planets/jupiter', 'jupiter');
+  route.push('/planets/jupiter');
 };
 // ----------土星をクリックした時の処理
 function toSaturn() {
-  toPlanet('/planets/saturn', 'saturn');
+  route.push('/planets/saturn');
 };
 // ----------天王星をクリックした時の処理
 function toUranus() {
-  toPlanet('/planets/uranus', 'uranus');
+  route.push('/planets/uranus');
 };
 // ----------海王星をクリックした時の処理
 function toNeptune() {
-  toPlanet('/planets/neptune', 'neptune');
+  route.push('/planets/neptune');
 };
-
-function toPlanet(path, name) {
-  route.push(path);
-  currentTarget = name;
-  durationPosition = 0.005;
-  durationLook = 0.005;
-}
-
+// ==================================================
+// 星座のカメラ制御
+// ==================================================
+function toSign(sign) {
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  for (let key in sign) {
+    x += sign[key].x;
+    y += sign[key].y;
+    z += sign[key].z;
+  };
+  x = x / Object.keys(sign).length * 1.5;
+  y = y / Object.keys(sign).length * 1.5;
+  z = z / Object.keys(sign).length * 1.5;
+  return new THREE.Vector3(x, y, z);
+};
 function cameraTarget() {
   if (currentTarget == 'mercury') {
     cameraLerpPosition(Mercury.mesh.position.x + Mercury.computeRadius * 5, Mercury.mesh.position.y + Mercury.computeRadius * 5, Mercury.mesh.position.z + Mercury.computeRadius * 5);
@@ -1175,29 +1181,63 @@ function cameraTarget() {
   } else if (currentTarget == 'neptune') {
     cameraLerpPosition(Neptune.mesh.position.x + Neptune.computeRadius * 5, Neptune.mesh.position.y + Neptune.computeRadius * 5, Neptune.mesh.position.z + Neptune.computeRadius * 5);
     cameraLerpLook(Neptune.mesh.position.x, Neptune.mesh.position.y, Neptune.mesh.position.z);
+  } else if (currentTarget == 'aries') {
+    cameraLerpPosition(toSign(Aries).x, toSign(Aries).y, toSign(Aries).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'taurus') {
+    cameraLerpPosition(toSign(Taurus).x, toSign(Taurus).y, toSign(Taurus).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'gemini') {
+    cameraLerpPosition(toSign(Gemini).x, toSign(Gemini).y, toSign(Gemini).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'cancer') {
+    cameraLerpPosition(toSign(Cancer).x, toSign(Cancer).y, toSign(Cancer).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'leo') {
+    cameraLerpPosition(toSign(Leo).x, toSign(Leo).y, toSign(Leo).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'virgo') {
+    cameraLerpPosition(toSign(Virgo).x, toSign(Virgo).y, toSign(Virgo).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'libra') {
+    cameraLerpPosition(toSign(Libra).x, toSign(Libra).y, toSign(Libra).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'scorpius') {
+    cameraLerpPosition(toSign(Scorpius).x, toSign(Scorpius).y, toSign(Scorpius).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'sagittarius') {
+    cameraLerpPosition(toSign(Sagittarius).x, toSign(Sagittarius).y, toSign(Sagittarius).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'capricornus') {
+    cameraLerpPosition(toSign(Capricornus).x, toSign(Capricornus).y, toSign(Capricornus).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'aquarius') {
+    cameraLerpPosition(toSign(Aquarius).x, toSign(Aquarius).y, toSign(Aquarius).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'pisces') {
+    cameraLerpPosition(toSign(Pisces).x, toSign(Pisces).y, toSign(Pisces).z);
+    cameraLerpLook(0, 0, 0);
+  } else if (currentTarget == 'control') {
+    // no script
   } else {
     cameraLerpPosition(0, au * 25, au * 50);
     cameraLerpLook(0, 0, 0);
   }
-}
-
+};
 // ==================================================
 // Function カメラ制御
 // ==================================================
-// -----function カメラの方向・位置を初期に設定
-
 // -----function コントロールを切り替える
 function controlSwitch() {
-  route.push("/");
   if (control) {
     control = false;
-    toPlanet('/', '');
   } else {
+    route.push('/')
     control = true;
+    currentTarget = 'control'
   };
 };
-
-
+// ----------カメラの位置を線形補完
 function cameraLerpPosition(x, y, z) {
   if (durationPosition <= 1) {
     durationPosition += 0.002;
@@ -1213,6 +1253,7 @@ function cameraLerpPosition(x, y, z) {
 
   webgl.camera.position.copy(newPosition);
 };
+// ----------カメラの方向を線形補完
 function cameraLerpLook(x, y, z) {
 
   if (durationLook <= 1) {
@@ -1229,7 +1270,6 @@ function cameraLerpLook(x, y, z) {
 
   webgl.controls.target.copy(newLook);
 };
-
 
 // ==================================================
 // Function Navigation
@@ -1276,8 +1316,6 @@ function hide(dom) {
   elem.style.display = 'none';
 };
 </script>
-
-
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap");
