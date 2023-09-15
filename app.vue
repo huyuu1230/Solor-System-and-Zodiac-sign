@@ -3,6 +3,18 @@
   <div>
     <headerNav />
     <div>
+      <div class="navigation-data">
+        <ul>
+          <li>durationPosition : {{ navDurationPosition }}</li>
+          <li>durationLook : {{ navDurationLook }}</li>
+          <li>Camera x : {{ navCameraX }}</li>
+          <li>Camera y : {{ navCameraY }}</li>
+          <li>Camera z : {{ navCameraZ }}</li>
+          <li>{{ navTargetX }}</li>
+          <li>{{ navTargetY }}</li>
+          <li>{{ navTargetZ }}</li>
+        </ul>
+      </div>
       <!--Canvas-->
       <div id="webgl-canvas"></div>
       <!--Control-->
@@ -30,10 +42,42 @@ import * as THREE from "three";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
 
+// ==================================================
+// 変数 : ナビゲーション
+// ==================================================
+let navTarget = {
+  x: 0,
+  y: 0,
+  z: 0
+};
+let navDurationPosition = ref();
+let navDurationLook = ref();
+let navCameraX = ref();
+let navCameraY = ref();
+let navCameraZ = ref();
+let navTargetX = ref();
+let navTargetY = ref();
+let navTargetZ = ref();
+
+let targetSign;
+
+function center(sign) {
+  return new THREE.Vector3(toSign(sign).x, toSign(sign).y, toSign(sign).z);
+};
+
+function navLoad() {
+  navDurationPosition.value = (Math.round(durationPosition * 1000)) / 1000;
+  navDurationLook.value = (Math.round(durationLook * 1000)) / 1000;
+  navCameraX.value = Math.round(webgl.camera.position.x);
+  navCameraY.value = Math.round(webgl.camera.position.y);
+  navCameraZ.value = Math.round(webgl.camera.position.z);
+  navTargetX.value = navTarget.x;
+  navTargetY.value = navTarget.y;
+  navTargetZ.value = navTarget.z;
+};
 
 // ==================================================
 // 変数 : 設定関連
@@ -48,7 +92,7 @@ const Planets = [];
 // ==================================================
 // 変数 : 半径・距離・公転・自転に関する変数
 // ==================================================
-let earthRadius = 1000;
+let earthRadius = 100;
 let earthDiameter = earthRadius * 2;
 let earthRevolution = toRad(360 / 365 / 60);
 let earthRotation = toRad(360 / 60);
@@ -472,6 +516,33 @@ class Trajectory {
     this.mesh = new THREE.Line(this.geometry, this.material);
   };
 };
+// --------------------線を作成
+class Line {
+  constructor(startVector, endVector) {
+    this.points = [];
+    this.points.push(startVector);
+    this.points.push(endVector);
+    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.material = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+    });
+    this.line = new THREE.Line(this.geometry, this.material);
+    scene.add(this.line);
+  }
+  update(updateVector) {
+    scene.remove(this.line);
+    this.points.pop();
+    this.updateVector = updateVector;
+    this.points.push(this.updateVector);
+    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.material = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+    });
+    this.line = new THREE.Line(this.geometry, this.material);
+    scene.add(this.line);
+  };
+};
+
 // --------------------星座の軌跡の表示
 function addTrajectory(trajectory) {
   for (let key in trajectory) {
@@ -514,80 +585,74 @@ function updateText(obj, data) {
   );
 };
 
-// --------------------線を作成
-class Line {
-  constructor(startVector, endVector) {
-    this.points = [];
-    this.points.push(startVector);
-    this.points.push(endVector);
-    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.material = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-    });
-    this.line = new THREE.Line(this.geometry, this.material);
-    scene.add(this.line);
-  }
-  update(updateVector) {
-    scene.remove(this.line);
-    this.points.pop();
-    this.updateVector = updateVector;
-    this.points.push(this.updateVector);
-    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.material = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-    });
-    this.line = new THREE.Line(this.geometry, this.material);
-    scene.add(this.line);
-  };
-};
-
 let currentPage = useRoute().name;
 function changePage() {
   durationPosition = 0.005;
   durationLook = 0.005;
   if (currentPage == 'planets-mercury') {
     currentTarget = 'mercury';
+    navTarget = Mercury;
   } else if (currentPage == 'planets-venus') {
     currentTarget = 'venus';
+    navTarget = Venus;
   } else if (currentPage == 'planets-earth') {
     currentTarget = 'earth';
+    navTarget = Earth;
   } else if (currentPage == 'planets-mars') {
     currentTarget = 'mars';
+    navTarget = Mars;
   } else if (currentPage == 'planets-jupiter') {
     currentTarget = 'jupiter';
+    navTarget = Jupiter;
   } else if (currentPage == 'planets-saturn') {
     currentTarget = 'saturn';
+    navTarget = Saturn;
   } else if (currentPage == 'planets-uranus') {
     currentTarget = 'uranus';
+    navTarget = Uranus;
   } else if (currentPage == 'planets-neptune') {
     currentTarget = 'neptune';
+    navTarget = Neptune;
   } else if (currentPage == 'signs-aries') {
     currentTarget = 'aries';
+    navTarget = center(Aries);
   } else if (currentPage == 'signs-taurus') {
     currentTarget = 'taurus';
+    navTarget = center(Taurus);
   } else if (currentPage == 'signs-gemini') {
     currentTarget = 'gemini';
+    navTarget = center(Gemini);
   } else if (currentPage == 'signs-cancer') {
     currentTarget = 'cancer';
+    navTarget = center(Cancer);
   } else if (currentPage == 'signs-leo') {
     currentTarget = 'leo';
+    navTarget = center(Leo);
   } else if (currentPage == 'signs-virgo') {
     currentTarget = 'virgo';
+    navTarget(Virgo);
   } else if (currentPage == 'signs-libra') {
     currentTarget = 'libra';
+    navTarget(Libra);
   } else if (currentPage == 'signs-scorpius') {
     currentTarget = 'scorpius';
+    navTarget = center(Scorpius);
   } else if (currentPage == 'signs-sagittarius') {
     currentTarget = 'sagittarius';
+    navTarget = center(Sagittarius);
   } else if (currentPage == 'signs-capricornus') {
     currentTarget = 'capricornus';
+    navTarget = center(Capricornus);
   } else if (currentPage == 'signs-aquarius') {
     currentTarget = 'aquarius';
+    navTarget = center(Aquarius);
   } else if (currentPage == 'signs-pisces') {
     currentTarget = 'pisces';
+    navTarget = center(Pisces);
   } else {
     currentTarget = ''
   }
+  console.log(navTarget)
 }
 
 watch(
@@ -737,7 +802,7 @@ onMounted(() => {
 
 
     cameraTarget();
-
+    navLoad()
 
     requestAnimationFrame(rendering);
   };
@@ -1224,6 +1289,8 @@ function cameraTarget() {
     cameraLerpLook(0, 0, 0);
   }
 };
+
+
 // ==================================================
 // Function カメラ制御
 // ==================================================
@@ -1240,7 +1307,7 @@ function controlSwitch() {
 // ----------カメラの位置を線形補完
 function cameraLerpPosition(x, y, z) {
   if (durationPosition <= 1) {
-    durationPosition += 0.002;
+    durationPosition += 0.003;
   };
 
   const startPosition = webgl.camera.position.clone();
@@ -1439,5 +1506,28 @@ body::-webkit-scrollbar {
   border: 1px solid #ffffff;
   z-index: 10;
   cursor: pointer;
+}
+
+// ==================================================
+// Navigation Data
+// ==================================================
+.navigation-data {
+  position: fixed;
+  top: 100px;
+  right: 50px;
+
+  ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+
+    li {
+      width: 250px;
+      padding: 5px 10px;
+      font-size: 16px;
+      color: #222222;
+      background-color: #ffffff;
+    }
+  }
 }
 </style>
