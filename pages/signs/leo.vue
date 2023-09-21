@@ -10,14 +10,14 @@
                 占星術的には、しし座は創造性、自己主張、自己発展、リーダーシップなどに焦点を当てることがあり、個人的な成長や成功に向けた情熱を強調します。しし座は7月23日から8月22日までの期間に太陽が通過する星座であり、この期間に生まれた人々はしし座の特徴を強調された個性を持つとされています。
             </p>
         </div>
-        <div class="sign-fixed">
+        <!-- <div class="sign-fixed">
             <h2>Fixed Stars</h2>
             <ul>
                 <li v-for="(item, key) in leo" :key=key>
                     {{ key }}
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </template>
 

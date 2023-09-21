@@ -11,14 +11,14 @@
             </p>
         </div>
 
-        <div class="sign-fixed">
+        <!-- <div class="sign-fixed">
             <h2>Fixed Stars</h2>
             <ul>
                 <li v-for="(item,key) in gemini" :key=key>
                     {{ key }}
                 </li>
             </ul>
-        </div>
+        </div> -->
 
     </div>
 </template>

@@ -1,26 +1,15 @@
-
 <template>
   <div>
     <headerNav />
     <div>
-      <div class="navigation-data">
-        <ul>
-          <li>durationPosition : {{ navDurationPosition }}</li>
-          <li>durationLook : {{ navDurationLook }}</li>
-          <li>Camera x : {{ navCameraX }}</li>
-          <li>Camera y : {{ navCameraY }}</li>
-          <li>Camera z : {{ navCameraZ }}</li>
-          <li>{{ navTargetX }}</li>
-          <li>{{ navTargetY }}</li>
-          <li>{{ navTargetZ }}</li>
-        </ul>
-      </div>
       <!--Canvas-->
       <div id="webgl-canvas"></div>
-      <!--Control-->
-      <div id="control" v-on:click="controlSwitch">
-        <h6>Controls</h6>
-      </div>
+    </div>
+    <div class="nav-info">
+      <navInfo :data="nav_info" />
+    </div>
+    <div class="nav-log">
+      <navLog />
     </div>
     <!--three.jsの惑星の座標-->
     <ul>
@@ -39,55 +28,57 @@
 
 <script setup>
 import * as THREE from "three";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+// import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+// import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
+
 
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
 let navTarget = {
-  x: 0,
-  y: 0,
-  z: 0
+  x:0,
+  y:0,
+  z:0,
 };
-let navDurationPosition = ref();
-let navDurationLook = ref();
-let navCameraX = ref();
-let navCameraY = ref();
-let navCameraZ = ref();
-let navTargetX = ref();
-let navTargetY = ref();
-let navTargetZ = ref();
+const nav_info = ref(
+  {
+    nav_duration_1: 0,
+    nav_duration_2: 0,
+    nav_camera_x: 0,
+    nav_camera_y: 0,
+    nav_camera_z: 0,
+    nav_target_x: 0,
+    nav_target_y: 0,
+    nav_target_z: 0,
+  },
+);
 
-let targetSign;
+function navLoad() {
+  nav_info.value.nav_duration_1 = (Math.round(durationPosition * 1000)) / 1000;
+  nav_info.value.nav_duration_2 = (Math.round(durationLook * 1000)) / 1000;
+  nav_info.value.nav_camera_x = Math.round(webgl.camera.position.x);
+  nav_info.value.nav_camera_y = Math.round(webgl.camera.position.y);
+  nav_info.value.nav_camera_z = Math.round(webgl.camera.position.z);
+  nav_info.value.nav_target_x = Math.round(navTarget.x);
+  nav_info.value.nav_target_y = Math.round(navTarget.y);
+  nav_info.value.nav_target_z = Math.round(navTarget.z);
+};
 
 function center(sign) {
   return new THREE.Vector3(toSign(sign).x, toSign(sign).y, toSign(sign).z);
 };
-
-function navLoad() {
-  navDurationPosition.value = (Math.round(durationPosition * 1000)) / 1000;
-  navDurationLook.value = (Math.round(durationLook * 1000)) / 1000;
-  navCameraX.value = Math.round(webgl.camera.position.x);
-  navCameraY.value = Math.round(webgl.camera.position.y);
-  navCameraZ.value = Math.round(webgl.camera.position.z);
-  navTargetX.value = navTarget.x;
-  navTargetY.value = navTarget.y;
-  navTargetZ.value = navTarget.z;
-};
-
 // ==================================================
 // 変数 : 設定関連
 // ==================================================
 const route = useRouter();
-const fontLoader = new FontLoader();
+// const fontLoader = new FontLoader();
 let container;
 let webgl;
 let raycaster;
-let Font;
+// let Font;
 const Planets = [];
 // ==================================================
 // 変数 : 半径・距離・公転・自転に関する変数
@@ -585,6 +576,9 @@ function updateText(obj, data) {
   );
 };
 
+// ==================================================
+// URLによって、変数の値を変更
+// ==================================================
 let currentPage = useRoute().name;
 function changePage() {
   durationPosition = 0.005;
@@ -630,10 +624,10 @@ function changePage() {
     navTarget = center(Leo);
   } else if (currentPage == 'signs-virgo') {
     currentTarget = 'virgo';
-    navTarget(Virgo);
+    navTarget = center(Virgo);
   } else if (currentPage == 'signs-libra') {
     currentTarget = 'libra';
-    navTarget(Libra);
+    navTarget = center(Libra);
   } else if (currentPage == 'signs-scorpius') {
     currentTarget = 'scorpius';
     navTarget = center(Scorpius);
@@ -650,9 +644,13 @@ function changePage() {
     currentTarget = 'pisces';
     navTarget = center(Pisces);
   } else {
-    currentTarget = ''
-  }
-  console.log(navTarget)
+    currentTarget = '';
+    navTarget = {
+      x:0,
+      y:0,
+      z:0,
+    }
+  };
 }
 
 watch(
@@ -1161,12 +1159,12 @@ onMounted(() => {
   };
 
   // --------------------フォント
-  function onLoadFont(font) {
-    Font = font;
-  };
-  function loadFont() {
-    fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
-  };
+  // function onLoadFont(font) {
+  //   Font = font;
+  // };
+  // function loadFont() {
+  //   fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
+  // };
 });
 
 // ==================================================
@@ -1294,16 +1292,6 @@ function cameraTarget() {
 // ==================================================
 // Function カメラ制御
 // ==================================================
-// -----function コントロールを切り替える
-function controlSwitch() {
-  if (control) {
-    control = false;
-  } else {
-    route.push('/')
-    control = true;
-    currentTarget = 'control'
-  };
-};
 // ----------カメラの位置を線形補完
 function cameraLerpPosition(x, y, z) {
   if (durationPosition <= 1) {
@@ -1324,7 +1312,7 @@ function cameraLerpPosition(x, y, z) {
 function cameraLerpLook(x, y, z) {
 
   if (durationLook <= 1) {
-    durationLook += 0.003;
+    durationLook += 0.004;
   };
 
   const startLook = webgl.controls.target.clone();
@@ -1511,23 +1499,15 @@ body::-webkit-scrollbar {
 // ==================================================
 // Navigation Data
 // ==================================================
-.navigation-data {
+.nav-info{
   position: fixed;
-  top: 100px;
-  right: 50px;
+  top: 15%;
+  right: 30px;
+}
 
-  ul {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 5px;
-
-    li {
-      width: 250px;
-      padding: 5px 10px;
-      font-size: 16px;
-      color: #222222;
-      background-color: #ffffff;
-    }
-  }
+.nav-log {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
 }
 </style>

@@ -10,14 +10,14 @@
                 占星術的には、やぎ座はキャリア、成功、責任、組織力に焦点を当て、個人の成長や社会的な地位向上に向けた努力を強調します。やぎ座は12月22日から1月19日までの期間に太陽が通過する星座であり、この期間に生まれた人々はやぎ座の特徴を強調された個性を持つとされています。
             </p>
         </div>
-        <div class="sign-fixed">
+        <!-- <div class="sign-fixed">
             <h2>Fixed Stars</h2>
             <ul>
                 <li v-for="(item,key) in capricornus" :key=key>
                     {{ key }}
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </template>
 

@@ -10,14 +10,14 @@
                 占星術的には、乙女座は秩序、労働、健康、細部への注意に焦点を当て、完璧主義や改善への欲求が強調されることがあります。乙女座は8月23日から9月22日までの期間に太陽が通過する星座であり、この期間に生まれた人々は乙女座の特徴を強調された個性を持つとされています。
             </p>
         </div>
-        <div class="sign-fixed">
+        <!-- <div class="sign-fixed">
             <h2>Fixed Stars</h2>
             <ul>
                 <li v-for="(item,key) in virgo" :key=key>
                     {{ key }}
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </template>
 

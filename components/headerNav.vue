@@ -369,21 +369,21 @@ header {
         margin: auto 0;
 
         .header-img {
-            width: 200px;
+            width: calc(200px + (100vw - 1920px) * 0.01);
             height: 200px;
             margin: 0 0 64px;
             background-color: #ffffff;
         }
 
         h2 {
-            font-size: 24px;
+            font-size: calc(24px + (100vw - 1920px) * 0.01);
             line-height: 2em;
         }
     }
 
     .header-toggle-line {
         width: 1px;
-        margin: 0 120px;
+        margin: 0 calc(120px + (100vw - 1920px) * 0.01);
         background-color: #ffffff;
     }
 
@@ -392,12 +392,12 @@ header {
 
         .header-links {
             h3 {
-                font-size: 24px;
+                font-size: calc(24px + (100vw - 1920px) * 0.01);
                 line-height: 1em;
             }
 
             .header-links-line {
-                width: 200px;
+                width: calc(200px + (100vw - 1920px) * 0.01);
                 height: 1px;
                 margin: 24px 0;
                 background-color: #ffffff;
@@ -405,7 +405,7 @@ header {
 
             ul {
                 li {
-                    font-size: 16px;
+                    font-size: calc(16px + (100vw - 1920px) * 0.01);
                     line-height: 1em;
                 }
 
@@ -416,7 +416,7 @@ header {
         }
 
         .header-links:not(:last-child) {
-            margin: 0 120px 0 0;
+            margin: 0 calc(120px + (100vw - 1920px) * 0.01) 0 0;
         }
     }
 
@@ -449,5 +449,33 @@ header {
     .header-copyright-from {
         display: none !important;
     }
+}
+
+@media screen and (max-width:1601px) {
+    header {
+        #header-logo {
+            display: none;
+        }
+
+        .header-toggle-line{
+            display: none;
+        }
+
+        #header-nav {
+            .header-links {
+                .header-links-line {
+                    width: 120px;
+                    margin: 16px 0;
+                }
+
+                ul {
+                    li:not(:last-child){
+                        margin: 0 0 18px;
+                    }
+                }
+            }
+        }
+    }
+
 }
 </style>

@@ -11,14 +11,14 @@
                 おうし座は、4月20日から5月20日までの期間に太陽が通過する星座であり、この期間に生まれた人々はおうし座の特徴を強調された個性を持つとされています。
             </p>
         </div>
-        <div class="sign-fixed">
+        <!-- <div class="sign-fixed">
             <h2>Fixed Stars</h2>
             <ul>
                 <li v-for="(item,key) in taurus" :key=key>
                     {{ key }}
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </template>
 

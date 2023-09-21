@@ -10,14 +10,14 @@
                 占星術的には、さそり座は変革、深層心理、パワー、セクシュアリティに焦点を当て、個人の内面や変化に対する探求を強調します。さそり座は10月23日から11月21日までの期間に太陽が通過する星座であり、この期間に生まれた人々はさそり座の特徴を強調された個性を持つとされています。
             </p>
         </div>
-        <div class="sign-fixed">
+        <!-- <div class="sign-fixed">
             <h2>Fixed Stars</h2>
             <ul>
                 <li v-for="(item,key) in scorpius" :key=key>
                     {{ key }}
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </template>
 
