@@ -5,19 +5,27 @@
             <div class="line"></div>
             <h6>diameter of the planet / magnification of the neptune</h6>
         </div>
-
-        <div class="orbit-params">
-            <!--公転速度 / Revolution-->
-            <div class="revolution">
-                <h2>revolution speed</h2>
-                <p>163.8year ( 5.4km/s )</p>
-            </div>
-            <!--自転速度 / Rotation-->
-            <div class="rotation">
-                <h2>rotation speed</h2>
-                <p>16.11hour</p>
-            </div>
-        </div>
-
+        <OrbitParams :data="list"/>
     </div>
 </template>
+
+<script setup  lang="ts">
+const list = {
+    size:{
+        head:'diameter of the planet',
+        body:'49,528km / 3.88(ratio to earth)',
+    },
+    distance:{
+        head:'distance to sun',
+        body:'45.044million km / 30AU',
+    },
+    revolution:{
+        head:'revolution speed',
+        body:'163.8year(5.4km/s)',
+    },
+    rotation:{
+        head:'rotation speed',
+        body:'16.11hour',
+    },
+};
+</script>

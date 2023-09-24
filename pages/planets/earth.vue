@@ -5,23 +5,27 @@
             <div class="line"></div>
             <h6>diameter of the planet / magnification of the earth</h6>
         </div>
-        <div class="orbit-params">
-            <div class="size">
-                <h2>diameter of the planet</h2>
-                <p>4,879 km / 1 ( ratio to earth )</p>
-            </div>
-            <div class="distance">
-                <h2>distance to sun</h2>
-                <p>149.6 million km / 1au</p>
-            </div>
-            <div class="revolution">
-                <h2>revolution speed</h2>
-                <p>1 year ( 29.8km/s )</p>
-            </div>
-            <div class="rotation">
-                <h2>rotation speed</h2>
-                <p>23.94 hour</p>
-            </div>
-        </div>
+        <OrbitParams :data="list"/>
     </div>
 </template>
+
+<script setup lang="ts">
+const list = {
+    size:{
+        head:'diameter of the planet',
+        body:'12,756km / 1(ratio to earth)',
+    },
+    distance:{
+        head:'distance to sun',
+        body:'1.496million km / 1AU',
+    },
+    revolution:{
+        head:'revolution speed',
+        body:'1.0year(29.8km/s)',
+    },
+    rotation:{
+        head:'rotation speed',
+        body:'23.94hour',
+    },
+};
+</script>

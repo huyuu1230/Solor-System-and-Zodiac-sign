@@ -5,9 +5,9 @@
       <!--Canvas-->
       <div id="webgl-canvas"></div>
     </div>
-    <div class="nav-info">
+    <!-- <div class="nav-info">
       <navInfo :data="nav_info" />
-    </div>
+    </div> -->
     <div class="nav-log">
       <navLog />
     </div>
