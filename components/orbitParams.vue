@@ -1,5 +1,5 @@
 <template>
-    <ul id="orbit-params">
+    <ul id="orbit-params" class="animation">
         <li v-for="(item, key) in props.data" :key="key">
             <h3>{{ item.head }}</h3>
             <p>{{ item.body }}</p>
@@ -33,16 +33,32 @@ const props = withDefaults(defineProps<Props>(), {
         padding: 0 0 10px;
         border-bottom: 1px solid #ffffff;
         h3{
-            font-size: 12px;
+            font-size: calc(12px + (100vw - 1920px) * 0.01);
             line-height: 1.5em;
         }
         p{
-            font-size: 16px;
+            font-size: calc(16px + (100vw - 1920px) * 0.01);
             line-height: 1em;
         }
     }
     li:not(:first-child){
         margin: 10px 0 0;
+    }
+}
+
+.animation{
+    animation-name: fadeIn;
+    animation-duration: 3s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
     }
 }
 </style>

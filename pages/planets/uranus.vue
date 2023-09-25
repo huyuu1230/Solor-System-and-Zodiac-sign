@@ -1,15 +1,15 @@
 <template>
    <div class="orbit">
-        <div class="orbit-title">
-            <h1>URANUS</h1>
-            <div class="line"></div>
-            <h6>diameter of the planet / magnification of the uranus</h6>
-        </div>
+        <OrbitTitle :main="title.main" :sub="title.sub"/>
         <OrbitParams :data="list"/>
     </div>
 </template>
 
 <script setup lang="ts">
+const title = {
+    main:'URANUS',
+    sub:'The Planet of Revolution, Uranus',
+};
 const list = {
     size:{
         head:'diameter of the planet',

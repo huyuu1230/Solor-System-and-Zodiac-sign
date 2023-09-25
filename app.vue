@@ -5,12 +5,15 @@
       <!--Canvas-->
       <div id="webgl-canvas"></div>
     </div>
-    <!-- <div class="nav-info">
-      <navInfo :data="nav_info" />
-    </div> -->
+    
     <div class="nav-log">
       <navLog />
     </div>
+
+    <div id="nav-control">
+      <p>CONTROL : <a>ON</a> / <a>OFF</a></p>
+    </div>
+
     <!--three.jsの惑星の座標-->
     <ul>
       <div v-on:click="toMercury" id="mercury" class="planet"></div>
@@ -22,6 +25,7 @@
       <div v-on:click="toUranus" id="uranus" class="planet"></div>
       <div v-on:click="toNeptune" id="neptune" class="planet"></div>
     </ul>
+
     <NuxtPage />
   </div>
 </template>
@@ -1425,17 +1429,19 @@ body::-webkit-scrollbar {
     text-decoration: none;
   }
 }
+// ==================================================
+// ページ遷移アニメーション
+// ==================================================
+// .page-enter-active,
+// .page-leave-active {
+//   transition: all 0.5s;
+// }
 
-.page-enter-active,
-.page-leave-active {
-  transition: all 0.5s;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-  filter: blur(1rem);
-}
+// .page-enter-from,
+// .page-leave-to {
+//   opacity: 0;
+//   filter: blur(1rem);
+// }
 
 #webgl-canvas {
   position: fixed;
@@ -1444,44 +1450,6 @@ body::-webkit-scrollbar {
   z-index: -1;
 }
 
-
-#planet-nav {
-  position: fixed;
-  bottom: 50px;
-  left: 50px;
-
-  li {
-    border: 1px solid #ffffff;
-    padding: 0 10px;
-    cursor: pointer;
-  }
-
-  li:not(:first-child) {
-    margin: 10px 0 0 0;
-  }
-}
-
-.data {
-  position: fixed;
-  top: 10%;
-  right: 5%;
-  font-size: 24px;
-  text-align: right;
-}
-
-#control {
-  position: fixed;
-  left: 50%;
-  bottom: 50px;
-  transform: translate(-50%, 0);
-  width: fit-content;
-  height: fit-content;
-  cursor: pointer;
-
-  h6 {
-    font-size: 24px;
-  }
-}
 
 .planet {
   position: fixed;
@@ -1497,17 +1465,28 @@ body::-webkit-scrollbar {
 }
 
 // ==================================================
-// Navigation Data
+// Navigation Log
 // ==================================================
-.nav-info{
-  position: fixed;
-  top: 15%;
-  right: 30px;
-}
 
 .nav-log {
   position: fixed;
   right: 30px;
   bottom: 30px;
+}
+
+// ==================================================
+// Navigation Control
+// ==================================================
+
+#nav-control {
+  position: fixed;
+  top: 160px;
+  right: 50px;
+  p{
+    a{
+      display: inline-block;
+      cursor: pointer;
+    }
+  }
 }
 </style>
