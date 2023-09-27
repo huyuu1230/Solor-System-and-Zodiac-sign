@@ -10,9 +10,9 @@
       <navLog />
     </div>
 
-    <div id="nav-control">
+    <!-- <div id="nav-control">
       <p>CONTROL : <a>ON</a> / <a>OFF</a></p>
-    </div>
+    </div> -->
 
     <!--three.jsの惑星の座標-->
     <ul>
@@ -461,7 +461,7 @@ class Orbit {
 class Sign {
   constructor(alpha, delta) {
     this.alpha = alpha;
-    this.delta = delta;
+    this.delta = -delta;
     this.radius = sunRadius * 50;
     this.w = 10;
     this.h = 10;
@@ -475,9 +475,12 @@ class Sign {
     this.computeDistance = au * 500;
     this.alphaRad = (this.alpha * Math.PI) / 180;
     this.deltaRad = (this.delta * Math.PI) / 180;
-    this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
-    this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.cos(this.alphaRad);
+    // this.x = this.computeDistance * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
+    // this.y = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    // this.z = this.computeDistance * Math.sin(this.deltaRad);
+    this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
+    this.y = this.computeDistance * Math.cos(this.alphaRad) * Math.sin(this.deltaRad);
+    this.z = this.computeDistance * Math.sin(this.alphaRad);
   };
   create() {
     this.geometry = new THREE.SphereGeometry(this.radius, this.w, this.h);
