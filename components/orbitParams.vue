@@ -33,11 +33,11 @@ const props = withDefaults(defineProps<Props>(), {
         padding: 0 0 10px;
         border-bottom: 1px solid #ffffff;
         h3{
-            font-size: calc(12px + (100vw - 1920px) * 0.01);
+            font-size: calc(16px + (100vw - 1920px) * 0.01);
             line-height: 1.5em;
         }
         p{
-            font-size: calc(16px + (100vw - 1920px) * 0.01);
+            font-size: calc(20px + (100vw - 1920px) * 0.01);
             line-height: 1em;
         }
     }

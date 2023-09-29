@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 
-const siteTitle: string = "Solor System and Signs";
+const siteTitle: string = "Solor System and Zodiac Signs";
 type HeaderLink = {
     text: string,
     path: string
@@ -225,14 +225,14 @@ function view_header() {
         bg.classList.add('header-toggle-bg-from');
         toggle.classList.add('header-toggle-from');
         copy.classList.add('header-copyright-from');
-    }
-}
+    };
+};
 
 // ----------SHUFFLE_ANIMATION----------
 // -----乱数生成
 function getRandom(min: number, max: number): number {
-    return Math.floor(Math.random() * (max + 1 - min)) + min
-}
+    return Math.floor(Math.random() * (max + 1 - min)) + min;
+};
 // -----アルファベット a から z と、数字の 0 から 9 までの文字配列
 const randomTextArray: string[] = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -244,7 +244,7 @@ function wrapSpan(elem: any): void {
     let text = elem.innerText;
     text = "<span>" + text.split("").join("</span><span>") + "</span>";
     elem.innerHTML = text
-}
+};
 
 function shuffle(elem: any, text: string): void {
     wrapSpan(elem);
@@ -270,10 +270,12 @@ function shuffle_active(): void {
     for (let i = 0; i < shuffleElem.length; i++) {
         DefaultShuffleTextArray.push(shuffleElem[i].innerHTML);
         shuffle(shuffleElem[i], DefaultShuffleTextArray[i]);
-    }
-}
+    };
+};
 
 </script>
+
+
 
 <style lang="scss" scoped>
 header {
@@ -457,7 +459,7 @@ header {
             display: none;
         }
 
-        .header-toggle-line{
+        .header-toggle-line {
             display: none;
         }
 
@@ -469,13 +471,23 @@ header {
                 }
 
                 ul {
-                    li:not(:last-child){
+                    li:not(:last-child) {
                         margin: 0 0 18px;
                     }
                 }
             }
         }
     }
+}
 
+@media screen and (max-width: 768px) {
+    header {
+        #header {
+            padding: 12px 2.5%;
+            h1 {
+                font-size: 16px;
+            }
+        }
+    }
 }
 </style>

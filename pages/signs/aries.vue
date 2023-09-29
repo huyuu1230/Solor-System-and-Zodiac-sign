@@ -30,6 +30,7 @@ const data = {
 
 .sign {
     font-family: 'Cormorant Garamond', serif;
+    width: fit-content;
     margin: 160px 0 0 80px;
 }
 </style>

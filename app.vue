@@ -5,20 +5,34 @@
       <!--Canvas-->
       <div id="webgl-canvas"></div>
     </div>
-    
-    <div class="nav-log">
-      <navLog />
-    </div>
 
-    <!-- <div id="nav-control">
-      <p>CONTROL : <a>ON</a> / <a>OFF</a></p>
+    <SlideModal />
+
+    <!-- <div class="nav-log">
+      <navLog />
     </div> -->
+
+    <div id="control-container">
+      <ul id="control-wrap">
+        <li>
+          <p id="control-control">コントロール : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p>
+          <!-- <p>CONTROL : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p> -->
+        </li>
+        <li>
+          <p id="control-trajectory">星座の軌跡の表示 : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p>
+          <!-- <p>Trajectory : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p> -->
+        </li>
+      </ul>
+    </div>
 
     <!--three.jsの惑星の座標-->
     <ul>
       <div v-on:click="toMercury" id="mercury" class="planet"></div>
+      <div class="planet-name">MERCURY</div>
       <div v-on:click="toVenus" id="venus" class="planet"></div>
+      <div class="planet-name">VENUS</div>
       <div v-on:click="toEarth" id="earth" class="planet"></div>
+      <div class="planet-name">EARTH</div>
       <div v-on:click="toMars" id="mars" class="planet"></div>
       <div v-on:click="toJupiter" id="jupiter" class="planet"></div>
       <div v-on:click="toSaturn" id="saturn" class="planet"></div>
@@ -43,9 +57,9 @@ import * as SIGN from "assets/js/data_Signs";
 // 変数 : ナビゲーション
 // ==================================================
 let navTarget = {
-  x:0,
-  y:0,
-  z:0,
+  x: 0,
+  y: 0,
+  z: 0,
 };
 const nav_info = ref(
   {
@@ -104,6 +118,7 @@ let currentLook = new THREE.Vector3(0, 0, 0);
 let durationPosition = 0.005;
 let durationLook = 0.005;
 let control = false;
+let trajectory = false;
 // ==================================================
 // 変数 : 惑星
 // ==================================================
@@ -461,7 +476,7 @@ class Orbit {
 class Sign {
   constructor(alpha, delta) {
     this.alpha = alpha;
-    this.delta = -delta;
+    this.delta = delta;
     this.radius = sunRadius * 50;
     this.w = 10;
     this.h = 10;
@@ -475,12 +490,22 @@ class Sign {
     this.computeDistance = au * 500;
     this.alphaRad = (this.alpha * Math.PI) / 180;
     this.deltaRad = (this.delta * Math.PI) / 180;
-    // this.x = this.computeDistance * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
-    // this.y = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
-    // this.z = this.computeDistance * Math.sin(this.deltaRad);
-    this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
-    this.y = this.computeDistance * Math.cos(this.alphaRad) * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.sin(this.alphaRad);
+    // -----公式
+    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
+    this.x = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
+    this.y = this.computeDistance * Math.sin(this.deltaRad);
+    // -----パターン1
+    // this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
+    // this.y = this.computeDistance * Math.cos(this.alphaRad) * Math.sin(this.deltaRad);
+    // this.z = this.computeDistance * Math.sin(this.alphaRad);
+    // -----パターン2
+    // this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
+    // this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
+    // this.z = this.computeDistance * Math.cos(this.alphaRad);
+    // -----パターン3
+    // this.x = this.computeDistance * Math.sin(this.deltaRad) * Math.cos(this.alphaRad);
+    // this.y = this.computeDistance * Math.sin(this.deltaRad) * Math.sin(this.alphaRad);
+    // this.z = this.computeDistance * Math.cos(this.deltaRad);
   };
   create() {
     this.geometry = new THREE.SphereGeometry(this.radius, this.w, this.h);
@@ -502,6 +527,7 @@ class Trajectory {
   init() {
     this.compute();
     this.create();
+
   }
   compute() {
     for (let i = 0; i < this.vectors.length; i++) {
@@ -511,7 +537,15 @@ class Trajectory {
   create() {
     this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
     this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.material.transparent = true;
+    this.material.opacity = 0;
     this.mesh = new THREE.Line(this.geometry, this.material);
+  };
+  view() {
+    this.material.opacity = 1;
+  };
+  hide() {
+    this.material.opacity = 0;
   };
 };
 // --------------------線を作成
@@ -546,6 +580,52 @@ function addTrajectory(trajectory) {
   for (let key in trajectory) {
     webgl.scene.add(trajectory[key].mesh);
   };
+};
+
+function viewTrajectory(trajectory) {
+  for (let key in trajectory) {
+    trajectory[key].view();
+  };
+};
+
+function hideTrajectory(trajectory) {
+  for (let key in trajectory) {
+    trajectory[key].hide();
+  };
+};
+function AllViewTrajectory() {
+  viewTrajectory(Aries_Trajectory);
+  viewTrajectory(Taurus_Trajectory);
+  viewTrajectory(Gemini_Trajectory);
+  viewTrajectory(Cnacer_Trajectory);
+  viewTrajectory(Leo_Trajectory);
+  viewTrajectory(Virgo_Trajectory);
+  viewTrajectory(Libra_Trajectory);
+  viewTrajectory(Scorpius_Trajectory);
+  viewTrajectory(Sagittarius_Trajectory);
+  viewTrajectory(Capricornus_Trajectory);
+  viewTrajectory(Aquarius_Trajectory);
+  viewTrajectory(Pisces_Trajectory);
+  // ----------STYLE
+  trajectory = true;
+  StyleTrajectory();
+};
+function AllHideTrajectory() {
+  hideTrajectory(Aries_Trajectory);
+  hideTrajectory(Taurus_Trajectory);
+  hideTrajectory(Gemini_Trajectory);
+  hideTrajectory(Cnacer_Trajectory);
+  hideTrajectory(Leo_Trajectory);
+  hideTrajectory(Virgo_Trajectory);
+  hideTrajectory(Libra_Trajectory);
+  hideTrajectory(Scorpius_Trajectory);
+  hideTrajectory(Sagittarius_Trajectory);
+  hideTrajectory(Capricornus_Trajectory);
+  hideTrajectory(Aquarius_Trajectory);
+  hideTrajectory(Pisces_Trajectory);
+  // ----------STYLE
+  trajectory = false;
+  StyleTrajectory();
 };
 // --------------------惑星をクリックイベントオブジェクトに追加
 function pushPlanets() {
@@ -653,12 +733,12 @@ function changePage() {
   } else {
     currentTarget = '';
     navTarget = {
-      x:0,
-      y:0,
-      z:0,
+      x: 0,
+      y: 0,
+      z: 0,
     }
   };
-}
+};
 
 watch(
   () => currentPage = useRoute().name,
@@ -671,9 +751,13 @@ onMounted(() => {
   raycaster = new Raycaster(container);
 
   function init() {
+    StyleControl();
+    StyleTrajectory()
     three_planet();
     three_orbit();
     three_sign();
+    threeWorld_signs()
+   
     rendering();
     changePage();
   };
@@ -806,7 +890,12 @@ onMounted(() => {
     check('neptune', Neptune);
 
 
-    cameraTarget();
+    if (control) {
+
+    } else {
+      cameraTarget();
+    }
+
     navLoad()
 
     requestAnimationFrame(rendering);
@@ -1151,18 +1240,18 @@ onMounted(() => {
     };
 
     // ----------星座の軌跡を追加
-    // addTrajectory(Aries_Trajectory);
-    // addTrajectory(Taurus_Trajectory);
-    // addTrajectory(Gemini_Trajectory);
-    // addTrajectory(Cnacer_Trajectory);
-    // addTrajectory(Leo_Trajectory);
-    // addTrajectory(Virgo_Trajectory);
-    // addTrajectory(Libra_Trajectory);
-    // addTrajectory(Scorpius_Trajectory);
-    // addTrajectory(Sagittarius_Trajectory);
-    // addTrajectory(Capricornus_Trajectory);
-    // addTrajectory(Aquarius_Trajectory);
-    // addTrajectory(Pisces_Trajectory);
+    addTrajectory(Aries_Trajectory);
+    addTrajectory(Taurus_Trajectory);
+    addTrajectory(Gemini_Trajectory);
+    addTrajectory(Cnacer_Trajectory);
+    addTrajectory(Leo_Trajectory);
+    addTrajectory(Virgo_Trajectory);
+    addTrajectory(Libra_Trajectory);
+    addTrajectory(Scorpius_Trajectory);
+    addTrajectory(Sagittarius_Trajectory);
+    addTrajectory(Capricornus_Trajectory);
+    addTrajectory(Aquarius_Trajectory);
+    addTrajectory(Pisces_Trajectory);
   };
 
   // --------------------フォント
@@ -1294,7 +1383,18 @@ function cameraTarget() {
     cameraLerpLook(0, 0, 0);
   }
 };
-
+// ----------コントロールをTrueに変更
+function controlOn() {
+  control = true;
+  StyleControl();
+};
+// ----------コントロールをFalseに変更
+function controlOff() {
+  durationPosition = 0.005;
+  durationLook = 0.005;
+  control = false;
+  StyleControl();
+};
 
 // ==================================================
 // Function カメラ制御
@@ -1377,6 +1477,42 @@ function hide(dom) {
   const elem = document.getElementById(dom);
   elem.style.display = 'none';
 };
+
+// ==================================================
+// Function Style CSSの変更を行う関数
+// ==================================================
+
+function StyleControl(){
+  const dom  = document.querySelectorAll("#control-control a");
+  if(control){
+    remove();
+    dom[0].classList.add('active');
+  } else {
+    remove();
+    dom[1].classList.add('active');
+  };
+  function remove(){
+    for(let i = 0; i<dom.length; i++){
+      dom[i].classList.remove('active');
+    };
+  };
+};
+
+function StyleTrajectory(){
+  const dom  = document.querySelectorAll("#control-trajectory a");
+  if(trajectory){
+    remove();
+    dom[0].classList.add('active');
+  } else {
+    remove();
+    dom[1].classList.add('active');
+  };
+  function remove(){
+    for(let i = 0; i<dom.length; i++){
+      dom[i].classList.remove('active');
+    };
+  };
+};
 </script>
 
 <style lang="scss">
@@ -1432,6 +1568,7 @@ body::-webkit-scrollbar {
     text-decoration: none;
   }
 }
+
 // ==================================================
 // ページ遷移アニメーション
 // ==================================================
@@ -1467,6 +1604,13 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+.planet-name{
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-size: 16px;
+}
+
 // ==================================================
 // Navigation Log
 // ==================================================
@@ -1481,15 +1625,39 @@ body::-webkit-scrollbar {
 // Navigation Control
 // ==================================================
 
-#nav-control {
+#control-container {
   position: fixed;
-  top: 160px;
+  bottom: 50px;
   right: 50px;
-  p{
-    a{
+  z-index: 1;
+
+  #control-wrap{
+    li{
+      p{
+        text-align: right;
+        font-weight: 700;
+        cursor: default;
+        a{
+          display: inline-block;
+          opacity: 0.5;
+          cursor: pointer;
+        }
+      }
+    }
+    li:not(:first-child){
+      margin: 10px 0 0 0;
+    }
+  }
+
+  p {
+    a {
       display: inline-block;
       cursor: pointer;
     }
   }
+}
+
+.active{
+  opacity: 1 !important;
 }
 </style>
