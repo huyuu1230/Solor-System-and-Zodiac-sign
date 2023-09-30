@@ -2,6 +2,12 @@
     <div class="orbit">
         <OrbitTitle :main="title.main" :sub="title.sub" />
         <OrbitParams :data="list"/>
+        <!-- <div id="text">
+            <p>
+                私達の住む惑星。<br>
+                表面の七割以上が水に覆われた水の惑星。
+            </p>
+        </div> -->
     </div>
 </template>
 
@@ -29,3 +35,15 @@ const list = {
     },
 };
 </script>
+
+<style lang="scss">
+#text{
+    position: fixed;
+    top: 300px;
+    right: 2.5vw;
+
+    p{
+        writing-mode: vertical-lr;
+    }
+}
+</style>

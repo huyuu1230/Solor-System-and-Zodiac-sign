@@ -1,18 +1,22 @@
 <template>
-    <div class="sign">
-        <SignPage :data="data" />
+    <div>
+        <div class="sign">
+            <SignPage :data="data" />
+        </div>
+        <div id="bg"></div>
     </div>
 </template>
 
 <script setup lang="ts">
-import * as SIGN from "assets/js/data_Signs";
-interface Sign {
-    [key: string]: {
-        alpha: number,
-        delta: number,
-    },
-};
-const aries: Sign = SIGN.Aries;
+// import * as SIGN from "assets/js/data_Signs";
+
+// interface Sign {
+//     [key: string]: {
+//         alpha: number,
+//         delta: number,
+//     },
+// };
+// const aries: Sign = SIGN.Aries;
 
 const data = {
     title: {
@@ -29,8 +33,26 @@ const data = {
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap");
 
 .sign {
-    font-family: 'Cormorant Garamond', serif;
+    position: relative;
     width: fit-content;
     margin: 160px 0 0 80px;
+    z-index: 100;
+}
+
+@media screen and (max-width:768px) {
+    .sign {
+        margin: 160px auto 0;
+    }
+
+    #bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        opacity: 0.8;
+        background-color: #222222;
+        z-index: 10;
+    }
 }
 </style>

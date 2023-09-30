@@ -1,6 +1,9 @@
 <template>
-    <div class="sign">
-        <SignPage :data="data" />
+    <div id="sign-page">
+        <div class="sign">
+            <SignPage :data="data" />
+        </div>
+        <div id="bg"></div>
     </div>
 </template>
 

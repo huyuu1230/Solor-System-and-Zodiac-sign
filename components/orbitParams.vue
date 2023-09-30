@@ -27,8 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
 <style lang="scss">
 #orbit-params{
     position: fixed;
-    left: 5%;
-    bottom: 10%;
+    left: 2.5vw;
+    bottom: 5vh;
     li{
         padding: 0 0 10px;
         border-bottom: 1px solid #ffffff;
@@ -43,6 +43,24 @@ const props = withDefaults(defineProps<Props>(), {
     }
     li:not(:first-child){
         margin: 10px 0 0;
+    }
+}
+
+@media screen and (max-width:768px) {
+    #orbit-params{
+        bottom: 15vh;
+        li{
+            padding: 0 0 5px;
+            h3{
+                font-size: 10px;
+            }
+            p{
+                font-size: 12px;
+            }
+        }
+        li:not(:first-child){
+            margin: 5px 0 0;
+        }
     }
 }
 

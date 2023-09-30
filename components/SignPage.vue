@@ -54,6 +54,24 @@ function htmlText(text: string) {
     font-size: calc(10px + (16 - 10) * ((100vw - 768px) / (1920 - 768)))
 }
 
+@media screen and (max-width:768px) {
+#sign-title{
+    max-width: 95vw;
+    h1{
+        font-size: 48px;
+    }
+    h2{
+        font-size: 12px;
+    }
+}
+
+#sign-body{
+    max-width: 95vw;
+    margin: 50px 0 0 0;
+    font-size: 12px;
+}
+}
+
 .animation {
     animation-name: fadeIn;
     animation-duration: 3s;

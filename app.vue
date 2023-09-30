@@ -6,7 +6,7 @@
       <div id="webgl-canvas"></div>
     </div>
 
-    <SlideModal />
+    <!-- <SlideModal /> -->
 
     <!-- <div class="nav-log">
       <navLog />
@@ -19,7 +19,8 @@
           <!-- <p>CONTROL : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p> -->
         </li>
         <li>
-          <p id="control-trajectory">星座の軌跡の表示 : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p>
+          <p id="control-trajectory">星座の軌跡の表示 : <a v-on:click="AllViewTrajectory">ON</a> / <a
+              v-on:click="AllHideTrajectory">OFF</a></p>
           <!-- <p>Trajectory : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p> -->
         </li>
       </ul>
@@ -28,16 +29,21 @@
     <!--three.jsの惑星の座標-->
     <ul>
       <div v-on:click="toMercury" id="mercury" class="planet"></div>
-      <div class="planet-name">MERCURY</div>
+      <div id="mercury-name" class="planet-name">MERCURY</div>
       <div v-on:click="toVenus" id="venus" class="planet"></div>
-      <div class="planet-name">VENUS</div>
+      <div id="venus-name" class="planet-name">VENUS</div>
       <div v-on:click="toEarth" id="earth" class="planet"></div>
-      <div class="planet-name">EARTH</div>
+      <div id="earth-name" class="planet-name">EARTH</div>
       <div v-on:click="toMars" id="mars" class="planet"></div>
+      <div id="mars-name" class="planet-name">MARS</div>
       <div v-on:click="toJupiter" id="jupiter" class="planet"></div>
+      <div id="jupiter-name" class="planet-name">JUPITER</div>
       <div v-on:click="toSaturn" id="saturn" class="planet"></div>
+      <div id="saturn-name" class="planet-name">SATURN</div>
       <div v-on:click="toUranus" id="uranus" class="planet"></div>
+      <div id="uranus-name" class="planet-name">URANUS</div>
       <div v-on:click="toNeptune" id="neptune" class="planet"></div>
+      <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
     <NuxtPage />
@@ -757,7 +763,7 @@ onMounted(() => {
     three_orbit();
     three_sign();
     threeWorld_signs()
-   
+
     rendering();
     changePage();
   };
@@ -880,15 +886,23 @@ onMounted(() => {
     Uranus.update();
     Neptune.update();
 
-    check('mercury', Mercury);
-    check('venus', Venus);
-    check('earth', Earth);
-    check('mars', Mars);
-    check('jupiter', Jupiter);
-    check('saturn', Saturn);
-    check('uranus', Uranus);
-    check('neptune', Neptune);
+    StylePlanet('mercury', Mercury);
+    StylePlanet('venus', Venus);
+    StylePlanet('earth', Earth);
+    StylePlanet('mars', Mars);
+    StylePlanet('jupiter', Jupiter);
+    StylePlanet('saturn', Saturn);
+    StylePlanet('uranus', Uranus);
+    StylePlanet('neptune', Neptune);
 
+    StylePlanetName("mercury-name", Mercury);
+    StylePlanetName("venus-name",Venus);
+    StylePlanetName("earth-name",Earth);
+    StylePlanetName("mars-name",Mars);
+    StylePlanetName("jupiter-name",Jupiter);
+    StylePlanetName("saturn-name",Saturn);
+    StylePlanetName("uranus-name",Uranus);
+    StylePlanetName("neptune-name", Neptune);
 
     if (control) {
 
@@ -1457,18 +1471,7 @@ function distance() {
     view('neptune');
   }
 };
-function check(dom, data) {
-  const elem = document.getElementById(dom);
-  const object3D = data.mesh;
-  const width = webgl.width;
-  const height = webgl.height;
-  const worldPosition = object3D.getWorldPosition(new THREE.Vector3());
-  const projection = worldPosition.project(webgl.camera);
-  const sx = (width / 2) * (+projection.x + 1.0);
-  const sy = (height / 2) * (-projection.y + 1.0);
-  elem.style.top = sy + 'px';
-  elem.style.left = sx + 'px';
-};
+
 function view(dom) {
   const elem = document.getElementById(dom);
   elem.style.display = 'block';
@@ -1482,33 +1485,59 @@ function hide(dom) {
 // Function Style CSSの変更を行う関数
 // ==================================================
 
-function StyleControl(){
-  const dom  = document.querySelectorAll("#control-control a");
-  if(control){
+function StylePlanet(dom, data) {
+  const elem = document.getElementById(dom);
+  const object3D = data.mesh;
+  const width = webgl.width;
+  const height = webgl.height;
+  const worldPosition = object3D.getWorldPosition(new THREE.Vector3());
+  const projection = worldPosition.project(webgl.camera);
+  const sx = (width / 2) * (+projection.x + 1.0);
+  const sy = (height / 2) * (-projection.y + 1.0);
+  elem.style.top = sy + 'px';
+  elem.style.left = sx + 'px';
+};
+
+function StylePlanetName(dom, data) {
+  const elem = document.getElementById(dom);
+  const object3D = data.mesh;
+  const width = webgl.width;
+  const height = webgl.height;
+  const worldPosition = object3D.getWorldPosition(new THREE.Vector3());
+  const projection = worldPosition.project(webgl.camera);
+  const sx = (width / 2) * (+projection.x + 1.0);
+  const sy = (height / 2) * (-projection.y + 1.0);
+  elem.style.top = sy - 30 + 'px';
+  elem.style.left = sx + 'px';
+};
+
+function StyleControl() {
+  const dom = document.querySelectorAll("#control-control a");
+  if (control) {
     remove();
     dom[0].classList.add('active');
   } else {
     remove();
     dom[1].classList.add('active');
   };
-  function remove(){
-    for(let i = 0; i<dom.length; i++){
+  function remove() {
+    for (let i = 0; i < dom.length; i++) {
       dom[i].classList.remove('active');
     };
   };
 };
 
-function StyleTrajectory(){
-  const dom  = document.querySelectorAll("#control-trajectory a");
-  if(trajectory){
+function StyleTrajectory() {
+  const dom = document.querySelectorAll("#control-trajectory a");
+  if (trajectory) {
     remove();
     dom[0].classList.add('active');
   } else {
     remove();
     dom[1].classList.add('active');
   };
-  function remove(){
-    for(let i = 0; i<dom.length; i++){
+  function remove() {
+    for (let i = 0; i < dom.length; i++) {
       dom[i].classList.remove('active');
     };
   };
@@ -1600,11 +1629,11 @@ body::-webkit-scrollbar {
   height: 20px;
   border-radius: 50%;
   border: 1px solid #ffffff;
-  z-index: 10;
+  z-index: 1;
   cursor: pointer;
 }
 
-.planet-name{
+.planet-name {
   position: fixed;
   top: 0;
   left: 0;
@@ -1627,24 +1656,27 @@ body::-webkit-scrollbar {
 
 #control-container {
   position: fixed;
-  bottom: 50px;
-  right: 50px;
+  right: 2.5vw;
+  bottom: 5vh;
   z-index: 1;
 
-  #control-wrap{
-    li{
-      p{
+  #control-wrap {
+    li {
+      p {
         text-align: right;
+        font-size: 16px;
         font-weight: 700;
         cursor: default;
-        a{
+
+        a {
           display: inline-block;
           opacity: 0.5;
           cursor: pointer;
         }
       }
     }
-    li:not(:first-child){
+
+    li:not(:first-child) {
       margin: 10px 0 0 0;
     }
   }
@@ -1657,7 +1689,12 @@ body::-webkit-scrollbar {
   }
 }
 
-.active{
-  opacity: 1 !important;
+@media screen and (max-width:768px) {
+  #control-container{
+    bottom: 2.5vh;
+  }
 }
-</style>
+
+.active {
+  opacity: 1 !important;
+}</style>

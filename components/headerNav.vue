@@ -27,9 +27,9 @@
             <nav id="header-nav">
                 <!--PLANET-->
                 <div class="header-links">
-                    <h3>PLANETS</h3>
+                    <h3 class="js-toggle-button">PLANETS</h3>
                     <div class="header-links-line"></div>
-                    <ul>
+                    <ul class="js-toggle-content">
                         <li v-for="(item, index) in planets" :key="index">
                             <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
                                 {{ item.text }}
@@ -39,9 +39,9 @@
                 </div>
                 <!--SIGNS-->
                 <div class="header-links">
-                    <h3>SIGNS</h3>
+                    <h3 class="js-toggle-button">SIGNS</h3>
                     <div class="header-links-line"></div>
-                    <ul>
+                    <ul class="js-toggle-content">
                         <li v-for="(item, index) in signs" :key="index">
                             <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
                                 {{ item.text }}
@@ -51,9 +51,9 @@
                 </div>
                 <!--ABOUT-->
                 <div class="header-links">
-                    <h3>ABOUT</h3>
+                    <h3 class="js-toggle-button">ABOUT</h3>
                     <div class="header-links-line"></div>
-                    <ul>
+                    <ul class="js-toggle-content">
                         <li v-for="(item, index) in abouts" :key="index">
                             <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
                                 {{ item.text }}
@@ -63,9 +63,9 @@
                 </div>
                 <!--CONTACTS-->
                 <div class="header-links">
-                    <h3>CONTACTS</h3>
+                    <h3 class="js-toggle-button">CONTACTS</h3>
                     <div class="header-links-line"></div>
-                    <ul>
+                    <ul class="js-toggle-content">
                         <li v-for="(item, index) in contacts" :key="index">
                             <NuxtLink :to="item.path" v-on:click="view_header" class="js-shuffle">
                                 {{ item.text }}
@@ -202,10 +202,33 @@ const contacts: HeaderLink[] = [
 
 const DefaultShuffleTextArray: string[] = [];
 let shuffleElem: any;
-
+// HTMLHeadingTag = hタグ
 onMounted(() => {
     shuffleElem = document.querySelectorAll('.js-shuffle');
     shuffle_active();
+    const toggleButton = document.querySelectorAll(".js-toggle-button");
+    const toggleContent = document.querySelectorAll(".js-toggle-content");
+    function slideDown() {
+        for (let i = 0; i < toggleButton.length; i++) {
+            toggleButton[i].addEventListener('click', () => {
+                if(toggleContent[i].classList.contains('view')){
+                    toggleHide();
+                    toggleContent[i].classList.remove('view');
+                }else{
+                    toggleHide();
+                    toggleContent[i].classList.add('view');
+                }
+            })
+        }
+    }
+    slideDown();
+    function toggleHide(): void {
+        const elem = document.querySelectorAll(".view");
+        for (let i = 0; i < elem.length; i++) {
+            elem[i].classList.remove("view");
+        };
+    };
+    
 });
 
 function view_header() {
@@ -273,6 +296,7 @@ function shuffle_active(): void {
     };
 };
 
+
 </script>
 
 
@@ -280,6 +304,8 @@ function shuffle_active(): void {
 <style lang="scss" scoped>
 header {
     font-family: 'Cormorant Garamond', serif;
+    position: relative;
+    z-index: 1000;
 
     #header {
         position: fixed;
@@ -411,8 +437,8 @@ header {
                     line-height: 1em;
                 }
 
-                li:not(:last-child) {
-                    margin: 0 0 24px;
+                li:not(:first-child) {
+                    margin: 24px 0 0;
                 }
             }
         }
@@ -471,8 +497,8 @@ header {
                 }
 
                 ul {
-                    li:not(:last-child) {
-                        margin: 0 0 18px;
+                    li:not(:first-child) {
+                        margin: 18px 0 0;
                     }
                 }
             }
@@ -484,10 +510,57 @@ header {
     header {
         #header {
             padding: 12px 2.5%;
+
             h1 {
-                font-size: 16px;
+                font-size: 14px;
+            }
+        }
+
+        #header-toggle {
+            top: 100px;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        #header-nav {
+            display: block;
+
+            .header-links {
+                width: 90vw;
+
+                h3 {
+                    font-size: 20px;
+                }
+
+                .header-links-line {
+                    width: 100%;
+                    margin: 12px 0;
+                }
+
+                ul {
+                    display: none;
+                    height: 0px;
+                    transition: all 1000ms;
+
+                    li {
+                        font-size: 12px;
+                    }
+
+                    li:not(:first-child) {
+                        margin: 12px 0 0;
+                    }
+                }
+            }
+
+            .header-links:not(:last-child) {
+                margin: 0 0 24px;
             }
         }
     }
+}
+
+.view {
+    display: block !important;
+    height: 100% !important;
 }
 </style>
