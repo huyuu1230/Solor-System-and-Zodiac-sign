@@ -19,9 +19,14 @@
           <!-- <p>CONTROL : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p> -->
         </li>
         <li>
-          <p id="control-trajectory">星座の軌跡の表示 : <a v-on:click="AllViewTrajectory">ON</a> / <a
-              v-on:click="AllHideTrajectory">OFF</a></p>
+          <p id="control-trajectory">
+            星座の軌跡の表示 : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a>
+          </p>
           <!-- <p>Trajectory : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p> -->
+        </li>
+        <li>
+          <p id="control-information">情報の表示 : <a v-on:click="informationOn">ON</a> / <a
+              v-on:click="informationOff">OFF</a></p>
         </li>
       </ul>
     </div>
@@ -46,7 +51,7 @@
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
-    <NuxtPage />
+    <NuxtPage :display="information" />
   </div>
 </template>
 
@@ -58,10 +63,19 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
 
-
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
+const information = ref(true);
+
+function informationOn() {
+  information.value = true;
+  StyleInformation();
+};
+function informationOff() {
+  information.value = false;
+  StyleInformation();
+};
 let navTarget = {
   x: 0,
   y: 0,
@@ -758,7 +772,8 @@ onMounted(() => {
 
   function init() {
     StyleControl();
-    StyleTrajectory()
+    StyleTrajectory();
+    StyleInformation();
     three_planet();
     three_orbit();
     three_sign();
@@ -896,12 +911,12 @@ onMounted(() => {
     StylePlanet('neptune', Neptune);
 
     StylePlanetName("mercury-name", Mercury);
-    StylePlanetName("venus-name",Venus);
-    StylePlanetName("earth-name",Earth);
-    StylePlanetName("mars-name",Mars);
-    StylePlanetName("jupiter-name",Jupiter);
-    StylePlanetName("saturn-name",Saturn);
-    StylePlanetName("uranus-name",Uranus);
+    StylePlanetName("venus-name", Venus);
+    StylePlanetName("earth-name", Earth);
+    StylePlanetName("mars-name", Mars);
+    StylePlanetName("jupiter-name", Jupiter);
+    StylePlanetName("saturn-name", Saturn);
+    StylePlanetName("uranus-name", Uranus);
     StylePlanetName("neptune-name", Neptune);
 
     if (control) {
@@ -910,8 +925,7 @@ onMounted(() => {
       cameraTarget();
     }
 
-    navLoad()
-
+    navLoad();
     requestAnimationFrame(rendering);
   };
 
@@ -1329,6 +1343,7 @@ function toSign(sign) {
   z = z / Object.keys(sign).length * 1.5;
   return new THREE.Vector3(x, y, z);
 };
+// ----------惑星との距離を調整するのはココ
 function cameraTarget() {
   if (currentTarget == 'mercury') {
     cameraLerpPosition(Mercury.mesh.position.x + Mercury.computeRadius * 5, Mercury.mesh.position.y + Mercury.computeRadius * 5, Mercury.mesh.position.z + Mercury.computeRadius * 5);
@@ -1542,6 +1557,22 @@ function StyleTrajectory() {
     };
   };
 };
+
+function StyleInformation() {
+  const dom = document.querySelectorAll("#control-information a");
+  if (information.value) {
+    remove();
+    dom[0].classList.add('active');
+  } else {
+    remove();
+    dom[1].classList.add('active');
+  };
+  function remove() {
+    for (let i = 0; i < dom.length; i++) {
+      dom[i].classList.remove('active');
+    };
+  };
+};
 </script>
 
 <style lang="scss">
@@ -1577,7 +1608,7 @@ li {
 body {
   color: #ffffff;
   font-size: 16px;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', 'Shippori Mincho', serif;
   letter-spacing: 0.25em;
 }
 
@@ -1658,7 +1689,7 @@ body::-webkit-scrollbar {
   position: fixed;
   right: 2.5vw;
   bottom: 5vh;
-  z-index: 1;
+  z-index: 500;
 
   #control-wrap {
     li {
@@ -1690,11 +1721,12 @@ body::-webkit-scrollbar {
 }
 
 @media screen and (max-width:768px) {
-  #control-container{
+  #control-container {
     bottom: 2.5vh;
   }
 }
 
 .active {
   opacity: 1 !important;
-}</style>
+}
+</style>

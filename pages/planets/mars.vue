@@ -1,11 +1,23 @@
 <template>
-    <div class="orbit">
-        <OrbitTitle :main="title.main" :sub="title.sub" />
-        <OrbitParams :data="list" />
+    <div id="orbit-container">
+        <div v-if="display" id="orbit-wrap">
+            <div class="orbit">
+                <OrbitTitle :main="title.main" :sub="title.sub" />
+                <OrbitParams :data="list" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
+
+interface Props {
+    display: boolean
+};
+
+const props = withDefaults(defineProps<Props>(), {
+});
+
 const title = {
     main: 'MARS',
     sub: 'The Dream of Adventurers, Mars',

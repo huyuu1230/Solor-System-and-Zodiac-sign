@@ -1,13 +1,23 @@
 <template>
-    <div id="sign-page">
-        <div class="sign">
-            <SignPage :data="data" />
+    <div>
+        <div v-if="display" id="sign-page">
+            <div class="sign">
+                <SignPage :data="data" />
+            </div>
+            <div id="bg"></div>
         </div>
-        <div id="bg"></div>
     </div>
 </template>
 
 <script setup lang="ts">
+
+interface Props {
+    display: boolean
+};
+
+const props = withDefaults(defineProps<Props>(), {
+});
+
 const data = {
     title: {
         main: 'LIBRA',

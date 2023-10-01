@@ -47,8 +47,9 @@ onMounted(()=>{
 
 @media screen and (max-width:768px){
     #orbit-title{
+        max-width: 95vw;
         h1{
-            font-size: 48px;
+            font-size: 32px;
         }
         .line{
             margin: 5px 0;

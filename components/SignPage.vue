@@ -58,7 +58,7 @@ function htmlText(text: string) {
 #sign-title{
     max-width: 95vw;
     h1{
-        font-size: 48px;
+        font-size: 32px;
     }
     h2{
         font-size: 12px;
@@ -68,7 +68,7 @@ function htmlText(text: string) {
 #sign-body{
     max-width: 95vw;
     margin: 50px 0 0 0;
-    font-size: 12px;
+    font-size: 10px;
 }
 }
 

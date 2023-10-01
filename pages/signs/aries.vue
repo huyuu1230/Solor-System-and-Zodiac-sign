@@ -1,22 +1,22 @@
 <template>
     <div>
-        <div class="sign">
-            <SignPage :data="data" />
+        <div v-if="display" id="sign-page">
+            <div class="sign">
+                <SignPage :data="data" />
+            </div>
+            <div id="bg"></div>
         </div>
-        <div id="bg"></div>
     </div>
 </template>
 
 <script setup lang="ts">
-// import * as SIGN from "assets/js/data_Signs";
 
-// interface Sign {
-//     [key: string]: {
-//         alpha: number,
-//         delta: number,
-//     },
-// };
-// const aries: Sign = SIGN.Aries;
+interface Props {
+    display: boolean
+};
+
+const props = withDefaults(defineProps<Props>(), {
+});
 
 const data = {
     title: {
