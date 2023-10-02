@@ -6,8 +6,9 @@
       <div id="webgl-canvas"></div>
     </div>
 
-    <!-- <SlideModal /> -->
-
+    <div v-if="presen">
+      <SlideModal />
+    </div>
     <!-- <div class="nav-log">
       <navLog />
     </div> -->
@@ -63,6 +64,17 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
 
+
+// ==================================================
+// presentation用
+// ==================================================
+const presen = ref(false);
+const theRoute = useRoute()
+if(theRoute.query.admin == 'true'){
+  presen.value = true;
+} else {
+  presen.value = false;
+}
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -762,7 +774,10 @@ function changePage() {
 
 watch(
   () => currentPage = useRoute().name,
-  () => { changePage(); },
+  () => { 
+    changePage();
+    controlOff();
+  },
 );
 
 onMounted(() => {

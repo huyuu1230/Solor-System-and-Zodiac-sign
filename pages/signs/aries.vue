@@ -33,16 +33,17 @@ const data = {
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap");
 
 .sign {
-    position: relative;
+    position: fixed;
+    top: 15%;
+    left: 2.5vw;
     width: fit-content;
-    margin: 160px 0 0 80px;
     z-index: 100;
 }
 
 @media screen and (max-width:768px) {
-    .sign {
-        margin: 160px auto 0;
-    }
+    // .sign {
+    //     margin: 160px auto 0;
+    // }
 
     #bg {
         position: fixed;

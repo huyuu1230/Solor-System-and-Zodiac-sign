@@ -17,16 +17,16 @@
         </ul>
         <ul id="nav-img">
             <li>
-                <img src="~/public/title.jpg">
+                <img src="~/public/img/title.jpg">
             </li>
             <li>
-                <img src="~/public/001.jpg">
+                <img src="~/public/img/001.jpg">
             </li>
             <li>
-                <img src="~/public/002.jpg">
+                <img src="~/public/img/002.jpg">
             </li>
             <li>
-                <img src="~/public/003.jpg">
+                <img src="~/public/img/003.jpg">
             </li>
         </ul>
     </div>
@@ -60,20 +60,11 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-#nav-close {
-    position: fixed;
-    bottom: 50px;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background-color: #ffffff;
-    cursor: pointer;
-    z-index: 10000;
-}
+
 
 #nav-menu {
     position: fixed;
-    bottom: 150px;
+    top: 150px;
     right: 0;
 
     li {
@@ -106,7 +97,7 @@ onMounted(() => {
         transform: translate(-50%, 0px);
         height: 90vh;
         transition: all 1000ms;
-        z-index: 100;
+        z-index: 10000;
         img {
             height: 100%;
         }

@@ -1,9 +1,9 @@
 <template>
     <div id="about-container">
-        <div id="about-wrap">
+        <div v-if="display" id="about-wrap">
             <div id="about" class="animation">
-                <h1>このサイトについて</h1>
-                <!-- <h1>EXPLANATION</h1> -->
+                <!-- <h1>このサイトについて</h1> -->
+                <h1>EXPLANATION</h1>
                 <p>
                     太陽系の惑星の、距離・大きさ・公転速度・自転速度、黄道十二星座の、赤緯・赤経に焦点をあて、それらをWebサイト上で表現してみました。主に上記の事柄に関してのみを表現したものであり、実際の宇宙とは異なる部分も多く存在します(離心率や軌道が実際には楕円であること、星座の距離も実際にはそれぞれ異なるなど)。また、あくまで数値を視覚化したものであり、色や形を抽象化したものとなっています。
                     <br>
@@ -20,13 +20,22 @@
 
 <script setup lang="ts">
 
+interface Props {
+    display: boolean
+};
+
+const props = withDefaults(defineProps<Props>(), {
+});
+
 </script>
 
 <style lang="scss">
 #about {
-    position: relative;
-    max-width: 800px;
-    margin: 160px auto 0;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 800px;
     z-index: 100;
 
     h1 {
@@ -50,6 +59,24 @@
     background-color: #222222;
     opacity: 0.8;
     z-index: 10;
+}
+
+@media screen and (max-width:768px) {
+    #about{
+        width: 90vw;
+        top: 15vh;
+        left: 50%;
+        transform: translate(-50%,0);
+        h1{
+            font-size: 32px;
+            line-height: 1em;
+        }
+        p{
+            margin: 30px 0 0;
+            font-size: 12px;
+            line-height: 1.5em;
+        }
+    }
 }
 
 .animation {
