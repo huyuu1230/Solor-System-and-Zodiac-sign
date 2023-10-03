@@ -1,33 +1,31 @@
 <template>
     <div>
         <ul id="nav-menu">
-            <li>
-                タイトル
-            </li>
-            <li>
-                カメラ制御
-            </li>
-            <li>
-                座標系1
-            </li>
-            <li>
-                座標系2
-            </li>
+            <li>slide-title</li>
+            <li>slide-001</li>
+            <li>slide-002</li>
+            <li>slide-003</li>
+            <li>doc-001</li>
+            <li>doc-002</li>
+            <li>doc-003</li>
+            <li>doc-004</li>
+            <li>doc-005</li>
+            <li>doc-006</li>
             <a id="close">CLOSE</a>
         </ul>
         <ul id="nav-img">
             <li>
                 <img src="~/public/img/title.jpg">
             </li>
-            <li>
-                <img src="~/public/img/001.jpg">
-            </li>
-            <li>
-                <img src="~/public/img/002.jpg">
-            </li>
-            <li>
-                <img src="~/public/img/003.jpg">
-            </li>
+            <li><img src="~/public/img/slide-001.jpg"></li>
+            <li><img src="~/public/img/slide-002.jpg"></li>
+            <li><img src="~/public/img/slide-003.jpg"></li>
+            <li><img src="~/public/img/doc-001.jpg"></li>
+            <li><img src="~/public/img/doc-002.jpg"></li>
+            <li><img src="~/public/img/doc-003.jpg"></li>
+            <li><img src="~/public/img/doc-004.jpg"></li>
+            <li><img src="~/public/img/doc-005.jpg"></li>
+            <li><img src="~/public/img/doc-006.jpg"></li>
         </ul>
     </div>
 </template>
