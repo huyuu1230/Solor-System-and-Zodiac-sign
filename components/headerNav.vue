@@ -18,7 +18,6 @@
                 <div class="header-img"></div>
                 <h2>
                     Solor System<br>
-                    Planets<br>
                     and<br>
                     Zodiac Signs
                 </h2>
@@ -76,7 +75,7 @@
             </nav>
         </div>
         <div id="header-copyright" class="header-copyright-from">
-            <h6>copyright.Solor_System_and_Signs</h6>
+            <h6>copyright.Solor_System_and_Zodiac_Signs</h6>
         </div>
     </header>
 </template>

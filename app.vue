@@ -6,17 +6,17 @@
       <div id="webgl-canvas"></div>
     </div>
 
+    <!--プレゼン用、後で削除します-->
     <div v-if="presen">
       <SlideModal />
     </div>
-    <!-- <div class="nav-log">
-      <navLog />
-    </div> -->
 
     <div id="control-container">
       <ul id="control-wrap">
         <li>
-          <p id="control-control">コントロール : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p>
+          <p id="control-control">
+            コントロール : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a>
+          </p>
           <!-- <p>CONTROL : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p> -->
         </li>
         <li>
@@ -26,8 +26,9 @@
           <!-- <p>Trajectory : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p> -->
         </li>
         <li>
-          <p id="control-information">情報の表示 : <a v-on:click="informationOn">ON</a> / <a
-              v-on:click="informationOff">OFF</a></p>
+          <p id="control-information">
+            情報の表示 : <a v-on:click="informationOn">ON</a> / <a v-on:click="informationOff">OFF</a>
+          </p>
         </li>
       </ul>
     </div>
@@ -50,6 +51,10 @@
       <div id="uranus-name" class="planet-name">URANUS</div>
       <div v-on:click="toNeptune" id="neptune" class="planet"></div>
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
+    </ul>
+
+    <ul>
+      
     </ul>
 
     <NuxtPage :display="information" />
@@ -87,34 +92,6 @@ function informationOn() {
 function informationOff() {
   information.value = false;
   StyleInformation();
-};
-let navTarget = {
-  x: 0,
-  y: 0,
-  z: 0,
-};
-const nav_info = ref(
-  {
-    nav_duration_1: 0,
-    nav_duration_2: 0,
-    nav_camera_x: 0,
-    nav_camera_y: 0,
-    nav_camera_z: 0,
-    nav_target_x: 0,
-    nav_target_y: 0,
-    nav_target_z: 0,
-  },
-);
-
-function navLoad() {
-  nav_info.value.nav_duration_1 = (Math.round(durationPosition * 1000)) / 1000;
-  nav_info.value.nav_duration_2 = (Math.round(durationLook * 1000)) / 1000;
-  nav_info.value.nav_camera_x = Math.round(webgl.camera.position.x);
-  nav_info.value.nav_camera_y = Math.round(webgl.camera.position.y);
-  nav_info.value.nav_camera_z = Math.round(webgl.camera.position.z);
-  nav_info.value.nav_target_x = Math.round(navTarget.x);
-  nav_info.value.nav_target_y = Math.round(navTarget.y);
-  nav_info.value.nav_target_z = Math.round(navTarget.z);
 };
 
 function center(sign) {
@@ -704,71 +681,46 @@ function changePage() {
   durationLook = 0.005;
   if (currentPage == 'planets-mercury') {
     currentTarget = 'mercury';
-    navTarget = Mercury;
   } else if (currentPage == 'planets-venus') {
     currentTarget = 'venus';
-    navTarget = Venus;
   } else if (currentPage == 'planets-earth') {
     currentTarget = 'earth';
-    navTarget = Earth;
   } else if (currentPage == 'planets-mars') {
     currentTarget = 'mars';
-    navTarget = Mars;
   } else if (currentPage == 'planets-jupiter') {
     currentTarget = 'jupiter';
-    navTarget = Jupiter;
   } else if (currentPage == 'planets-saturn') {
     currentTarget = 'saturn';
-    navTarget = Saturn;
   } else if (currentPage == 'planets-uranus') {
     currentTarget = 'uranus';
-    navTarget = Uranus;
   } else if (currentPage == 'planets-neptune') {
     currentTarget = 'neptune';
-    navTarget = Neptune;
   } else if (currentPage == 'signs-aries') {
     currentTarget = 'aries';
-    navTarget = center(Aries);
   } else if (currentPage == 'signs-taurus') {
     currentTarget = 'taurus';
-    navTarget = center(Taurus);
   } else if (currentPage == 'signs-gemini') {
     currentTarget = 'gemini';
-    navTarget = center(Gemini);
   } else if (currentPage == 'signs-cancer') {
     currentTarget = 'cancer';
-    navTarget = center(Cancer);
   } else if (currentPage == 'signs-leo') {
     currentTarget = 'leo';
-    navTarget = center(Leo);
   } else if (currentPage == 'signs-virgo') {
     currentTarget = 'virgo';
-    navTarget = center(Virgo);
   } else if (currentPage == 'signs-libra') {
     currentTarget = 'libra';
-    navTarget = center(Libra);
   } else if (currentPage == 'signs-scorpius') {
     currentTarget = 'scorpius';
-    navTarget = center(Scorpius);
   } else if (currentPage == 'signs-sagittarius') {
     currentTarget = 'sagittarius';
-    navTarget = center(Sagittarius);
   } else if (currentPage == 'signs-capricornus') {
     currentTarget = 'capricornus';
-    navTarget = center(Capricornus);
   } else if (currentPage == 'signs-aquarius') {
     currentTarget = 'aquarius';
-    navTarget = center(Aquarius);
   } else if (currentPage == 'signs-pisces') {
     currentTarget = 'pisces';
-    navTarget = center(Pisces);
   } else {
     currentTarget = '';
-    navTarget = {
-      x: 0,
-      y: 0,
-      z: 0,
-    }
   };
 };
 
@@ -792,7 +744,7 @@ onMounted(() => {
     three_planet();
     three_orbit();
     three_sign();
-    threeWorld_signs()
+    three_trajectory();
 
     rendering();
     changePage();
@@ -938,15 +890,12 @@ onMounted(() => {
 
     } else {
       cameraTarget();
-    }
-
-    navLoad();
+    };
     requestAnimationFrame(rendering);
   };
 
-
   // --------------------THREE_SIGNS
-  function threeWorld_signs() {
+  function three_trajectory() {
     // ----------星座の軌跡の座標を設定
     Aries_Trajectory = {
       Trajectory_1: new Trajectory([
@@ -1427,19 +1376,6 @@ function cameraTarget() {
     cameraLerpLook(0, 0, 0);
   }
 };
-// ----------コントロールをTrueに変更
-function controlOn() {
-  control = true;
-  StyleControl();
-};
-// ----------コントロールをFalseに変更
-function controlOff() {
-  durationPosition = 0.005;
-  durationLook = 0.005;
-  control = false;
-  StyleControl();
-};
-
 // ==================================================
 // Function カメラ制御
 // ==================================================
@@ -1476,7 +1412,18 @@ function cameraLerpLook(x, y, z) {
 
   webgl.controls.target.copy(newLook);
 };
-
+// ----------コントロールをTrueに変更
+function controlOn() {
+  control = true;
+  StyleControl();
+};
+// ----------コントロールをFalseに変更
+function controlOff() {
+  durationPosition = 0.005;
+  durationLook = 0.005;
+  control = false;
+  StyleControl();
+};
 // ==================================================
 // Function Navigation
 // ==================================================
