@@ -9,6 +9,78 @@ export function toRad(deg) {
 function toDeg(rad) {
     return rad * (180 / Math.PI);
 };
+// ==================================================
+// WEBGL
+// ==================================================
+class WebGL {
+    constructor(webgl) {
+        this.webgl = webgl;
+        this.scene = new THREE.Scene();
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setClearColor(new THREE.Color(0x222222));
+        this.renderer.setSize(this.width, this.height);
+        this.init();
+    };
+    init() {
+        this.#setting_webgl();
+        this.#setting_camera();
+        this.#setting_controls();
+    };
+    // Private DOM要素にWebGLを追加
+    #setting_webgl() {
+        this.webgl.appendChild(this.renderer.domElement);
+    };
+    
+    // Private コントロールの設定
+    #setting_controls() {
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+    };
+    // ※必要ないかも Private タッチムーブイベントの初期化
+    #setting_touch() {
+        document.addEventListener("touchmove", (e) => { e.preventDefault(); }, { passive: false });
+    };
+    // Public リサイズ
+    onResize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    };
+    // Public アニメーション用
+    onUpdate() {
+        this.renderer.render(this.scene, this.camera);
+        this.controls.update();
+    };
+    // ==================================================
+    // カメラ
+    // ==================================================
+    #setting_camera() {
+        this.cameraFov = 45;
+        this.cameraAspect = window.innerWidth / window.innerHeight;
+        this.cameraNear = 0.1;
+        this.cameraFar = pc;
+        this.camera = new THREE.PerspectiveCamera(
+            this.cameraFov,
+            this.cameraAspect,
+            this.cameraNear,
+            this.cameraFar,
+        );
+    };
+    #setting_camera_control() {
+        this.cameraControl = true;
+        this.cameraLookStart = this.controls.target.clone();
+        this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
+        this.cameraPositionStart = this.camera.position.clone();
+        this.cameraPositionEnd = new THREE.Vector3(0, 0, 1000);
+        this.cameraProgress = 0;
+    };
+};
 // ------------------------------惑星
 export class Planet {
     constructor(earthRadius, earthRvolutionAlpha, earthRevolutionDelta, earthRotation, sunRadius, au, name, radius, distance, alpha, delta, revolution, rotation) {

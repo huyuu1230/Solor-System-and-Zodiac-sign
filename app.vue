@@ -6,10 +6,7 @@
       <div id="webgl-canvas"></div>
     </div>
 
-    <!--プレゼン用、後で削除します-->
-    <div v-if="presen">
-      <SlideModal />
-    </div>
+
 
     <div id="control-container">
       <ul id="control-wrap">
@@ -54,7 +51,7 @@
     </ul>
 
     <ul>
-      
+
     </ul>
 
     <NuxtPage :display="information" />
@@ -63,23 +60,14 @@
 
 <script setup>
 import * as THREE from "three";
-// import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-// import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
+import { Planet, Orbit, Sign, Trajectory } from "~/assets/js/module_class";
 
 
-// ==================================================
-// presentation用
-// ==================================================
-const presen = ref(false);
-const theRoute = useRoute()
-if(theRoute.query.admin == 'true'){
-  presen.value = true;
-} else {
-  presen.value = false;
-}
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -94,9 +82,6 @@ function informationOff() {
   StyleInformation();
 };
 
-function center(sign) {
-  return new THREE.Vector3(toSign(sign).x, toSign(sign).y, toSign(sign).z);
-};
 // ==================================================
 // 変数 : 設定関連
 // ==================================================
@@ -184,10 +169,6 @@ let Pisces_Trajectory;
 // ==================================================
 // function 計算用
 // ==================================================
-// -----乱数生成
-function random(min, max) {
-  return Math.floor(Math.random() * (max + 1 - min)) + min;
-};
 // -----リープ関数・線形補完
 function lerp(x, y, a) {
   return (1 - a) * x + a * y;
@@ -195,10 +176,6 @@ function lerp(x, y, a) {
 // -----度からラジアンに変換
 function toRad(deg) {
   return (deg * Math.PI) / 180;
-};
-// -----ラジアンから度に変換
-function toDeg(rad) {
-  return rad * (180 / Math.PI);
 };
 // -----function ease in out イージングを計算する関数
 function easeInOutQuart(x) {
@@ -400,189 +377,7 @@ class Planet_Sun {
     this.mesh.name = "sun";
   }
 };
-// -----class Planet
-class Planet {
-  constructor(name, radius, distance, revolution, rotation, alpha, delta) {
-    this.name = name;
-    this.radius = radius;
-    this.distance = distance;
-    this.revolution = revolution;
-    this.rotation = rotation;
-    this.alpha = alpha;
-    this.delta = delta;
-    this.width = 10;
-    this.height = 10;
-    this.init();
-  };
-  init() {
-    this.compute();
-    this.create();
-  };
-  compute() {
-    this.computeRadius = earthRadius * this.radius;
-    this.computeDistance = sunRadius + au * this.distance;
-    this.computeRevolution = earthRevolution / this.revolution;
-    this.computeRotation = earthRotation / this.rotation;
-    this.alphaRad = (this.alpha * Math.PI) / 180;
-    this.deltaRad = (this.delta * Math.PI) / 180;
-    this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
-    this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.cos(this.alphaRad);
-  };
-  create() {
-    this.geometry = new THREE.SphereGeometry(this.computeRadius, this.width, this.height);
-    this.material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-    });
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.mesh.position.set(this.x, this.y, this.z);
-    this.mesh.name = this.name;
-  };
-  update() {
-    // -----Revolution
-    this.alphaRad += this.computeRevolution;
-    this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
-    this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
-    this.z = this.computeDistance * Math.cos(this.alphaRad);
-    this.mesh.position.set(this.x, this.y, this.z);
-    // -----Rotation
-    this.mesh.rotation.y += this.computeRotation;
-  };
-};
-// -----class Orbit
-class Orbit {
-  constructor(distance) {
-    this.distance = distance;
-    this.orbitPoints = [];
-    this.orbitPointNum = 3600;
-    this.init();
-  };
-  init() {
-    this.compute();
-    this.create();
-  }
-  compute() {
-    this.computeDistance = sunRadius + au * this.distance;
-    for (let i = 0; i <= this.orbitPointNum; i++) {
-      const rad = ((360 / this.orbitPointNum) * i * Math.PI) / 180;
-      const x = this.computeDistance * Math.cos(rad);
-      const y = 0;
-      const z = this.computeDistance * Math.sin(rad);
-      const p = new THREE.Vector3(x, y, z);
-      this.orbitPoints.push(p);
-    };
-  };
-  create() {
-    this.geometry = new THREE.BufferGeometry().setFromPoints(
-      this.orbitPoints
-    );
-    this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
-    this.mesh = new THREE.Line(this.geometry, this.material);
-  };
-};
-// -----class Sign
-class Sign {
-  constructor(alpha, delta) {
-    this.alpha = alpha;
-    this.delta = delta;
-    this.radius = sunRadius * 50;
-    this.w = 10;
-    this.h = 10;
-    this.init();
-  };
-  init() {
-    this.compute();
-    this.create();
-  }
-  compute() {
-    this.computeDistance = au * 500;
-    this.alphaRad = (this.alpha * Math.PI) / 180;
-    this.deltaRad = (this.delta * Math.PI) / 180;
-    // -----公式
-    this.z = this.computeDistance * Math.cos(this.deltaRad) * Math.cos(this.alphaRad);
-    this.x = this.computeDistance * Math.cos(this.deltaRad) * Math.sin(this.alphaRad);
-    this.y = this.computeDistance * Math.sin(this.deltaRad);
-    // -----パターン1
-    // this.x = this.computeDistance * Math.cos(this.alphaRad) * Math.cos(this.deltaRad);
-    // this.y = this.computeDistance * Math.cos(this.alphaRad) * Math.sin(this.deltaRad);
-    // this.z = this.computeDistance * Math.sin(this.alphaRad);
-    // -----パターン2
-    // this.x = this.computeDistance * Math.sin(this.alphaRad) * Math.cos(this.deltaRad);
-    // this.y = this.computeDistance * Math.sin(this.alphaRad) * Math.sin(this.deltaRad);
-    // this.z = this.computeDistance * Math.cos(this.alphaRad);
-    // -----パターン3
-    // this.x = this.computeDistance * Math.sin(this.deltaRad) * Math.cos(this.alphaRad);
-    // this.y = this.computeDistance * Math.sin(this.deltaRad) * Math.sin(this.alphaRad);
-    // this.z = this.computeDistance * Math.cos(this.deltaRad);
-  };
-  create() {
-    this.geometry = new THREE.SphereGeometry(this.radius, this.w, this.h);
-    this.material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-    });
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.mesh.position.set(this.x, this.y, this.z);
-  };
-};
-// -----class Trajectory
-class Trajectory {
-  constructor(vectors) {
-    this.vectors = vectors;
-    this.points = [];
-    this.init();
-  };
-  init() {
-    this.compute();
-    this.create();
 
-  }
-  compute() {
-    for (let i = 0; i < this.vectors.length; i++) {
-      this.points.push(this.vectors[i]);
-    };
-  };
-  create() {
-    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.material = new THREE.LineBasicMaterial({ color: 0xffffff });
-    this.material.transparent = true;
-    this.material.opacity = 0;
-    this.mesh = new THREE.Line(this.geometry, this.material);
-  };
-  view() {
-    this.material.opacity = 1;
-  };
-  hide() {
-    this.material.opacity = 0;
-  };
-};
-// --------------------線を作成
-class Line {
-  constructor(startVector, endVector) {
-    this.points = [];
-    this.points.push(startVector);
-    this.points.push(endVector);
-    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.material = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-    });
-    this.line = new THREE.Line(this.geometry, this.material);
-    scene.add(this.line);
-  }
-  update(updateVector) {
-    scene.remove(this.line);
-    this.points.pop();
-    this.updateVector = updateVector;
-    this.points.push(this.updateVector);
-    this.geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.material = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-    });
-    this.line = new THREE.Line(this.geometry, this.material);
-    scene.add(this.line);
-  };
-};
 
 // --------------------星座の軌跡の表示
 function addTrajectory(trajectory) {
@@ -635,41 +430,6 @@ function AllHideTrajectory() {
   // ----------STYLE
   trajectory = false;
   StyleTrajectory();
-};
-// --------------------惑星をクリックイベントオブジェクトに追加
-function pushPlanets() {
-  Planets.push(Mercury.Planet.mesh);
-  Planets.push(Venus.Planet.mesh);
-  Planets.push(Earth.Planet.mesh);
-  Planets.push(Mars.Planet.mesh);
-  Planets.push(Jupiter.Planet.mesh);
-  Planets.push(Saturn.Planet.mesh);
-  Planets.push(Uranus.Planet.mesh);
-  Planets.push(Neptune.Planet.mesh);
-};
-// --------------------テキストの作成
-function createText(obj, data, text) {
-  obj.Title = new PlanetText(
-    text,
-    Font,
-    0.1,
-    data.Planet.x + data.Planet.r * 10,
-    data.Planet.y + data.Planet.r * 10,
-    data.Planet.z + data.Planet.r * 10,
-  );
-};
-// --------------------テキストの表示
-function addText(obj) {
-  obj.Title.add(scene)
-};
-// --------------------テキストのアニメーション
-function updateText(obj, data) {
-  obj.Title.update(
-    data.Planet.x + data.Planet.r * 3,
-    data.Planet.y + data.Planet.r * 3,
-    data.Planet.z + data.Planet.r * 3,
-    camera,
-  );
 };
 
 // ==================================================
@@ -726,7 +486,7 @@ function changePage() {
 
 watch(
   () => currentPage = useRoute().name,
-  () => { 
+  () => {
     changePage();
     controlOff();
   },
@@ -752,10 +512,8 @@ onMounted(() => {
   init();
 
   // ==================================================
-  // オブジェクトのインスタンス化 + シーンに追加
+  // 惑星
   // ==================================================
-
-  // ----------惑星のインスタンス化 + 惑星をシーンに追加
   function three_planet() {
     // -----惑星のインスタンスを作成
     Sun = new Planet_Sun();
@@ -782,7 +540,10 @@ onMounted(() => {
       return new Planet(data.name, data.radius, data.distance, data.revolution, data.rotation, data.alpha, data.delta);
     };
   };
-  // ----------惑星の軌道のインスタンス化 + 惑星の軌道をシーンに追加
+
+  // ==================================================
+  // 惑星の軌道
+  // ==================================================
   function three_orbit() {
     // -----惑星の軌道のインスタンス化
     MercuryOrbit = new Orbit(PLANET.Mercury.distance);
@@ -803,7 +564,10 @@ onMounted(() => {
     webgl.scene.add(UranusOrbit.mesh);
     webgl.scene.add(NeptuneOrbit.mesh);
   };
-  // ----------星座のインスタンス化 + 星座をシーンに追加
+
+  // ==================================================
+  // 星座
+  // ==================================================
   function three_sign() {
     // -----星座のインスタンスを作成
     createSign(Aries);
@@ -846,55 +610,8 @@ onMounted(() => {
   };
 
   // ==================================================
-  // Resize
+  // 星座の軌跡
   // ==================================================
-  window.addEventListener('resize', () => {
-    webgl.onResize();
-  });
-  // ==================================================
-  // Rendering
-  // ==================================================
-  function rendering() {
-    webgl.onUpdate();
-    raycaster.update();
-
-    // -----惑星のアニメーション
-    Mercury.update();
-    Venus.update();
-    Earth.update();
-    Mars.update();
-    Jupiter.update();
-    Saturn.update();
-    Uranus.update();
-    Neptune.update();
-
-    StylePlanet('mercury', Mercury);
-    StylePlanet('venus', Venus);
-    StylePlanet('earth', Earth);
-    StylePlanet('mars', Mars);
-    StylePlanet('jupiter', Jupiter);
-    StylePlanet('saturn', Saturn);
-    StylePlanet('uranus', Uranus);
-    StylePlanet('neptune', Neptune);
-
-    StylePlanetName("mercury-name", Mercury);
-    StylePlanetName("venus-name", Venus);
-    StylePlanetName("earth-name", Earth);
-    StylePlanetName("mars-name", Mars);
-    StylePlanetName("jupiter-name", Jupiter);
-    StylePlanetName("saturn-name", Saturn);
-    StylePlanetName("uranus-name", Uranus);
-    StylePlanetName("neptune-name", Neptune);
-
-    if (control) {
-
-    } else {
-      cameraTarget();
-    };
-    requestAnimationFrame(rendering);
-  };
-
-  // --------------------THREE_SIGNS
   function three_trajectory() {
     // ----------星座の軌跡の座標を設定
     Aries_Trajectory = {
@@ -1246,13 +963,53 @@ onMounted(() => {
     addTrajectory(Pisces_Trajectory);
   };
 
-  // --------------------フォント
-  // function onLoadFont(font) {
-  //   Font = font;
-  // };
-  // function loadFont() {
-  //   fontLoader.load("/fonts/helvetiker_regular.typeface.json", onLoadFont);
-  // };
+  // ==================================================
+  // Resize
+  // ==================================================
+  window.addEventListener('resize', () => {
+    webgl.onResize();
+  });
+  // ==================================================
+  // Rendering
+  // ==================================================
+  function rendering() {
+    webgl.onUpdate();
+    raycaster.update();
+
+    Mercury.update();
+    Venus.update();
+    Earth.update();
+    Mars.update();
+    Jupiter.update();
+    Saturn.update();
+    Uranus.update();
+    Neptune.update();
+
+    StylePlanet('mercury', Mercury);
+    StylePlanet('venus', Venus);
+    StylePlanet('earth', Earth);
+    StylePlanet('mars', Mars);
+    StylePlanet('jupiter', Jupiter);
+    StylePlanet('saturn', Saturn);
+    StylePlanet('uranus', Uranus);
+    StylePlanet('neptune', Neptune);
+
+    StylePlanetName("mercury-name", Mercury);
+    StylePlanetName("venus-name", Venus);
+    StylePlanetName("earth-name", Earth);
+    StylePlanetName("mars-name", Mars);
+    StylePlanetName("jupiter-name", Jupiter);
+    StylePlanetName("saturn-name", Saturn);
+    StylePlanetName("uranus-name", Uranus);
+    StylePlanetName("neptune-name", Neptune);
+
+    if (control) {
+
+    } else {
+      cameraTarget();
+    };
+    requestAnimationFrame(rendering);
+  };
 });
 
 // ==================================================
@@ -1302,9 +1059,9 @@ function toSign(sign) {
     y += sign[key].y;
     z += sign[key].z;
   };
-  x = x / Object.keys(sign).length * 1.5;
-  y = y / Object.keys(sign).length * 1.5;
-  z = z / Object.keys(sign).length * 1.5;
+  x = x / Object.keys(sign).length * 2;
+  y = y / Object.keys(sign).length * 2;
+  z = z / Object.keys(sign).length * 2;
   return new THREE.Vector3(x, y, z);
 };
 // ----------惑星との距離を調整するのはココ
@@ -1425,40 +1182,6 @@ function controlOff() {
   StyleControl();
 };
 // ==================================================
-// Function Navigation
-// ==================================================
-function distance() {
-  if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) < au * 20) {
-    view('mercury');
-    view('venus');
-    view('earth');
-    view('mars');
-    view('jupiter');
-    view('saturn');
-    view('uranus');
-    view('neptune');
-  } else if (webgl.camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) > au * 25) {
-    hide('mercury');
-    hide('venus');
-    hide('earth');
-    hide('mars');
-    view('jupiter');
-    view('saturn');
-    view('uranus');
-    view('neptune');
-  }
-};
-
-function view(dom) {
-  const elem = document.getElementById(dom);
-  elem.style.display = 'block';
-};
-function hide(dom) {
-  const elem = document.getElementById(dom);
-  elem.style.display = 'none';
-};
-
-// ==================================================
 // Function Style CSSの変更を行う関数
 // ==================================================
 
@@ -1535,6 +1258,7 @@ function StyleInformation() {
     };
   };
 };
+
 </script>
 
 <style lang="scss">
