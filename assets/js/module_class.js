@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import * as MATH from "~/assets/js/math";
 
 // ==================================================
@@ -16,6 +18,7 @@ let pc = ly * 3.26;
 function lerp(x, y, a) {
     return (1 - a) * x + a * y;
 };
+
 // ==================================================
 // WEBGL
 // ==================================================
@@ -133,6 +136,37 @@ export class WebGL {
         document.addEventListener("touchmove", (e) => { e.preventDefault(); }, { passive: false });
     };
 
+};
+
+// ==================================================
+// PlanetSun : 太陽の作成
+// ==================================================
+export class PlanetSun {
+    constructor() {
+        this.radius = sunRadius;
+        this.width = 10;
+        this.height = 10;
+        this.init();
+    }
+    init() {
+        this.compute();
+        this.create();
+    }
+    compute() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+    create() {
+        this.geometry = new THREE.SphereGeometry(this.radius, this.width, this.height);
+        this.material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            wireframe: true,
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.position.set(this.x, this.y, this.z);
+        this.mesh.name = "sun";
+    }
 };
 
 // ==================================================
@@ -357,3 +391,82 @@ class Line {
         scene.add(this.line);
     };
 };
+
+// ==================================================
+// Decoration_text : 装飾テキスト
+// ==================================================
+export class Decoration_text {
+    constructor(font, text, r, theta, phi) {
+        this.loader = new FontLoader();
+        this.font = font;
+        this.text = text;
+        this.r = r;
+        this.theta = (theta * Math.PI) / 180;
+        this.phi = (phi * Math.PI) / 180;
+        this.loader.load(this.font, (font) => {
+            this.font = font;
+            this.init()
+
+        });
+    }
+    init() {
+        this.geometry = new TextGeometry(
+            this.text,
+            {
+                font: this.font,
+                size: 10,
+                height: 0.1,
+            }
+        );
+        this.material = new THREE.MeshBasicMaterial({
+            color: 0xffffff
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    };
+
+    update(vec3, camera) {
+        const basicVec3 = vec3;
+        this.theta += (0.1 * Math.PI) / 180;
+        this.mesh.position.x = basicVec3.x + this.r * Math.sin(this.theta) * Math.cos(this.phi);
+        this.mesh.position.y = basicVec3.y + this.r * Math.sin(this.theta) * Math.sin(this.phi);
+        this.mesh.position.z = basicVec3.z + this.r * Math.cos(this.theta);
+        const cameraVec3 = camera.position.clone();
+        this.mesh.lookAt(cameraVec3.x, cameraVec3.y, cameraVec3.z);
+    }
+}
+
+export class Decoration_text_info {
+    constructor(font, text) {
+        this.loader = new FontLoader();
+        this.font = font;
+        this.text = text;
+        this.loader.load(this.font, (font) => {
+            this.font = font;
+            this.init()
+
+        });
+    }
+    init() {
+        this.geometry = new TextGeometry(
+            this.text,
+            {
+                font: this.font,
+                size: 5,
+                height: 0.1,
+            }
+        );
+        this.material = new THREE.MeshBasicMaterial({
+            color: 0xffffff
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    };
+
+    update(vec3, camera) {
+        const basicVec3 = vec3;
+        this.mesh.position.x = basicVec3.x;
+        this.mesh.position.y = basicVec3.y - 10;
+        this.mesh.position.z = basicVec3.z;
+        const cameraVec3 = camera.position.clone();
+        this.mesh.lookAt(cameraVec3.x, cameraVec3.y, cameraVec3.z);
+    }
+}

@@ -6,8 +6,6 @@
       <div id="webgl-canvas"></div>
     </div>
 
-
-
     <div id="control-container">
       <ul id="control-wrap">
         <li>
@@ -50,10 +48,6 @@
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
-    <ul>
-
-    </ul>
-
     <NuxtPage :display="information" />
   </div>
 </template>
@@ -65,9 +59,11 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
-import { Planet, Orbit, Sign, Trajectory } from "~/assets/js/module_class";
+import { PlanetSun, Planet, Orbit, Sign, Trajectory, Decoration_text, Decoration_text_info } from "~/assets/js/module_class";
 
-
+let text;
+const Mercury_Decoration = {};
+const fontPath = "/font/helvetiker_regular.typeface.json";
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -89,9 +85,7 @@ const route = useRouter();
 // const fontLoader = new FontLoader();
 let container;
 let webgl;
-let raycaster;
 // let Font;
-const Planets = [];
 // ==================================================
 // 変数 : 半径・距離・公転・自転に関する変数
 // ==================================================
@@ -184,7 +178,6 @@ function easeInOutQuart(x) {
 // ==================================================
 // Class
 // ==================================================
-// -----class WebGL
 class WebGL {
   constructor(webgl) {
     this.webgl = webgl;
@@ -193,7 +186,7 @@ class WebGL {
     this.height = window.innerHeight;
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setClearColor(new THREE.Color(0x222222));
+    this.renderer.setClearColor(new THREE.Color(0x000000));
     this.renderer.setSize(this.width, this.height);
     this.init();
   };
@@ -241,157 +234,15 @@ class WebGL {
     this.controls.update();
   };
 };
-// -----class Raycaster
-class Raycaster {
-  constructor(webgl) {
-    this.webgl = webgl;
-    this.target = '';
-    this.moveFlg = false;
-    this.clickFlg = false;
-    this.mouse = new THREE.Vector2();
-    this.raycaster = new THREE.Raycaster();
-  };
-  init() {
-    this.mouseMove();
-    this.mouseClick();
-  };
-  mouseMove() {
-    this.webgl.addEventListener("mousemove", (e) => {
-      this.moveFlg = true;
-      const element = e.currentTarget;
-      const x = e.clientX - element.offsetLeft;
-      const y = e.clientY - element.offsetTop;
-      const w = element.offsetWidth;
-      const h = element.offsetHeight;
-      mouse.x = (x / w) * 2 - 1;
-      mouse.y = -(y / h) * 2 + 1;
-    });
-  };
-  mouseClick() {
-    this.webgl.addEventListener("click", (e) => {
-      if (this.clickFlg) {
-        if (this.target == 'mercury') {
-          console.log('click to mercury');
-        } else if (this.target == 'venus') {
-          console.log('click to venus');
-        } else if (this.target == 'earth') {
-          console.log('click to earth');
-        } else if (this.target == 'mars') {
-          console.log('click to mars');
-        } else if (this.target == 'jupiter') {
-          console.log('click to jupiter');
-        } else if (this.target == 'saturn') {
-          console.log('click to saturn');
-        } else if (this.target == 'uranus') {
-          console.log('click to uranus');
-        } else if (this.target == 'neptune') {
-          console.log('click to neptune');
-        };
-      };
-    });
-  };
-  update() {
-    this.raycaster.setFromCamera(this.mouse, webgl.camera);
-    this.intersects = this.raycaster.intersectObjects(Planets);
-    if (this.intersects.length > 0) {
-      const obj = this.intersects[0].object;
-      if (obj.name == 'mercury') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'mercury';
-        };
-      } else if (obj.name == 'venus') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'venus';
-        };
-      } else if (obj.name == 'earth') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'earth';
-        };
-      } else if (obj.name == 'mars') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'mars';
-        };
-      } else if (obj.name == 'jupiter') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'jupiter';
-        };
-      } else if (obj.name == 'saturn') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'saturn';
-        };
-      } else if (obj.name == 'uranus') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'uranus';
-        };
-      } else if (obj.name == 'neptune') {
-        if (moveFlg) {
-          this.clickFlg = true;
-          this.target = 'neptune';
-        };
-      } else {
-        this.clickFlg = false;
-      };
-    } else {
-      this.clickFlg = false;
-    };
-    // -----cssを変更
-    if (this.clickFlg) {
-      this.webgl.style.cursor = 'pointer';
-    } else {
-      this.webgl.style.cursor = 'grab';
-    };
-  };
-};
-// -----class Sun
-class Planet_Sun {
-  constructor() {
-    this.radius = sunRadius;
-    this.width = 10;
-    this.height = 10;
-    this.init();
-  }
-  init() {
-    this.compute();
-    this.create();
-  }
-  compute() {
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-  }
-  create() {
-    this.geometry = new THREE.SphereGeometry(this.radius, this.width, this.height);
-    this.material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-    });
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.mesh.position.set(this.x, this.y, this.z);
-    this.mesh.name = "sun";
-  }
-};
 
-
-// --------------------星座の軌跡の表示
-function addTrajectory(trajectory) {
-  for (let key in trajectory) {
-    webgl.scene.add(trajectory[key].mesh);
-  };
-};
-
+// ==================================================
+// 星座の軌跡の表示・非表示
+// ==================================================
 function viewTrajectory(trajectory) {
   for (let key in trajectory) {
     trajectory[key].view();
   };
 };
-
 function hideTrajectory(trajectory) {
   for (let key in trajectory) {
     trajectory[key].hide();
@@ -437,50 +288,36 @@ function AllHideTrajectory() {
 // ==================================================
 let currentPage = useRoute().name;
 function changePage() {
-  durationPosition = 0.005;
-  durationLook = 0.005;
-  if (currentPage == 'planets-mercury') {
-    currentTarget = 'mercury';
-  } else if (currentPage == 'planets-venus') {
-    currentTarget = 'venus';
-  } else if (currentPage == 'planets-earth') {
-    currentTarget = 'earth';
-  } else if (currentPage == 'planets-mars') {
-    currentTarget = 'mars';
-  } else if (currentPage == 'planets-jupiter') {
-    currentTarget = 'jupiter';
-  } else if (currentPage == 'planets-saturn') {
-    currentTarget = 'saturn';
-  } else if (currentPage == 'planets-uranus') {
-    currentTarget = 'uranus';
-  } else if (currentPage == 'planets-neptune') {
-    currentTarget = 'neptune';
-  } else if (currentPage == 'signs-aries') {
-    currentTarget = 'aries';
+  durationPosition = 0;
+  durationLook = 0;
+};
+
+function changePage_trajectory() {
+  AllHideTrajectory();
+  if (currentPage == 'signs-aries') {
+    viewTrajectory(Aries_Trajectory);
   } else if (currentPage == 'signs-taurus') {
-    currentTarget = 'taurus';
+    viewTrajectory(Taurus_Trajectory);
   } else if (currentPage == 'signs-gemini') {
-    currentTarget = 'gemini';
+    viewTrajectory(Gemini_Trajectory);
   } else if (currentPage == 'signs-cancer') {
-    currentTarget = 'cancer';
+    viewTrajectory(Cnacer_Trajectory);
   } else if (currentPage == 'signs-leo') {
-    currentTarget = 'leo';
+    viewTrajectory(Leo_Trajectory);
   } else if (currentPage == 'signs-virgo') {
-    currentTarget = 'virgo';
+    viewTrajectory(Virgo_Trajectory);
   } else if (currentPage == 'signs-libra') {
-    currentTarget = 'libra';
+    viewTrajectory(Libra_Trajectory);
   } else if (currentPage == 'signs-scorpius') {
-    currentTarget = 'scorpius';
+    viewTrajectory(Scorpius_Trajectory);
   } else if (currentPage == 'signs-sagittarius') {
-    currentTarget = 'sagittarius';
+    viewTrajectory(Sagittarius_Trajectory);
   } else if (currentPage == 'signs-capricornus') {
-    currentTarget = 'capricornus';
+    viewTrajectory(Capricornus_Trajectory);
   } else if (currentPage == 'signs-aquarius') {
-    currentTarget = 'aquarius';
+    viewTrajectory(Aquarius_Trajectory);
   } else if (currentPage == 'signs-pisces') {
-    currentTarget = 'pisces';
-  } else {
-    currentTarget = '';
+    viewTrajectory(Pisces_Trajectory);
   };
 };
 
@@ -489,22 +326,45 @@ watch(
   () => {
     changePage();
     controlOff();
+    changePage_trajectory()
   },
 );
 
 onMounted(() => {
   container = document.getElementById("webgl-canvas");
   webgl = new WebGL(container);
-  raycaster = new Raycaster(container);
 
   function init() {
     StyleControl();
     StyleTrajectory();
     StyleInformation();
+
     three_planet();
     three_orbit();
     three_sign();
     three_trajectory();
+    three_stardust();
+    text = new Decoration_text(fontPath, "M E R C U R Y", 100, 0, 45);
+    Mercury_Decoration.diameter = new Decoration_text(fontPath,"diameter of the planet",150,0,15);
+    Mercury_Decoration.diameter2 = new Decoration_text_info(fontPath,"4,879km / 0.38(ratio to earth)");
+    Mercury_Decoration.distance = new Decoration_text(fontPath, "distance to sun", 150, 90, 30);
+    Mercury_Decoration.distance2 = new Decoration_text_info(fontPath, "0.579million km / 0.39AU");
+    Mercury_Decoration.revolution = new Decoration_text(fontPath,"revolution speed",200,180,45);
+    Mercury_Decoration.revolution2 = new Decoration_text_info(fontPath,"0.24year (47.4km/s)");
+    Mercury_Decoration.rotation = new Decoration_text(fontPath,"rotation speed",200,270,60);
+    Mercury_Decoration.rotation2 = new Decoration_text_info(fontPath,"1407.60hour / 58.65day");
+    
+    setTimeout(() => {
+      webgl.scene.add(text.mesh);
+      webgl.scene.add(Mercury_Decoration.diameter.mesh);
+      webgl.scene.add(Mercury_Decoration.diameter2.mesh);
+      webgl.scene.add(Mercury_Decoration.distance.mesh);
+      webgl.scene.add(Mercury_Decoration.distance2.mesh);
+      webgl.scene.add(Mercury_Decoration.revolution.mesh);
+      webgl.scene.add(Mercury_Decoration.revolution2.mesh);
+      webgl.scene.add(Mercury_Decoration.rotation.mesh);
+      webgl.scene.add(Mercury_Decoration.rotation2.mesh);
+    }, 1000);
 
     rendering();
     changePage();
@@ -516,7 +376,7 @@ onMounted(() => {
   // ==================================================
   function three_planet() {
     // -----惑星のインスタンスを作成
-    Sun = new Planet_Sun();
+    Sun = new PlanetSun();
     Mercury = createPlanet(PLANET.Mercury);
     Venus = createPlanet(PLANET.Venus);
     Earth = createPlanet(PLANET.Earth);
@@ -961,6 +821,28 @@ onMounted(() => {
     addTrajectory(Capricornus_Trajectory);
     addTrajectory(Aquarius_Trajectory);
     addTrajectory(Pisces_Trajectory);
+
+    function addTrajectory(trajectory) {
+      for (let key in trajectory) {
+        webgl.scene.add(trajectory[key].mesh);
+      };
+    };
+  };
+
+  // ==================================================
+  // 装飾惑星 : リファクタリング
+  // ==================================================
+  function three_stardust() {
+    for (let i = 0; i < 1000; i++) {
+      const geometry = new THREE.SphereGeometry(sunRadius * 50, 10, 10);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff, });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(random(-au * 1000, au * 1000), random(-au * 1000, au * 1000), random(-au * 1000, au * 1000))
+      webgl.scene.add(mesh);
+    };
+    function random(min, max) {
+      return Math.floor(Math.random() * (max + 1 - min)) + min;
+    };
   };
 
   // ==================================================
@@ -969,12 +851,12 @@ onMounted(() => {
   window.addEventListener('resize', () => {
     webgl.onResize();
   });
+
   // ==================================================
   // Rendering
   // ==================================================
   function rendering() {
     webgl.onUpdate();
-    raycaster.update();
 
     Mercury.update();
     Venus.update();
@@ -985,29 +867,25 @@ onMounted(() => {
     Uranus.update();
     Neptune.update();
 
-    StylePlanet('mercury', Mercury);
-    StylePlanet('venus', Venus);
-    StylePlanet('earth', Earth);
-    StylePlanet('mars', Mars);
-    StylePlanet('jupiter', Jupiter);
-    StylePlanet('saturn', Saturn);
-    StylePlanet('uranus', Uranus);
-    StylePlanet('neptune', Neptune);
-
-    StylePlanetName("mercury-name", Mercury);
-    StylePlanetName("venus-name", Venus);
-    StylePlanetName("earth-name", Earth);
-    StylePlanetName("mars-name", Mars);
-    StylePlanetName("jupiter-name", Jupiter);
-    StylePlanetName("saturn-name", Saturn);
-    StylePlanetName("uranus-name", Uranus);
-    StylePlanetName("neptune-name", Neptune);
+    rendering_style();
 
     if (control) {
 
     } else {
       cameraTarget();
     };
+
+    if (text.mesh) {
+      text.update(Mercury.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.diameter.update(Mercury.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.diameter2.update(Mercury_Decoration.diameter.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.distance.update(Mercury.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.distance2.update(Mercury_Decoration.distance.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.revolution.update(Mercury.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.revolution2.update(Mercury_Decoration.revolution.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.rotation.update(Mercury.mesh.position.clone(), webgl.camera);
+      Mercury_Decoration.rotation2.update(Mercury_Decoration.rotation.mesh.position.clone(), webgl.camera);
+    }
     requestAnimationFrame(rendering);
   };
 });
@@ -1047,83 +925,69 @@ function toUranus() {
 function toNeptune() {
   route.push('/planets/neptune');
 };
+
 // ==================================================
-// 星座のカメラ制御
+// カメラ制御
 // ==================================================
-function toSign(sign) {
-  let x = 0;
-  let y = 0;
-  let z = 0;
-  for (let key in sign) {
-    x += sign[key].x;
-    y += sign[key].y;
-    z += sign[key].z;
-  };
-  x = x / Object.keys(sign).length * 2;
-  y = y / Object.keys(sign).length * 2;
-  z = z / Object.keys(sign).length * 2;
-  return new THREE.Vector3(x, y, z);
-};
-// ----------惑星との距離を調整するのはココ
 function cameraTarget() {
-  if (currentTarget == 'mercury') {
+  if (currentPage == 'planets-mercury') {
     cameraLerpPosition(Mercury.mesh.position.x + Mercury.computeRadius * 5, Mercury.mesh.position.y + Mercury.computeRadius * 5, Mercury.mesh.position.z + Mercury.computeRadius * 5);
     cameraLerpLook(Mercury.mesh.position.x, Mercury.mesh.position.y, Mercury.mesh.position.z);
-  } else if (currentTarget == 'venus') {
+  } else if (currentPage == 'planets-venus') {
     cameraLerpPosition(Venus.mesh.position.x + Venus.computeRadius * 5, Venus.mesh.position.y + Venus.computeRadius * 5, Venus.mesh.position.z + Venus.computeRadius * 5);
     cameraLerpLook(Venus.mesh.position.x, Venus.mesh.position.y, Venus.mesh.position.z);
-  } else if (currentTarget == 'earth') {
+  } else if (currentPage == 'planets-earth') {
     cameraLerpPosition(Earth.mesh.position.x + Earth.computeRadius * 5, Earth.mesh.position.y + Earth.computeRadius * 5, Earth.mesh.position.z + Earth.computeRadius * 5);
     cameraLerpLook(Earth.mesh.position.x, Earth.mesh.position.y, Earth.mesh.position.z);
-  } else if (currentTarget == 'mars') {
+  } else if (currentPage == 'planets-mars') {
     cameraLerpPosition(Mars.mesh.position.x + Mars.computeRadius * 5, Mars.mesh.position.y + Mars.computeRadius * 5, Mars.mesh.position.z + Mars.computeRadius * 5);
     cameraLerpLook(Mars.mesh.position.x, Mars.mesh.position.y, Mars.mesh.position.z);
-  } else if (currentTarget == 'jupiter') {
+  } else if (currentPage == 'planets-jupiter') {
     cameraLerpPosition(Jupiter.mesh.position.x + Jupiter.computeRadius * 5, Jupiter.mesh.position.y + Jupiter.computeRadius * 5, Jupiter.mesh.position.z + Jupiter.computeRadius * 5);
     cameraLerpLook(Jupiter.mesh.position.x, Jupiter.mesh.position.y, Jupiter.mesh.position.z);
-  } else if (currentTarget == 'saturn') {
+  } else if (currentPage == 'planets-saturn') {
     cameraLerpPosition(Saturn.mesh.position.x + Saturn.computeRadius * 5, Saturn.mesh.position.y + Saturn.computeRadius * 5, Saturn.mesh.position.z + Saturn.computeRadius * 5);
     cameraLerpLook(Saturn.mesh.position.x, Saturn.mesh.position.y, Saturn.mesh.position.z);
-  } else if (currentTarget == 'uranus') {
+  } else if (currentPage == 'planets-uranus') {
     cameraLerpPosition(Uranus.mesh.position.x + Uranus.computeRadius * 5, Uranus.mesh.position.y + Uranus.computeRadius * 5, Uranus.mesh.position.z + Uranus.computeRadius * 5);
     cameraLerpLook(Uranus.mesh.position.x, Uranus.mesh.position.y, Uranus.mesh.position.z);
-  } else if (currentTarget == 'neptune') {
+  } else if (currentPage == 'planets-neptune') {
     cameraLerpPosition(Neptune.mesh.position.x + Neptune.computeRadius * 5, Neptune.mesh.position.y + Neptune.computeRadius * 5, Neptune.mesh.position.z + Neptune.computeRadius * 5);
     cameraLerpLook(Neptune.mesh.position.x, Neptune.mesh.position.y, Neptune.mesh.position.z);
-  } else if (currentTarget == 'aries') {
+  } else if (currentPage == 'signs-aries') {
     cameraLerpPosition(toSign(Aries).x, toSign(Aries).y, toSign(Aries).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'taurus') {
+  } else if (currentPage == 'signs-taurus') {
     cameraLerpPosition(toSign(Taurus).x, toSign(Taurus).y, toSign(Taurus).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'gemini') {
+  } else if (currentPage == 'signs-gemini') {
     cameraLerpPosition(toSign(Gemini).x, toSign(Gemini).y, toSign(Gemini).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'cancer') {
+  } else if (currentPage == 'signs-cancer') {
     cameraLerpPosition(toSign(Cancer).x, toSign(Cancer).y, toSign(Cancer).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'leo') {
+  } else if (currentPage == 'signs-leo') {
     cameraLerpPosition(toSign(Leo).x, toSign(Leo).y, toSign(Leo).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'virgo') {
+  } else if (currentPage == 'signs-virgo') {
     cameraLerpPosition(toSign(Virgo).x, toSign(Virgo).y, toSign(Virgo).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'libra') {
+  } else if (currentPage == 'signs-libra') {
     cameraLerpPosition(toSign(Libra).x, toSign(Libra).y, toSign(Libra).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'scorpius') {
+  } else if (currentPage == 'signs-scorpius') {
     cameraLerpPosition(toSign(Scorpius).x, toSign(Scorpius).y, toSign(Scorpius).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'sagittarius') {
+  } else if (currentPage == 'signs-sagittarius') {
     cameraLerpPosition(toSign(Sagittarius).x, toSign(Sagittarius).y, toSign(Sagittarius).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'capricornus') {
+  } else if (currentPage == 'signs-capricornus') {
     cameraLerpPosition(toSign(Capricornus).x, toSign(Capricornus).y, toSign(Capricornus).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'aquarius') {
+  } else if (currentPage == 'signs-aquarius') {
     cameraLerpPosition(toSign(Aquarius).x, toSign(Aquarius).y, toSign(Aquarius).z);
     cameraLerpLook(0, 0, 0);
-  } else if (currentTarget == 'pisces') {
+  } else if (currentPage == 'signs-pisces') {
     cameraLerpPosition(toSign(Pisces).x, toSign(Pisces).y, toSign(Pisces).z);
     cameraLerpLook(0, 0, 0);
   } else if (currentTarget == 'control') {
@@ -1131,42 +995,57 @@ function cameraTarget() {
   } else {
     cameraLerpPosition(0, au * 25, au * 50);
     cameraLerpLook(0, 0, 0);
-  }
+  };
+  // ==============================
+  // 星座の中心 + 星座から一定の距離を計算
+  // ==============================
+  function toSign(sign) {
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    for (let key in sign) {
+      x += sign[key].x;
+      y += sign[key].y;
+      z += sign[key].z;
+    };
+    x = x / Object.keys(sign).length * 2;
+    y = y / Object.keys(sign).length * 2;
+    z = z / Object.keys(sign).length * 2;
+    return new THREE.Vector3(x, y, z);
+  };
 };
+
 // ==================================================
 // Function カメラ制御
 // ==================================================
 // ----------カメラの位置を線形補完
 function cameraLerpPosition(x, y, z) {
   if (durationPosition <= 1) {
-    durationPosition += 0.003;
+    durationPosition += 1 / 240;
+  } else {
+    durationPosition = 1;
   };
-
   const startPosition = webgl.camera.position.clone();
   const endPosition = new THREE.Vector3(x, y, z);
-
   const newPosition = new THREE.Vector3();
   newPosition.x = lerp(startPosition.x, endPosition.x, easeInOutQuart(durationPosition));
   newPosition.y = lerp(startPosition.y, endPosition.y, easeInOutQuart(durationPosition));
   newPosition.z = lerp(startPosition.z, endPosition.z, easeInOutQuart(durationPosition));
-
   webgl.camera.position.copy(newPosition);
 };
 // ----------カメラの方向を線形補完
 function cameraLerpLook(x, y, z) {
-
   if (durationLook <= 1) {
-    durationLook += 0.004;
+    durationLook += 1 / 180;
+  } else {
+    durationLook = 1;
   };
-
   const startLook = webgl.controls.target.clone();
   const endLook = new THREE.Vector3(x, y, z);
-
   const newLook = new THREE.Vector3();
   newLook.x = lerp(startLook.x, endLook.x, easeInOutQuart(durationLook));
   newLook.y = lerp(startLook.y, endLook.y, easeInOutQuart(durationLook));
   newLook.z = lerp(startLook.z, endLook.z, easeInOutQuart(durationLook));
-
   webgl.controls.target.copy(newLook);
 };
 // ----------コントロールをTrueに変更
@@ -1181,6 +1060,7 @@ function controlOff() {
   control = false;
   StyleControl();
 };
+
 // ==================================================
 // Function Style CSSの変更を行う関数
 // ==================================================
@@ -1209,6 +1089,27 @@ function StylePlanetName(dom, data) {
   const sy = (height / 2) * (-projection.y + 1.0);
   elem.style.top = sy - 30 + 'px';
   elem.style.left = sx + 'px';
+};
+
+function rendering_style() {
+  // -----惑星の位置を表す丸
+  StylePlanet('mercury', Mercury);
+  StylePlanet('venus', Venus);
+  StylePlanet('earth', Earth);
+  StylePlanet('mars', Mars);
+  StylePlanet('jupiter', Jupiter);
+  StylePlanet('saturn', Saturn);
+  StylePlanet('uranus', Uranus);
+  StylePlanet('neptune', Neptune);
+  // -----惑星の位置を表す文字
+  StylePlanetName("mercury-name", Mercury);
+  StylePlanetName("venus-name", Venus);
+  StylePlanetName("earth-name", Earth);
+  StylePlanetName("mars-name", Mars);
+  StylePlanetName("jupiter-name", Jupiter);
+  StylePlanetName("saturn-name", Saturn);
+  StylePlanetName("uranus-name", Uranus);
+  StylePlanetName("neptune-name", Neptune);
 };
 
 function StyleControl() {
