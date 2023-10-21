@@ -54,16 +54,12 @@
 
 <script setup>
 import * as THREE from "three";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as PLANET from "assets/js/data_planets";
 import * as SIGN from "assets/js/data_Signs";
-import { PlanetSun, Planet, Orbit, Sign, Trajectory, Decoration_text, Decoration_text_info } from "~/assets/js/module_class";
+import { PlanetSun, Planet, Orbit, Sign, Trajectory } from "~/assets/js/module_class";
+import * as Information from "~/assets/js/module_information";
 
-let text;
-const Mercury_Decoration = {};
-const fontPath = "/font/helvetiker_regular.typeface.json";
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -82,10 +78,8 @@ function informationOff() {
 // 変数 : 設定関連
 // ==================================================
 const route = useRouter();
-// const fontLoader = new FontLoader();
 let container;
 let webgl;
-// let Font;
 // ==================================================
 // 変数 : 半径・距離・公転・自転に関する変数
 // ==================================================
@@ -119,6 +113,18 @@ let Jupiter;
 let Saturn;
 let Uranus;
 let Neptune;
+// ==================================================
+// 変数 : 惑星の情報
+// ==================================================
+const fontPath = "/font/helvetiker_regular.typeface.json";
+let Mercury_information;
+let Venus_information;
+let Earth_information;
+let Mars_information;
+let Jupiter_information;
+let Saturn_information;
+let Uranus_information;
+let Neptune_information;
 // ==================================================
 // 変数 : 惑星の軌道
 // ==================================================
@@ -283,15 +289,17 @@ function AllHideTrajectory() {
   StyleTrajectory();
 };
 
-// ==================================================
-// URLによって、変数の値を変更
-// ==================================================
+// ====================================================================================================
+// WATCH
+// ====================================================================================================
 let currentPage = useRoute().name;
 function changePage() {
   durationPosition = 0;
   durationLook = 0;
 };
-
+// ==================================================
+// URLによって、表示する星座の軌跡を変更
+// ==================================================
 function changePage_trajectory() {
   AllHideTrajectory();
   if (currentPage == 'signs-aries') {
@@ -326,10 +334,12 @@ watch(
   () => {
     changePage();
     controlOff();
-    changePage_trajectory()
+    changePage_trajectory();
   },
 );
-
+// ====================================================================================================
+// MOUNTED
+// ====================================================================================================
 onMounted(() => {
   container = document.getElementById("webgl-canvas");
   webgl = new WebGL(container);
@@ -340,31 +350,11 @@ onMounted(() => {
     StyleInformation();
 
     three_planet();
+    three_planet_information();
     three_orbit();
     three_sign();
     three_trajectory();
     three_stardust();
-    text = new Decoration_text(fontPath, "M E R C U R Y", 100, 0, 45);
-    Mercury_Decoration.diameter = new Decoration_text(fontPath,"diameter of the planet",150,0,15);
-    Mercury_Decoration.diameter2 = new Decoration_text_info(fontPath,"4,879km / 0.38(ratio to earth)");
-    Mercury_Decoration.distance = new Decoration_text(fontPath, "distance to sun", 150, 90, 30);
-    Mercury_Decoration.distance2 = new Decoration_text_info(fontPath, "0.579million km / 0.39AU");
-    Mercury_Decoration.revolution = new Decoration_text(fontPath,"revolution speed",200,180,45);
-    Mercury_Decoration.revolution2 = new Decoration_text_info(fontPath,"0.24year (47.4km/s)");
-    Mercury_Decoration.rotation = new Decoration_text(fontPath,"rotation speed",200,270,60);
-    Mercury_Decoration.rotation2 = new Decoration_text_info(fontPath,"1407.60hour / 58.65day");
-    
-    setTimeout(() => {
-      webgl.scene.add(text.mesh);
-      webgl.scene.add(Mercury_Decoration.diameter.mesh);
-      webgl.scene.add(Mercury_Decoration.diameter2.mesh);
-      webgl.scene.add(Mercury_Decoration.distance.mesh);
-      webgl.scene.add(Mercury_Decoration.distance2.mesh);
-      webgl.scene.add(Mercury_Decoration.revolution.mesh);
-      webgl.scene.add(Mercury_Decoration.revolution2.mesh);
-      webgl.scene.add(Mercury_Decoration.rotation.mesh);
-      webgl.scene.add(Mercury_Decoration.rotation2.mesh);
-    }, 1000);
 
     rendering();
     changePage();
@@ -399,6 +389,20 @@ onMounted(() => {
     function createPlanet(data) {
       return new Planet(data.name, data.radius, data.distance, data.revolution, data.rotation, data.alpha, data.delta);
     };
+  };
+
+  // ==================================================
+  // 惑星の情報
+  // ==================================================
+  function three_planet_information() {
+    Mercury_information = Information.information_mercury(webgl.scene, fontPath, Mercury);
+    Venus_information = Information.information_venus(webgl.scene, fontPath, Venus);
+    Earth_information = Information.information_earth(webgl.scene, fontPath, Earth);
+    Mars_information = Information.information_mars(webgl.scene, fontPath, Mars);
+    Jupiter_information = Information.information_jupiter(webgl.scene, fontPath, Jupiter);
+    Saturn_information = Information.information_saturn(webgl.scene, fontPath, Saturn);
+    Uranus_information = Information.information_uranus(webgl.scene, fontPath, Uranus);
+    Neptune_information = Information.information_neptune(webgl.scene, fontPath, Neptune);
   };
 
   // ==================================================
@@ -867,6 +871,15 @@ onMounted(() => {
     Uranus.update();
     Neptune.update();
 
+    Mercury_information.update(Mercury, webgl.camera);
+    Venus_information.update(Venus, webgl.camera);
+    Earth_information.update(Earth, webgl.camera);
+    Mars_information.update(Mars, webgl.camera);
+    Jupiter_information.update(Jupiter, webgl.camera);
+    Saturn_information.update(Saturn, webgl.camera);
+    Uranus_information.update(Uranus, webgl.camera);
+    Neptune_information.update(Neptune, webgl.camera);
+
     rendering_style();
 
     if (control) {
@@ -874,18 +887,6 @@ onMounted(() => {
     } else {
       cameraTarget();
     };
-
-    if (text.mesh) {
-      text.update(Mercury.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.diameter.update(Mercury.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.diameter2.update(Mercury_Decoration.diameter.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.distance.update(Mercury.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.distance2.update(Mercury_Decoration.distance.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.revolution.update(Mercury.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.revolution2.update(Mercury_Decoration.revolution.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.rotation.update(Mercury.mesh.position.clone(), webgl.camera);
-      Mercury_Decoration.rotation2.update(Mercury_Decoration.rotation.mesh.position.clone(), webgl.camera);
-    }
     requestAnimationFrame(rendering);
   };
 });
@@ -1064,7 +1065,6 @@ function controlOff() {
 // ==================================================
 // Function Style CSSの変更を行う関数
 // ==================================================
-
 function StylePlanet(dom, data) {
   const elem = document.getElementById(dom);
   const object3D = data.mesh;
