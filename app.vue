@@ -125,6 +125,7 @@ let Jupiter_information;
 let Saturn_information;
 let Uranus_information;
 let Neptune_information;
+let TestInformation;
 // ==================================================
 // 変数 : 惑星の軌道
 // ==================================================
@@ -356,6 +357,9 @@ onMounted(() => {
     three_trajectory();
     three_stardust();
 
+    TestInformation = new Information.Test(webgl.scene, fontPath);
+    // TestInformation.move()
+
     rendering();
     changePage();
   };
@@ -395,14 +399,14 @@ onMounted(() => {
   // 惑星の情報
   // ==================================================
   function three_planet_information() {
-    Mercury_information = Information.information_mercury(webgl.scene, fontPath, Mercury);
-    Venus_information = Information.information_venus(webgl.scene, fontPath, Venus);
-    Earth_information = Information.information_earth(webgl.scene, fontPath, Earth);
-    Mars_information = Information.information_mars(webgl.scene, fontPath, Mars);
-    Jupiter_information = Information.information_jupiter(webgl.scene, fontPath, Jupiter);
-    Saturn_information = Information.information_saturn(webgl.scene, fontPath, Saturn);
-    Uranus_information = Information.information_uranus(webgl.scene, fontPath, Uranus);
-    Neptune_information = Information.information_neptune(webgl.scene, fontPath, Neptune);
+    // Mercury_information = Information.information_mercury(webgl.scene, fontPath, Mercury);
+    // Venus_information = Information.information_venus(webgl.scene, fontPath, Venus);
+    // Earth_information = Information.information_earth(webgl.scene, fontPath, Earth);
+    // Mars_information = Information.information_mars(webgl.scene, fontPath, Mars);
+    // Jupiter_information = Information.information_jupiter(webgl.scene, fontPath, Jupiter);
+    // Saturn_information = Information.information_saturn(webgl.scene, fontPath, Saturn);
+    // Uranus_information = Information.information_uranus(webgl.scene, fontPath, Uranus);
+    // Neptune_information = Information.information_neptune(webgl.scene, fontPath, Neptune);
   };
 
   // ==================================================
@@ -871,14 +875,9 @@ onMounted(() => {
     Uranus.update();
     Neptune.update();
 
-    Mercury_information.update(Mercury, webgl.camera);
-    Venus_information.update(Venus, webgl.camera);
-    Earth_information.update(Earth, webgl.camera);
-    Mars_information.update(Mars, webgl.camera);
-    Jupiter_information.update(Jupiter, webgl.camera);
-    Saturn_information.update(Saturn, webgl.camera);
-    Uranus_information.update(Uranus, webgl.camera);
-    Neptune_information.update(Neptune, webgl.camera);
+
+
+    TestInformation.update(Earth.mesh.position)
 
     rendering_style();
 

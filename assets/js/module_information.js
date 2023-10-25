@@ -350,8 +350,196 @@ export function information_neptune(scene, font, planet) {
     return info;
 };
 
-class Decoration_Line{
-    constructor(){
-   
+function lerp(x, y, a) {
+    return (1 - a) * x + a * y;
+};
+
+// ==================================================
+// 装飾用の線を作成
+// ==================================================
+class Decoration_Line {
+    constructor(r,theta,phi) {
+        this.duration = 1;
+        this.startVec = new THREE.Vector3(0, 0, 0);
+
+        this.r = r;
+        this.theta = (theta * Math.PI) / 180;
+        this.phi = (phi * Math.PI) / 180;
+
+        this.endVec = new THREE.Vector3(
+            this.r * Math.sin(this.theta) * Math.cos(this.phi),
+            this.r * Math.sin(this.theta) * Math.sin(this.phi),
+            this.r * Math.cos(this.theta)
+        );
+
+        this.points = [];
+        this.count = 0;
+        this.init();
+    };
+
+    init() {
+        this.createVertex();
+        this.createMesh();
     }
+
+    createVertex() {
+        for (let i = 0; i < 1; i += 1 / this.duration / 60) {
+            const newVec3 = new THREE.Vector3();
+            newVec3.x = lerp(this.startVec.x, this.endVec.x, i);
+            newVec3.y = lerp(this.startVec.y, this.endVec.y, i);
+            newVec3.z = lerp(this.startVec.z, this.endVec.z, i);
+            this.points.push(newVec3);
+        };
+    };
+
+    createMesh() {
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points,
+        );
+        this.material = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+        });
+        this.mesh = new THREE.Line(this.geometry, this.material);
+        this.mesh.geometry.setDrawRange(0, this.count);
+    };
+
+    position(vec3) {
+        const position = vec3.clone();
+        this.mesh.position.set(position.x, position.y, position.z);
+    };
+
+    move() {
+        const that = this;
+        (function _update() {
+            if (that.count < that.points.length) {
+                that.move_update();
+                requestAnimationFrame(_update);
+            } else {
+                cancelAnimationFrame(_update);
+            };
+        }());
+    };
+
+    remove() {
+        const that = this;
+        (function _update() {
+            if (0 < that.count) {
+                that.remove_update();
+                requestAnimationFrame(_update);
+            } else {
+                cancelAnimationFrame(_update);
+            };
+        }());
+    };
+
+    move_update() {
+        if (this.count < this.points.length) {
+            this.count++;
+            this.mesh.geometry.setDrawRange(0, this.count);
+        };
+    };
+
+    remove_update() {
+        if (0 < this.count) {
+            this.count--;
+            this.mesh.geometry.setDrawRange(0, this.count);
+        };
+    };
+
+    update(vec3) {
+        this.position(vec3);
+    };
+};
+
+class Decoration_Text {
+    constructor(font, text, size) {
+        this.font = font;
+        this.text = text;
+        this.size = size;
+        this.height = 0.1;
+
+        this.r = 200;
+        this.theta = (90 * Math.PI) / 180;
+        this.phi = (90 * Math.PI) / 180;
+
+        this.init();
+    };
+    init() {
+        this.createMesh();
+    };
+    createMesh() {
+        this.geometry = new TextGeometry(
+            this.text,
+            {
+                font: this.font,
+                size: this.size,
+                height: this.height,
+            }
+        );
+        this.material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    };
+    add(scene) {
+        scene.add(this.mesh);
+    }
+    position(vec3) {
+        const position = vec3.clone();
+        const x = this.r * Math.sin(this.theta) * Math.cos(this.phi) + position.x;
+        const y = this.r * Math.sin(this.theta) * Math.sin(this.phi) + position.y;
+        const z = this.r * Math.cos(this.theta) + position.z;
+        this.mesh.position.set(x, y, z);
+    };
+    // look(camera) {
+    //     const look = camera.position.clone();
+    //     this.mesh.lookAt(look.x, look.y, look.z);
+    // }
+    update(vec3) {
+        this.position(vec3);
+    };
+}
+
+// ==================================================
+// 
+// ==================================================
+/*
+ * ・lerp関数
+ * ・Decoration_line
+ * 
+ * 
+*/
+export class Test {
+    constructor(scene, font) {
+        this.load = false;
+        this.loader = new FontLoader();
+        this.font = font;
+        this.loader.load(this.font, (font) => {
+            this.font = font;
+            this.init();
+            this.add(scene);
+            this.move()
+            this.load = true;
+        });
+    };
+    init() {
+        this.createMesh();
+    };
+    createMesh() {
+        this.line = new Decoration_Line(200,90,90);
+        this.text = new Decoration_Text(this.font, "H e l l o", 25);
+    };
+    add(scene) {
+        scene.add(this.line.mesh);
+        scene.add(this.text.mesh);
+    };
+    move() {
+        this.line.move();
+    };
+    update(vec3) {
+        if (this.load) {
+            this.line.update(vec3);
+            this.text.update(vec3);
+        };
+    };
 }
