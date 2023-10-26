@@ -55,8 +55,8 @@
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import * as PLANET from "assets/js/data_planets";
-import * as SIGN from "assets/js/data_Signs";
+import * as PLANET from "~/assets/js/data_planets";
+import * as SIGN from "~/assets/js/data_Signs";
 import { PlanetSun, Planet, Orbit, Sign, Trajectory } from "~/assets/js/module_class";
 import * as Information from "~/assets/js/module_information";
 
@@ -877,7 +877,7 @@ onMounted(() => {
 
 
 
-    TestInformation.update(Earth.mesh.position)
+    TestInformation.update(webgl.camera,Earth.mesh.position)
 
     rendering_style();
 
