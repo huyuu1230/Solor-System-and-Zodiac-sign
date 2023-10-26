@@ -458,9 +458,9 @@ class Decoration_Text {
         this.size = size;
         this.height = 0.1;
 
-        this.r = 200;
-        this.theta = (120 * Math.PI) / 180;
-        this.phi = (40 * Math.PI) / 180;
+        this.r = 500;
+        this.theta = (45 * Math.PI) / 180;
+        this.phi = (20 * Math.PI) / 180;
 
         this.init();
     };
@@ -495,9 +495,8 @@ class Decoration_Text {
         const look = camera.position.clone();
         // this.mesh.lookAt(look.x, look.y, look.z);
     }
-    update(look, vec3) {
+    update(vec3) {
         this.position(vec3);
-        this.look(look);
     };
 }
 
@@ -527,17 +526,17 @@ export class Test {
         this.createMesh();
     };
     createMesh() {
-        this.line = new Decoration_Line(300, 0, 0);
-        this.line_02 = new Decoration_Line(200, 120, 40);
-        this.line_03 = new Decoration_Line(300, 120, -40);
-        this.line_04 = new Decoration_Line(300, 120, 60);
-        this.text = new Decoration_Text(this.font, "H e l l o", 25);
+        this.line = new Decoration_Line(500, 45, 20);
+        this.line_02 = new Decoration_Line(300, 90, 20);
+        this.line_03 = new Decoration_Line(300, 45, -45);
+        this.line_04 = new Decoration_Line(300, 90, 60);
+        this.text = new Decoration_Text(this.font, "H e l l o", 40);
     };
     add(scene) {
         scene.add(this.line.mesh);
         scene.add(this.line_02.mesh);
-        scene.add(this.line_03.mesh);
-        scene.add(this.line_04.mesh);
+        // scene.add(this.line_03.mesh);
+        // scene.add(this.line_04.mesh);
         scene.add(this.text.mesh);
     };
     move() {
@@ -546,30 +545,13 @@ export class Test {
         this.line_03.move();
         this.line_04.move();
     };
-    update(look, vec3) {
+    update(vec3) {
         if (this.load) {
             this.line.update(vec3);
             this.line_02.update(vec3);
             this.line_03.update(vec3);
             this.line_04.update(vec3);
-            this.text.update(look, vec3);
+            this.text.update(vec3);
         };
     };
-};
-
-// ==================================================
-// memo
-// ==================================================
-
-function planet(_planet) {
-    const planet = _planet;
-    const distance = planet.computeDistance;
-    const radius = planet.computeRadius;
-    const r = distance + radius * 10;
-    const theta = planet.alphaRad;
-    const phi = planet.deltaRad;
-
-    const x = r * Math.sin(theta) * Math.sin(phi);
-    const y = r * Math.sin(theta) * Math.sin(phi);
-    const z = r * Math.cos(theta);
 };

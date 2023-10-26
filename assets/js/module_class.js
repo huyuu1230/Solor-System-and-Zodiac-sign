@@ -15,6 +15,7 @@ let sunRadius = earthRadius * 219.08;
 let au = earthRadius * 23533.69;
 let ly = au * 63241;
 let pc = ly * 3.26;
+
 function lerp(x, y, a) {
     return (1 - a) * x + a * y;
 };
