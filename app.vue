@@ -56,14 +56,18 @@
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Test } from "~/assets/js/module_information";
+import { Test,Test_Text } from "~/assets/js/module_information";
 import { WebGL } from "~/assets/js/module_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
+import { Information_Button} from "~/assets/js/module_PLANET_INFO";
 
 let THREE_PLANET;
 let THREE_SIGN;
-let THREE_Information;
+let TEST;
+let TEST_TEXT;
+
+let TEST_BUTTON;
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -100,9 +104,7 @@ let pc = ly * 3.26;
 // ==================================================
 let control = false;
 let trajectory = false;
-
 const fontPath = "/font/helvetiker_regular.typeface.json";
-
 // ==================================================
 // function 計算用
 // ==================================================
@@ -148,7 +150,13 @@ onMounted(() => {
     THREE_SIGN.add_Trajectory(WEBGL.scene);
     THREE_SIGN.watch();
 
-    THREE_Information = new Test(WEBGL.scene,fontPath);
+    TEST = new Test()
+    // TEST.add(WEBGL.scene)
+
+    TEST_BUTTON = new Information_Button(THREE_PLANET.Earth);
+    TEST_BUTTON.add(WEBGL.scene);
+
+    TEST_TEXT = new Test_Text(WEBGL.scene,fontPath);
     
     rendering();
   };
@@ -184,8 +192,11 @@ onMounted(() => {
     WEBGL.update()
 
     THREE_PLANET.update()
-    WEBGL.update_camera(THREE_PLANET, THREE_SIGN);
-    THREE_Information.update(THREE_PLANET.Earth.mesh.position.clone())
+    WEBGL.rendering(THREE_PLANET, THREE_SIGN);
+
+    TEST_BUTTON.update(THREE_PLANET.Earth)
+    
+    TEST.update()
 
     requestAnimationFrame(rendering);
   };
@@ -233,13 +244,11 @@ function toNeptune() {
 
 // ----------コントロールをTrueに変更
 function controlOn() {
-  control = true;
-  StyleControl();
+  WEBGL.cameraControl = true;
 };
 // ----------コントロールをFalseに変更
 function controlOff() {
-  control = false;
-  StyleControl();
+  WEBGL.cameraControl = false;
 };
 
 // ==================================================

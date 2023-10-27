@@ -52,6 +52,13 @@ export class WebGL {
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
     };
+    rendering(planet, sign){
+        if(this.cameraControl){
+
+        } else {
+            this.update_camera(planet, sign);
+        }
+    }
     // ==================================================
     // キャンバスを作成
     // ==================================================

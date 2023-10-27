@@ -2,14 +2,8 @@
     <div id="orbit-container">
         <div v-if="display" id="orbit-wrap">
             <div class="orbit">
-                <OrbitTitle :main="title.main" :sub="title.sub" />
-                <OrbitParams :data="list" />
-                <!-- <div id="text">
-            <p>
-                私達の住む惑星。<br>
-                表面の七割以上が水に覆われた水の惑星。
-            </p>
-        </div> -->
+                <!-- <OrbitTitle :main="title.main" :sub="title.sub" />
+                <OrbitParams :data="list" /> -->
             </div>
         </div>
     </div>

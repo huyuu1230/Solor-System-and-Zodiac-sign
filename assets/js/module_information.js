@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
 
 /* 惑星の情報に関するプログラムをまとめたJavascriptファイルです。
  * Text_PlanetName : 惑星の名前
@@ -451,21 +452,411 @@ class Decoration_Line {
     };
 };
 
-class Decoration_Text {
-    constructor(font, text, size) {
-        this.font = font;
-        this.text = text;
-        this.size = size;
-        this.height = 0.1;
 
-        this.r = 500;
-        this.theta = (45 * Math.PI) / 180;
-        this.phi = (20 * Math.PI) / 180;
 
+// ==================================================
+// 
+// ==================================================
+/*
+ * ・lerp関数
+ * ・Decoration_line
+ * 
+ * 
+*/
+class Circle {
+    constructor() {
+        this.radius = 10000000 / 2;
         this.init();
     };
     init() {
         this.createMesh();
+        this.position()
+    }
+    createMesh() {
+        this.geometry = new THREE.CircleGeometry(this.radius, 36);
+        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    }
+    position() {
+        // Y軸を傾ければOK
+        this.mesh.rotation.set(0, 0, 0)
+    }
+}
+class Circle_Line_01 {
+    constructor() {
+        this.points = []
+        this.radius = 10000000 / 2 * 1.25;
+        this.weight = 100000 * 4;
+        this.angle = -180
+        this.init();
+    }
+    init() {
+        this.compute();
+        this.createMesh();
+    }
+    compute() {
+        for (let i = (this.angle * Math.PI) / 180; i < ((this.angle + 180) * Math.PI) / 180; i += Math.PI / 180) {
+            const x = this.radius * Math.cos(i);
+            const y = this.radius * Math.sin(i)
+            const z = 0;
+            const point = new THREE.Vector3(x, y, z);
+            this.points.push(point);
+        }
+    }
+    createMesh() {
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points
+        );
+        this.line = new MeshLine();
+        this.line.setGeometry(this.geometry)
+        this.material = new MeshLineMaterial({
+            color: 0xffffff,
+            lineWidth: this.weight
+        });
+        this.mesh = new THREE.Mesh(this.line, this.material);
+    };
+    update() {
+        this.points = [];
+        this.angle -= 1;
+        this.compute();
+        const newGeo = new THREE.BufferGeometry().setFromPoints(this.points);
+        this.mesh.geometry.setGeometry(newGeo)
+    }
+}
+class Rect {
+    constructor(theta, alpha) {
+        this.width = 10000000 / 20;
+        this.height = 10000000 / 7;
+        this.r = 10000000 / 2 * 1.25;
+        this.theta = (theta * Math.PI) / 180;
+        this.phi = (0 * Math.PI) / 180;
+        this.alpha = alpha;
+        this.init();
+    };
+    init() {
+        this.createMesh();
+        this.position()
+    }
+    createMesh() {
+        this.geometry = new THREE.PlaneGeometry(this.width, this.height);
+        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+        this.material.transparent = true;
+        this.material.opacity = this.alpha
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    }
+    position() {
+        this.x = this.r * Math.cos(this.theta)
+        this.y = this.r * Math.sin(this.theta)
+        this.z = 0;
+        this.mesh.position.set(this.x, this.y, this.z)
+        this.mesh.rotation.set(0, 0, this.theta + (90 * Math.PI) / 180)
+    }
+    update() {
+        this.theta -= (1 * Math.PI) / 180;
+        this.alpha += 1 / 60;
+        this.material.opacity = Math.abs(Math.sin(this.alpha));
+        this.position();
+    }
+}
+class Circle_Line_02 {
+    constructor() {
+        this.points = [];
+        this.init()
+    }
+    init() {
+        this.compute();
+        this.createMesh();
+    }
+    compute() {
+        for (let i = 0; i < Math.PI * 2; i += Math.PI / 180) {
+            const r = 10000000 / 2 * 1.5;
+            const x = r * Math.cos(i);
+            const y = r * Math.sin(i);
+            const z = 0;
+            this.points.push(new THREE.Vector3(x, y, z));
+        }
+    }
+    createMesh() {
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points
+        );
+        this.line = new MeshLine();
+        this.line.setGeometry(this.geometry)
+        this.material = new MeshLineMaterial({
+            color: 0xffffff,
+            lineWidth: 100000
+        });
+        this.mesh = new THREE.Mesh(this.line, this.material);
+    }
+}
+
+class Circle_02 {
+    constructor() {
+        this.radius = 10000000 / 2 * 1.5;
+        this.theta = (180 * Math.PI) / 180;
+        this.init();
+    }
+    init() {
+        this.createMesh()
+        this.position()
+    }
+
+    createMesh() {
+        this.geometry = new THREE.CircleGeometry(100000 * 2.5, 36);
+        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    }
+
+    position() {
+        const x = this.radius * Math.cos(this.theta);
+        const y = this.radius * Math.sin(this.theta);
+        const z = 0;
+        this.mesh.position.set(x, y, z);
+    }
+
+    update() {
+        this.theta += (1 * Math.PI) / 180;
+        this.position()
+    }
+}
+
+class Circle_Line_03 {
+    constructor() {
+        this.points = [];
+        this.radius = 10000000 / 2 * 1.75;
+        this.angle = -45
+        this.init();
+    };
+    init() {
+        this.compute();
+        this.createMesh();
+    };
+    compute() {
+        for (let i = (this.angle * Math.PI) / 180; i < ((this.angle + 180) * Math.PI) / 180; i += Math.PI / 180) {
+            const x = this.radius * Math.cos(i);
+            const y = this.radius * Math.sin(i);
+            const z = 0;
+            const point = new THREE.Vector3(x, y, z);
+            this.points.push(point);
+        };
+
+    };
+    createMesh() {
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points
+        );
+        this.line = new MeshLine();
+        this.line.setGeometry(this.geometry)
+        this.material = new MeshLineMaterial({
+            color: 0xffffff,
+            lineWidth: 100000 * 6
+        });
+        this.mesh = new THREE.Mesh(this.line, this.material);
+    };
+    update() {
+        this.points = [];
+        this.angle += 0.5;
+        this.compute();
+        const newGeo = new THREE.BufferGeometry().setFromPoints(this.points);
+        this.mesh.geometry.setGeometry(newGeo)
+    };
+};
+
+class Circle_Line_04 {
+    constructor() {
+        this.points = [];
+        this.radius = 10000000 / 2 * 1.75;
+        this.angle = 180
+        this.init();
+    };
+    init() {
+        this.compute();
+        this.createMesh();
+    }
+    compute() {
+        for (let i = (this.angle * Math.PI) / 180; i < ((this.angle + 90) * Math.PI) / 180; i += Math.PI / 180) {
+            const x = this.radius * Math.cos(i);
+            const y = this.radius * Math.sin(i);
+            const z = 0;
+            const point = new THREE.Vector3(x, y, z);
+            this.points.push(point);
+        };
+    };
+    createMesh() {
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points
+        );
+        this.line = new MeshLine();
+        this.line.setGeometry(this.geometry)
+        this.material = new MeshLineMaterial({
+            color: 0xffffff,
+            lineWidth: 100000 * 2
+        });
+        this.mesh = new THREE.Mesh(this.line, this.material);
+    };
+    update() {
+        this.points = [];
+        this.angle += 0.5;
+        this.compute();
+        const newGeo = new THREE.BufferGeometry().setFromPoints(this.points);
+        this.mesh.geometry.setGeometry(newGeo)
+    }
+}
+
+class Line_01 {
+    constructor() {
+        this.points = [];
+        this.count = 1;
+        this.range = (10000000 * 1.8) + (10000000 / 2 * 1.25);
+        this.init()
+    }
+    init() {
+        this.createVert();
+        this.createMesh();
+    }
+    createVert() {
+        this.points.push(new THREE.Vector3(10000000 / 2 * 1.25, 10000000 / 2 * 1.25, 0));
+        this.points.push(new THREE.Vector3(this.range, this.range, 0));
+    };
+    createMesh() {
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points,
+        );
+        this.material = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+        });
+        this.mesh = new THREE.Line(this.geometry, this.material);
+        // this.mesh.geometry.setDrawRange(0, this.count);
+    }
+}
+
+class Line_02 {
+    constructor() {
+        this.start = new THREE.Vector3(
+            (10000000  * 1.8) + (10000000 / 2 * 1.25),
+            (10000000  * 1.8) + (10000000 / 2 * 1.25),
+            0
+        );
+        this.end = new THREE.Vector3(
+            (10000000  * 1.8) + (10000000 / 2 * 1.25) + (10000000 * 6),
+            (10000000  * 1.8) + (10000000 / 2 * 1.25),
+            0
+        )
+        this.points = [this.start,this.end]
+        this.createMesh()
+    }
+
+    createMesh(){
+        this.geometry = new THREE.BufferGeometry().setFromPoints(
+            this.points,
+        );
+        this.material = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+        });
+        this.mesh = new THREE.Line(this.geometry, this.material);
+    };
+}
+
+export class Test {
+    constructor() {
+        this.init()
+
+    };
+    init() {
+        this.createMesh();
+    };
+    createMesh() {
+        this.circle = new Circle()
+        this.circle_Line_01 = new Circle_Line_01();
+
+        this.circle_Rect_01 = new Rect(30, 1 / 13 * 13);
+        this.circle_Rect_02 = new Rect(40, 1 / 13 * 12);
+        this.circle_Rect_03 = new Rect(50, 1 / 13 * 11);
+        this.circle_Rect_04 = new Rect(60, 1 / 13 * 10);
+        this.circle_Rect_05 = new Rect(70, 1 / 13 * 9);
+        this.circle_Rect_06 = new Rect(80, 1 / 13 * 8);
+        this.circle_Rect_07 = new Rect(90, 1 / 13 * 7);
+        this.circle_Rect_08 = new Rect(100, 1 / 13 * 6);
+        this.circle_Rect_09 = new Rect(110, 1 / 13 * 5);
+        this.circle_Rect_010 = new Rect(120, 1 / 13 * 4);
+        this.circle_Rect_011 = new Rect(130, 1 / 13 * 3);
+        this.circle_Rect_012 = new Rect(140, 1 / 13 * 2);
+        this.circle_Rect_013 = new Rect(150, 1 / 13 * 1);
+
+        this.circle_line_02 = new Circle_Line_02()
+        this.circle_02 = new Circle_02()
+        this.circle_line_03 = new Circle_Line_03()
+        this.circle_line_04 = new Circle_Line_04()
+
+        this.line_01 = new Line_01()
+        this.line_02 = new Line_02()
+
+
+    };
+    add(scene) {
+        scene.add(this.circle.mesh);
+        scene.add(this.circle_Line_01.mesh);
+
+        scene.add(this.circle_Rect_01.mesh);
+        scene.add(this.circle_Rect_02.mesh);
+        scene.add(this.circle_Rect_03.mesh);
+        scene.add(this.circle_Rect_04.mesh);
+        scene.add(this.circle_Rect_05.mesh);
+        scene.add(this.circle_Rect_06.mesh);
+        scene.add(this.circle_Rect_07.mesh);
+        scene.add(this.circle_Rect_08.mesh);
+        scene.add(this.circle_Rect_09.mesh);
+        scene.add(this.circle_Rect_010.mesh);
+        scene.add(this.circle_Rect_011.mesh);
+        scene.add(this.circle_Rect_012.mesh);
+        scene.add(this.circle_Rect_013.mesh);
+
+        scene.add(this.circle_line_02.mesh);
+        scene.add(this.circle_02.mesh);
+
+        scene.add(this.circle_line_03.mesh);
+        scene.add(this.circle_line_04.mesh);
+
+        scene.add(this.line_01.mesh);
+        scene.add(this.line_02.mesh);
+    };
+    move() {
+
+    };
+    update() {
+        this.circle_02.update()
+
+        this.circle_Line_01.update()
+        this.circle_line_03.update()
+        this.circle_line_04.update()
+
+        this.circle_Rect_01.update()
+        this.circle_Rect_02.update()
+        this.circle_Rect_03.update()
+        this.circle_Rect_04.update()
+        this.circle_Rect_05.update()
+        this.circle_Rect_06.update()
+        this.circle_Rect_07.update()
+        this.circle_Rect_08.update()
+        this.circle_Rect_09.update()
+        this.circle_Rect_010.update()
+        this.circle_Rect_011.update()
+        this.circle_Rect_012.update()
+        this.circle_Rect_013.update()
+    };
+};
+
+class Text {
+    constructor(font, text) {
+        this.font = font;
+        this.text = text;
+        this.size = 10000000 * 0.4;
+        this.height = 0.1;
+        this.init();
+    };
+    init() {
+        this.createMesh();
+        this.position()
     };
     createMesh() {
         this.geometry = new TextGeometry(
@@ -484,74 +875,29 @@ class Decoration_Text {
     add(scene) {
         scene.add(this.mesh);
     }
-    position(vec3) {
-        const position = vec3.clone();
-        const x = this.r * Math.sin(this.theta) * Math.cos(this.phi) + position.x;
-        const y = this.r * Math.sin(this.theta) * Math.sin(this.phi) + position.y;
-        const z = this.r * Math.cos(this.theta) + position.z;
-        this.mesh.position.set(x, y, z);
+    position() {
+       
+        this.mesh.position.set((10000000  * 1.8) + (10000000 / 2 * 1.25),
+        (10000000  * 1.8) + (10000000 / 2 * 1.25) + this.size / 2,
+        0)
     };
-    look(camera) {
-        const look = camera.position.clone();
-        // this.mesh.lookAt(look.x, look.y, look.z);
-    }
     update(vec3) {
         this.position(vec3);
     };
 }
 
-// ==================================================
-// 
-// ==================================================
-/*
- * ・lerp関数
- * ・Decoration_line
- * 
- * 
-*/
-export class Test {
-    constructor(scene, font) {
-        this.load = false;
-        this.loader = new FontLoader();
+export class Test_Text{
+    constructor(scene,font){
+        this.scene = scene;
         this.font = font;
-        this.loader.load(this.font, (font) => {
+        this.fontLoader = new FontLoader();
+        this.fontLoader.load(this.font,(font)=>{
             this.font = font;
             this.init();
-            this.add(scene);
-            this.move()
-            this.load = true;
-        });
-    };
-    init() {
-        this.createMesh();
-    };
-    createMesh() {
-        this.line = new Decoration_Line(500, 45, 20);
-        this.line_02 = new Decoration_Line(300, 90, 20);
-        this.line_03 = new Decoration_Line(300, 45, -45);
-        this.line_04 = new Decoration_Line(300, 90, 60);
-        this.text = new Decoration_Text(this.font, "H e l l o", 40);
-    };
-    add(scene) {
-        scene.add(this.line.mesh);
-        scene.add(this.line_02.mesh);
-        // scene.add(this.line_03.mesh);
-        // scene.add(this.line_04.mesh);
-        scene.add(this.text.mesh);
-    };
-    move() {
-        this.line.move();
-        this.line_02.move();
-        this.line_03.move();
-        this.line_04.move();
-    };
-    update(vec3) {
-        if (this.load) {
-            this.line.update(vec3);
-            this.line_02.update(vec3);
-            this.line_03.update(vec3);
-            this.line_04.update(vec3);
-            this.text.update(vec3);
-        };
-    };
-};
+        })
+    }
+    init(){
+        this.head = new Text(this.font,'distance of the planet');
+        this.head.add(this.scene);
+    }
+}

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@tweenjs/tween.js": "^21.0.0",
-    "three": "^0.152.2"
+    "three": "^0.152.2",
+    "three.meshline": "^1.4.0"
   }
 }
