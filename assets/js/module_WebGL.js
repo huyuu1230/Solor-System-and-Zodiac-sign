@@ -28,7 +28,7 @@ export class WebGL {
         this.scene = new THREE.Scene();
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({antialias:true});
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.setClearColor(new THREE.Color(0x000000));
         this.renderer.setSize(this.width, this.height);

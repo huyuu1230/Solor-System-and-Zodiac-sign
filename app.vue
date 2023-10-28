@@ -60,7 +60,7 @@ import { Test,Test_Text } from "~/assets/js/module_information";
 import { WebGL } from "~/assets/js/module_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
-import { Information_Button} from "~/assets/js/module_PLANET_INFO";
+import { Information_Point} from "~/assets/js/module_PLANET_INFO";
 
 let THREE_PLANET;
 let THREE_SIGN;
@@ -68,6 +68,9 @@ let TEST;
 let TEST_TEXT;
 
 let TEST_BUTTON;
+
+let TEST_MERCURY;
+let TEST_JUPITER;
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -150,13 +153,16 @@ onMounted(() => {
     THREE_SIGN.add_Trajectory(WEBGL.scene);
     THREE_SIGN.watch();
 
-    TEST = new Test()
-    // TEST.add(WEBGL.scene)
+    
 
-    TEST_BUTTON = new Information_Button(THREE_PLANET.Earth);
+    TEST_BUTTON = new Information_Point(THREE_PLANET.Earth);
     TEST_BUTTON.add(WEBGL.scene);
 
-    TEST_TEXT = new Test_Text(WEBGL.scene,fontPath);
+    TEST_MERCURY = new Information_Point(THREE_PLANET.Mercury);
+    TEST_MERCURY.add(WEBGL.scene)
+
+    TEST_JUPITER = new Information_Point(THREE_PLANET.Jupiter);
+    TEST_JUPITER.add(WEBGL.scene);
     
     rendering();
   };
@@ -195,8 +201,8 @@ onMounted(() => {
     WEBGL.rendering(THREE_PLANET, THREE_SIGN);
 
     TEST_BUTTON.update(THREE_PLANET.Earth)
-    
-    TEST.update()
+    TEST_MERCURY.update(THREE_PLANET.Mercury);
+    TEST_JUPITER.update(THREE_PLANET.Jupiter)
 
     requestAnimationFrame(rendering);
   };
