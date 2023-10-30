@@ -29,7 +29,7 @@
     </div>
 
     <!--three.jsの惑星の座標-->
-    <!--<ul>
+    <ul>
       <div v-on:click="toMercury" id="mercury" class="planet"></div>
       <div id="mercury-name" class="planet-name">MERCURY</div>
       <div v-on:click="toVenus" id="venus" class="planet"></div>
@@ -46,7 +46,7 @@
       <div id="uranus-name" class="planet-name">URANUS</div>
       <div v-on:click="toNeptune" id="neptune" class="planet"></div>
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
-    </ul>-->
+    </ul>
 
     <NuxtPage :display="information" />
   </div>
@@ -56,21 +56,27 @@
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Test,Test_Text } from "~/assets/js/module_information";
 import { WebGL } from "~/assets/js/module_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
-import { Information_Point} from "~/assets/js/module_PLANET_INFO";
+import { Information_Point } from "~/assets/js/module_PLANET_INFO";
+import { Information_Distance_Point, Distance_Information } from "~/assets/js/module_Info_distance";
+import { Line } from "~/assets/js/module_Info_speed";
 
 let THREE_PLANET;
 let THREE_SIGN;
-let TEST;
-let TEST_TEXT;
 
 let TEST_BUTTON;
-
 let TEST_MERCURY;
 let TEST_JUPITER;
+
+let Test_Distance_Mercury;
+let Test_Distance_Earth;
+let Test_Distance_Jupiter;
+
+let Test_Distance_information;
+
+let Test_line;
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -153,7 +159,7 @@ onMounted(() => {
     THREE_SIGN.add_Trajectory(WEBGL.scene);
     THREE_SIGN.watch();
 
-    
+
 
     TEST_BUTTON = new Information_Point(THREE_PLANET.Earth);
     TEST_BUTTON.add(WEBGL.scene);
@@ -163,7 +169,28 @@ onMounted(() => {
 
     TEST_JUPITER = new Information_Point(THREE_PLANET.Jupiter);
     TEST_JUPITER.add(WEBGL.scene);
-    
+
+    Test_Distance_Mercury = new Information_Distance_Point(THREE_PLANET.Mercury);
+    Test_Distance_Mercury.add(WEBGL.scene);
+
+    Test_Distance_Earth = new Information_Distance_Point(THREE_PLANET.Earth);
+    Test_Distance_Earth.add(WEBGL.scene);
+
+    Test_Distance_Jupiter = new Information_Distance_Point(THREE_PLANET.Jupiter);
+    Test_Distance_Jupiter.add(WEBGL.scene);
+
+    Test_Distance_information = new Distance_Information(THREE_PLANET.Earth);
+    Test_Distance_information.add(WEBGL.scene);
+
+    console.log(TEST_BUTTON.circle_01.mesh.position)
+    console.log(Test_Distance_Earth.circle_01.mesh.position)
+    Test_line = new Line(
+      THREE_PLANET.Earth,
+      TEST_BUTTON.circle_01.mesh.position,
+      Test_Distance_Earth.circle_01.mesh.position
+    );
+    WEBGL.scene.add(Test_line.mesh);
+
     rendering();
   };
   init();
@@ -202,7 +229,20 @@ onMounted(() => {
 
     TEST_BUTTON.update(THREE_PLANET.Earth)
     TEST_MERCURY.update(THREE_PLANET.Mercury);
-    TEST_JUPITER.update(THREE_PLANET.Jupiter)
+    TEST_JUPITER.update(THREE_PLANET.Jupiter);
+
+    Test_Distance_Mercury.update(THREE_PLANET.Mercury);
+    Test_Distance_Earth.update(THREE_PLANET.Earth);
+    Test_Distance_Jupiter.update(THREE_PLANET.Jupiter);
+
+    Test_Distance_information.update(THREE_PLANET.Earth);
+
+    Test_line.update(
+      TEST_BUTTON.circle_01.mesh.position,
+      Test_Distance_Earth.circle_01.mesh.position
+    )
+
+
 
     requestAnimationFrame(rendering);
   };
@@ -286,11 +326,22 @@ function StylePlanetName(dom, data) {
   elem.style.left = sx + 'px';
 };
 
+function worldPosition(data) {
+  const object3D = data;
+  const width = WEBGL.width;
+  const height = WEBGL.height;
+  const worldPosition = object3D.getWorldPosition(new THREE.Vector3());
+  const projection = worldPosition.project(WEBGL.camera);
+  const sx = (width / 2) * (+projection.x + 1.0);
+  const sy = (height / 2) * (-projection.y + 1.0);
+  console.log(sx, sy)
+};
+
 function rendering_style() {
   // -----惑星の位置を表す丸
   StylePlanet('mercury', Mercury);
   StylePlanet('venus', Venus);
-  StylePlanet('earth', Earth);
+  StylePlanet('earth', THREE_PLANET.Earth);
   StylePlanet('mars', Mars);
   StylePlanet('jupiter', Jupiter);
   StylePlanet('saturn', Saturn);

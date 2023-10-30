@@ -221,7 +221,6 @@ class Circle_LINE_04 {
         this.points = [];
         this.radius = radius * 1.75;
         this.weight = (radius / 100) * 12;
-        console.log(this.weight)
         this.angle = (-45 * Math.PI) / 180;
         this.init();
     };
@@ -262,9 +261,10 @@ export class Information_Point {
     constructor(planet) {
         // figmaだとこれが100px
         this.base = planet.computeRadius * 0.22;
-        this.init();
+        this.speed = planet.computeRevolution;
         this.theta = planet.alphaRad + Math.PI / 2;
         this.phi = (0 * Math.PI) / 180;
+        this.init();
     };
     init() {
         this.createMesh();
@@ -298,7 +298,7 @@ export class Information_Point {
     update(planet) {
         // ====================POSITION====================
         const position = planet.mesh.position.clone();
-        const radius = planet.computeRadius * 2;
+        const radius = planet.computeRadius * 1.5;
         this.theta += planet.computeRevolution;
         position.x += radius * Math.sin(this.theta) * Math.cos(this.phi);
         position.y += radius * Math.sin(this.theta) * Math.sin(this.phi) + radius;
@@ -311,10 +311,9 @@ export class Information_Point {
         for(let i = 0; i<this.circle_Rects.length; i++){
             this.circle_Rects[i].update(look,position);
         }
-
         this.circle_Line_01.update(look, position);
         this.circle_Line_02.update(look, position);
         this.circle_Line_03.update(look, position);
         this.circle_Line_04.update(look, position);
-    }
-}
+    };
+};

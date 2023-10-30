@@ -1,11 +1,11 @@
 <template>
     <div id="orbit-container">
-        <div v-if="display" id="orbit-wrap">
+        <!-- <div v-if="display" id="orbit-wrap">
             <div class="orbit">
                 <OrbitTitle :main="title.main" :sub="title.sub" />
                 <OrbitParams :data="list" />
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
