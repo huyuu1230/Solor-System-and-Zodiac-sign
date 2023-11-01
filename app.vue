@@ -59,24 +59,27 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { WebGL } from "~/assets/js/module_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
-import { Information_Point } from "~/assets/js/module_PLANET_INFO";
-import { Information_Distance_Point, Distance_Information } from "~/assets/js/module_Info_distance";
-import { Line } from "~/assets/js/module_Info_speed";
+
+import { Point_Name } from "~/assets/js/planet_information/point_name";
+import { Point_Size } from "~/assets/js/planet_information/point_size";
+import { Point_Distance } from "~/assets/js/planet_information/point_distance";
+import { Point_Speed } from "~/assets/js/planet_information/point_speed";
+
+import { Line } from "~/assets/js/planet_information/information_line";
+
 
 let THREE_PLANET;
 let THREE_SIGN;
 
-let TEST_BUTTON;
-let TEST_MERCURY;
-let TEST_JUPITER;
+let Earth_Point_Name;
+let Earth_Point_Size;
+let Earth_Point_Distance;
+let Earth_Point_Speed;
 
-let Test_Distance_Mercury;
-let Test_Distance_Earth;
-let Test_Distance_Jupiter;
-
-let Test_Distance_information;
-
-let Test_line;
+let Earth_Line_Name;
+let Earth_Line_Size;
+let Earth_Line_Distance;
+let Earth_Line_Speed;
 // ==================================================
 // 変数 : ナビゲーション
 // ==================================================
@@ -161,35 +164,43 @@ onMounted(() => {
 
 
 
-    TEST_BUTTON = new Information_Point(THREE_PLANET.Earth);
-    TEST_BUTTON.add(WEBGL.scene);
+    Earth_Point_Name = new Point_Name(THREE_PLANET.Earth);
+    Earth_Point_Size = new Point_Size(THREE_PLANET.Earth);
+    Earth_Point_Distance = new Point_Distance(THREE_PLANET.Earth);
+    Earth_Point_Speed = new Point_Speed(THREE_PLANET.Earth);
 
-    TEST_MERCURY = new Information_Point(THREE_PLANET.Mercury);
-    TEST_MERCURY.add(WEBGL.scene)
+    Earth_Point_Name.add(WEBGL.scene);
+    Earth_Point_Size.add(WEBGL.scene);
+    Earth_Point_Distance.add(WEBGL.scene);
+    Earth_Point_Speed.add(WEBGL.scene);
 
-    TEST_JUPITER = new Information_Point(THREE_PLANET.Jupiter);
-    TEST_JUPITER.add(WEBGL.scene);
-
-    Test_Distance_Mercury = new Information_Distance_Point(THREE_PLANET.Mercury);
-    Test_Distance_Mercury.add(WEBGL.scene);
-
-    Test_Distance_Earth = new Information_Distance_Point(THREE_PLANET.Earth);
-    Test_Distance_Earth.add(WEBGL.scene);
-
-    Test_Distance_Jupiter = new Information_Distance_Point(THREE_PLANET.Jupiter);
-    Test_Distance_Jupiter.add(WEBGL.scene);
-
-    Test_Distance_information = new Distance_Information(THREE_PLANET.Earth);
-    Test_Distance_information.add(WEBGL.scene);
-
-    console.log(TEST_BUTTON.circle_01.mesh.position)
-    console.log(Test_Distance_Earth.circle_01.mesh.position)
-    Test_line = new Line(
+    Earth_Line_Name = new Line(
       THREE_PLANET.Earth,
-      TEST_BUTTON.circle_01.mesh.position,
-      Test_Distance_Earth.circle_01.mesh.position
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Name.round_1.mesh.position
     );
-    WEBGL.scene.add(Test_line.mesh);
+    WEBGL.scene.add(Earth_Line_Name.mesh);
+    
+    Earth_Line_Size = new Line(
+      THREE_PLANET.Earth,
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Size.circle_01.mesh.position
+    );
+    WEBGL.scene.add(Earth_Line_Size.mesh);
+
+    Earth_Line_Distance = new Line(
+      THREE_PLANET.Earth,
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Distance.circle_01.mesh.position
+    );
+    WEBGL.scene.add(Earth_Line_Distance.mesh);
+
+    Earth_Line_Speed = new Line(
+      THREE_PLANET.Earth,
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Speed.circle.mesh.position
+    );
+    WEBGL.scene.add(Earth_Line_Speed.mesh);
 
     rendering();
   };
@@ -227,22 +238,27 @@ onMounted(() => {
     THREE_PLANET.update()
     WEBGL.rendering(THREE_PLANET, THREE_SIGN);
 
-    TEST_BUTTON.update(THREE_PLANET.Earth)
-    TEST_MERCURY.update(THREE_PLANET.Mercury);
-    TEST_JUPITER.update(THREE_PLANET.Jupiter);
+    Earth_Point_Name.update(THREE_PLANET.Earth);
+    Earth_Point_Size.update(THREE_PLANET.Earth);
+    Earth_Point_Distance.update(THREE_PLANET.Earth);
+    Earth_Point_Speed.update(THREE_PLANET.Earth);
 
-    Test_Distance_Mercury.update(THREE_PLANET.Mercury);
-    Test_Distance_Earth.update(THREE_PLANET.Earth);
-    Test_Distance_Jupiter.update(THREE_PLANET.Jupiter);
-
-    Test_Distance_information.update(THREE_PLANET.Earth);
-
-    Test_line.update(
-      TEST_BUTTON.circle_01.mesh.position,
-      Test_Distance_Earth.circle_01.mesh.position
-    )
-
-
+    Earth_Line_Name.update(
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Name.round_1.mesh.position
+    );
+    Earth_Line_Size.update(
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Size.circle_01.mesh.position
+    );
+    Earth_Line_Distance.update(
+      Earth_Point_Size.circle_01.mesh.position,
+      Earth_Point_Distance.circle_01.mesh.position
+    );
+    Earth_Line_Speed.update(
+      THREE_PLANET.Earth.mesh.position,
+      Earth_Point_Speed.circle.mesh.position
+    );
 
     requestAnimationFrame(rendering);
   };

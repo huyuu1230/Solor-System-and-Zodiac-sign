@@ -257,7 +257,7 @@ class Circle_LINE_04 {
 // ==================================================
 // 二つ目のポイント
 // ==================================================
-export class Information_Point {
+export class Point_Size {
     constructor(planet) {
         // figmaだとこれが100px
         this.base = planet.computeRadius * 0.22;
