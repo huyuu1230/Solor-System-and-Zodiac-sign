@@ -174,6 +174,8 @@ class Round_3 {
     };
 };
 
+
+
 export class Point_Name {
     constructor(planet) {
         this.base = planet.computeRadius * 0.22;
