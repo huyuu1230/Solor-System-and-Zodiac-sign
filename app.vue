@@ -4,28 +4,7 @@
     <div>
       <!--Canvas-->
       <div id="webgl-canvas"></div>
-    </div>
-
-    <div id="control-container">
-      <ul id="control-wrap">
-        <li>
-          <p id="control-control">
-            コントロール : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a>
-          </p>
-          <!-- <p>CONTROL : <a v-on:click="controlOn">ON</a> / <a v-on:click="controlOff">OFF</a></p> -->
-        </li>
-        <li>
-          <p id="control-trajectory">
-            星座の軌跡の表示 : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a>
-          </p>
-          <!-- <p>Trajectory : <a v-on:click="AllViewTrajectory">ON</a> / <a v-on:click="AllHideTrajectory">OFF</a></p> -->
-        </li>
-        <li>
-          <p id="control-information">
-            情報の表示 : <a v-on:click="informationOn">ON</a> / <a v-on:click="informationOff">OFF</a>
-          </p>
-        </li>
-      </ul>
+      <div id="webgl-canvas-2"></div>
     </div>
 
     <!--three.jsの惑星の座標-->
@@ -48,7 +27,9 @@
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
-    <NuxtPage :display="information" />
+    <NuxtPage :namePosition="namePoint" :sizePosition="textSizePosition" :distancePosition="textDistancePosition"
+      :revolutionPosition="textRevolutionPosition" :rotationPosition="textRotationPosition" />
+
   </div>
 </template>
 
@@ -57,49 +38,28 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { WebGL } from "~/assets/js/module_WebGL";
+import { WebGL_info } from "~/assets/js/planet_information/information_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
+import { Information } from "~/assets/js/planet_information/planet_information";
 
-import { Point_Name } from "~/assets/js/planet_information/point_name";
-import { Point_Size } from "~/assets/js/planet_information/point_size";
-import { Point_Distance } from "~/assets/js/planet_information/point_distance";
-import { Point_Speed } from "~/assets/js/planet_information/point_speed";
-
-import { Line } from "~/assets/js/planet_information/information_line";
-
+let namePoint = ref({ x: 0, y: 0 });
+let textSizePosition = ref({ x: 0, y: 0 });
+let textDistancePosition = ref({ x: 0, y: 0 });
+let textRevolutionPosition = ref({ x: 0, y: 0 });
+let textRotationPosition = ref({ x: 0, y: 0 });
 
 let THREE_PLANET;
 let THREE_SIGN;
 
-let Earth_Point_Name;
-let Earth_Point_Size;
-let Earth_Point_Distance;
-let Earth_Point_Speed;
-
-let Earth_Line_Name;
-let Earth_Line_Size;
-let Earth_Line_Distance;
-let Earth_Line_Speed;
-// ==================================================
-// 変数 : ナビゲーション
-// ==================================================
-const information = ref(true);
-
-function informationOn() {
-  information.value = true;
-  StyleInformation();
-};
-function informationOff() {
-  information.value = false;
-  StyleInformation();
-};
+let PlanetInformation;
 
 // ==================================================
 // 変数 : 設定関連
 // ==================================================
 const route = useRouter();
-let container;
 let WEBGL;
+let WEBGL2;
 // ==================================================
 // 変数 : 半径・距離・公転・自転に関する変数
 // ==================================================
@@ -115,15 +75,12 @@ let pc = ly * 3.26;
 // 変数 : カメラ制御
 // ==================================================
 let control = false;
-let trajectory = false;
+
 const fontPath = "/font/helvetiker_regular.typeface.json";
 // ==================================================
 // function 計算用
 // ==================================================
-// -----リープ関数・線形補完
-function lerp(x, y, a) {
-  return (1 - a) * x + a * y;
-};
+
 // -----度からラジアンに変換
 function toRad(deg) {
   return (deg * Math.PI) / 180;
@@ -135,22 +92,22 @@ let currentPage = useRoute().name;
 watch(
   () => currentPage = useRoute().name,
   () => {
-    controlOff();
     WEBGL.change_camera();
     THREE_SIGN.watch();
+    PlanetInformation.pointAnim = false;
+    PlanetInformation.lineAnim = false;
   },
 );
 // ====================================================================================================
 // MOUNTED
 // ====================================================================================================
 onMounted(() => {
-  container = document.getElementById("webgl-canvas");
+  const container = document.getElementById("webgl-canvas");
+  const container2 = document.getElementById("webgl-canvas-2");
   WEBGL = new WebGL(container);
+  WEBGL2 = new WebGL_info(container2)
 
   function init() {
-    // StyleControl();
-    // StyleTrajectory();
-    // StyleInformation();
     three_stardust();
 
     THREE_PLANET = new Three_Planet();
@@ -163,46 +120,18 @@ onMounted(() => {
     THREE_SIGN.watch();
 
 
+    PlanetInformation = new Information(WEBGL2.scene);
 
-    Earth_Point_Name = new Point_Name(THREE_PLANET.Earth);
-    Earth_Point_Size = new Point_Size(THREE_PLANET.Earth);
-    Earth_Point_Distance = new Point_Distance(THREE_PLANET.Earth);
-    Earth_Point_Speed = new Point_Speed(THREE_PLANET.Earth);
+    PlanetInformation.pointAnim = true;
+    PlanetInformation.lineAnim = true;
 
-    Earth_Point_Name.add(WEBGL.scene);
-    Earth_Point_Size.add(WEBGL.scene);
-    Earth_Point_Distance.add(WEBGL.scene);
-    Earth_Point_Speed.add(WEBGL.scene);
 
-    Earth_Line_Name = new Line(
-      THREE_PLANET.Earth,
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Name.round_1.mesh.position
-    );
-    WEBGL.scene.add(Earth_Line_Name.mesh);
+
     
-    Earth_Line_Size = new Line(
-      THREE_PLANET.Earth,
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Size.circle_01.mesh.position
-    );
-    WEBGL.scene.add(Earth_Line_Size.mesh);
-
-    Earth_Line_Distance = new Line(
-      THREE_PLANET.Earth,
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Distance.circle_01.mesh.position
-    );
-    WEBGL.scene.add(Earth_Line_Distance.mesh);
-
-    Earth_Line_Speed = new Line(
-      THREE_PLANET.Earth,
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Speed.circle.mesh.position
-    );
-    WEBGL.scene.add(Earth_Line_Speed.mesh);
 
     rendering();
+
+
   };
   init();
 
@@ -227,42 +156,39 @@ onMounted(() => {
   // ==================================================
   window.addEventListener('resize', () => {
     WEBGL.onResize();
+    WEBGL2.onResize();
   });
 
   // ==================================================
   // Rendering
   // ==================================================
   function rendering() {
-    WEBGL.update()
+    WEBGL.update();
+    WEBGL2.update();
 
     THREE_PLANET.update()
     WEBGL.rendering(THREE_PLANET, THREE_SIGN);
+    PlanetInformation.update();
 
-    Earth_Point_Name.update(THREE_PLANET.Earth);
-    Earth_Point_Size.update(THREE_PLANET.Earth);
-    Earth_Point_Distance.update(THREE_PLANET.Earth);
-    Earth_Point_Speed.update(THREE_PLANET.Earth);
+    namePoint.value = toScreen(PlanetInformation.textNamePosition);
+    textSizePosition.value = toScreen(PlanetInformation.textSizePosition);
+    textDistancePosition.value = toScreen(PlanetInformation.textDistancePosition);
+    textRevolutionPosition.value = toScreen(PlanetInformation.textRevolutionPosition);
+    textRotationPosition.value = toScreen(PlanetInformation.textRotationPosition);
 
-    Earth_Line_Name.update(
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Name.round_1.mesh.position
-    );
-    Earth_Line_Size.update(
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Size.circle_01.mesh.position
-    );
-    Earth_Line_Distance.update(
-      Earth_Point_Size.circle_01.mesh.position,
-      Earth_Point_Distance.circle_01.mesh.position
-    );
-    Earth_Line_Speed.update(
-      THREE_PLANET.Earth.mesh.position,
-      Earth_Point_Speed.circle.mesh.position
-    );
-
+    rendering_style();
     requestAnimationFrame(rendering);
   };
 });
+
+function toScreen(vec3) {
+  const worldPosition = vec3.clone();
+  const screenPosition = worldPosition.clone();
+  screenPosition.project(WEBGL2.camera);
+  const x = (screenPosition.x + 1) / 2 * window.innerWidth;
+  const y = (-screenPosition.y + 1) / 2 * window.innerHeight;
+  return { x: x, y: y };
+};
 
 // ==================================================
 // Function ページ遷移 & オブジェクト選択
@@ -301,19 +227,6 @@ function toNeptune() {
 };
 
 // ==================================================
-// カメラ制御
-// ==================================================
-
-// ----------コントロールをTrueに変更
-function controlOn() {
-  WEBGL.cameraControl = true;
-};
-// ----------コントロールをFalseに変更
-function controlOff() {
-  WEBGL.cameraControl = false;
-};
-
-// ==================================================
 // Function Style CSSの変更を行う関数
 // ==================================================
 function StylePlanet(dom, data) {
@@ -342,86 +255,26 @@ function StylePlanetName(dom, data) {
   elem.style.left = sx + 'px';
 };
 
-function worldPosition(data) {
-  const object3D = data;
-  const width = WEBGL.width;
-  const height = WEBGL.height;
-  const worldPosition = object3D.getWorldPosition(new THREE.Vector3());
-  const projection = worldPosition.project(WEBGL.camera);
-  const sx = (width / 2) * (+projection.x + 1.0);
-  const sy = (height / 2) * (-projection.y + 1.0);
-  console.log(sx, sy)
-};
-
 function rendering_style() {
   // -----惑星の位置を表す丸
-  StylePlanet('mercury', Mercury);
-  StylePlanet('venus', Venus);
+  StylePlanet('mercury', THREE_PLANET.Mercury);
+  StylePlanet('venus', THREE_PLANET.Venus);
   StylePlanet('earth', THREE_PLANET.Earth);
-  StylePlanet('mars', Mars);
-  StylePlanet('jupiter', Jupiter);
-  StylePlanet('saturn', Saturn);
-  StylePlanet('uranus', Uranus);
-  StylePlanet('neptune', Neptune);
+  StylePlanet('mars', THREE_PLANET.Mars);
+  StylePlanet('jupiter', THREE_PLANET.Jupiter);
+  StylePlanet('saturn', THREE_PLANET.Saturn);
+  StylePlanet('uranus', THREE_PLANET.Uranus);
+  StylePlanet('neptune', THREE_PLANET.Neptune);
   // -----惑星の位置を表す文字
-  StylePlanetName("mercury-name", Mercury);
-  StylePlanetName("venus-name", Venus);
-  StylePlanetName("earth-name", Earth);
-  StylePlanetName("mars-name", Mars);
-  StylePlanetName("jupiter-name", Jupiter);
-  StylePlanetName("saturn-name", Saturn);
-  StylePlanetName("uranus-name", Uranus);
-  StylePlanetName("neptune-name", Neptune);
+  StylePlanetName("mercury-name", THREE_PLANET.Mercury);
+  StylePlanetName("venus-name", THREE_PLANET.Venus);
+  StylePlanetName("earth-name", THREE_PLANET.Earth);
+  StylePlanetName("mars-name", THREE_PLANET.Mars);
+  StylePlanetName("jupiter-name", THREE_PLANET.Jupiter);
+  StylePlanetName("saturn-name", THREE_PLANET.Saturn);
+  StylePlanetName("uranus-name", THREE_PLANET.Uranus);
+  StylePlanetName("neptune-name", THREE_PLANET.Neptune);
 };
-
-function StyleControl() {
-  const dom = document.querySelectorAll("#control-control a");
-  if (control) {
-    remove();
-    dom[0].classList.add('active');
-  } else {
-    remove();
-    dom[1].classList.add('active');
-  };
-  function remove() {
-    for (let i = 0; i < dom.length; i++) {
-      dom[i].classList.remove('active');
-    };
-  };
-};
-
-function StyleTrajectory() {
-  const dom = document.querySelectorAll("#control-trajectory a");
-  if (trajectory) {
-    remove();
-    dom[0].classList.add('active');
-  } else {
-    remove();
-    dom[1].classList.add('active');
-  };
-  function remove() {
-    for (let i = 0; i < dom.length; i++) {
-      dom[i].classList.remove('active');
-    };
-  };
-};
-
-function StyleInformation() {
-  const dom = document.querySelectorAll("#control-information a");
-  if (information.value) {
-    remove();
-    dom[0].classList.add('active');
-  } else {
-    remove();
-    dom[1].classList.add('active');
-  };
-  function remove() {
-    for (let i = 0; i < dom.length; i++) {
-      dom[i].classList.remove('active');
-    };
-  };
-};
-
 </script>
 
 <style lang="scss">
@@ -440,7 +293,7 @@ h5,
 h6,
 p,
 a {
-  line-height: 1.5;
+  line-height: 1em;
 }
 
 a {
@@ -463,19 +316,6 @@ body {
 
 body::-webkit-scrollbar {
   display: none;
-}
-
-.nav-menu {
-  position: fixed;
-  left: 50%;
-  bottom: 50px;
-  transform: translate(-50%, 0);
-  z-index: 1000;
-
-  a {
-    color: #ffffff;
-    text-decoration: none;
-  }
 }
 
 // ==================================================
@@ -520,62 +360,21 @@ body::-webkit-scrollbar {
   font-size: 16px;
 }
 
-// ==================================================
-// Navigation Log
-// ==================================================
 
-.nav-log {
-  position: fixed;
-  right: 30px;
-  bottom: 30px;
-}
 
-// ==================================================
-// Navigation Control
-// ==================================================
 
-#control-container {
-  position: fixed;
-  right: 2.5vw;
-  bottom: 5vh;
-  z-index: 500;
+#planet-text {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  color: #ffffff;
 
-  #control-wrap {
-    li {
-      p {
-        text-align: right;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: default;
-
-        a {
-          display: inline-block;
-          opacity: 0.5;
-          cursor: pointer;
-        }
-      }
-    }
-
-    li:not(:first-child) {
-      margin: 10px 0 0 0;
-    }
+  h2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 2.5vw;
   }
-
-  p {
-    a {
-      display: inline-block;
-      cursor: pointer;
-    }
-  }
-}
-
-@media screen and (max-width:768px) {
-  #control-container {
-    bottom: 2.5vh;
-  }
-}
-
-.active {
-  opacity: 1 !important;
 }
 </style>

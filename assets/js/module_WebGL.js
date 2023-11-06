@@ -28,7 +28,7 @@ export class WebGL {
         this.scene = new THREE.Scene();
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.renderer = new THREE.WebGLRenderer({antialias:true});
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.setClearColor(new THREE.Color(0x000000));
         this.renderer.setSize(this.width, this.height);
@@ -52,8 +52,8 @@ export class WebGL {
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
     };
-    rendering(planet, sign){
-        if(this.cameraControl){
+    rendering(planet, sign) {
+        if (this.cameraControl) {
 
         } else {
             this.update_camera(planet, sign);
