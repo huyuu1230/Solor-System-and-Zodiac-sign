@@ -27,14 +27,12 @@
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
-    <NuxtPage :namePosition="namePoint" :sizePosition="textSizePosition" :distancePosition="textDistancePosition"
-      :revolutionPosition="textRevolutionPosition" :rotationPosition="textRotationPosition" />
+    <NuxtPage :namePosition="namePoint" :sizePosition="textSizePosition" :distancePosition="textDistancePosition" :revolutionPosition="textRevolutionPosition" :rotationPosition="textRotationPosition" />
 
   </div>
 </template>
 
 <script setup>
-
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { WebGL } from "~/assets/js/module_WebGL";
@@ -74,14 +72,10 @@ let pc = ly * 3.26;
 // ==================================================
 // 変数 : カメラ制御
 // ==================================================
-let control = false;
-
 const fontPath = "/font/helvetiker_regular.typeface.json";
 // ==================================================
 // function 計算用
 // ==================================================
-
-// -----度からラジアンに変換
 function toRad(deg) {
   return (deg * Math.PI) / 180;
 };
@@ -96,6 +90,12 @@ watch(
     THREE_SIGN.watch();
     PlanetInformation.pointAnim = false;
     PlanetInformation.lineAnim = false;
+    if (currentPage == "planets-mercury") {
+      setTimeout(() => {
+        PlanetInformation.pointAnim = true;
+        PlanetInformation.lineAnim = true;
+      }, 3000);
+    }
   },
 );
 // ====================================================================================================
@@ -119,19 +119,11 @@ onMounted(() => {
     THREE_SIGN.add_Trajectory(WEBGL.scene);
     THREE_SIGN.watch();
 
-
     PlanetInformation = new Information(WEBGL2.scene);
-
-    PlanetInformation.pointAnim = true;
-    PlanetInformation.lineAnim = true;
-
-
-
-    
+    // PlanetInformation.pointAnim = true;
+    // PlanetInformation.lineAnim = true;
 
     rendering();
-
-
   };
   init();
 
@@ -339,7 +331,6 @@ body::-webkit-scrollbar {
   z-index: -1;
 }
 
-
 .planet {
   position: fixed;
   top: 0px;
@@ -359,9 +350,6 @@ body::-webkit-scrollbar {
   left: 0;
   font-size: 16px;
 }
-
-
-
 
 #planet-text {
   position: relative;

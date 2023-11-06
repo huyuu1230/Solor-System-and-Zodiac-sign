@@ -52,7 +52,7 @@ class Line {
     };
     remove() {
         if (0 < this.progress) {
-            this.progress -= 1 / 120;
+            this.progress -= 1 / 60;
             this.count = easeInOutQuart(this.progress) * 60;
             this.mesh.geometry.setDrawRange(0, this.count * 6) // LineMeshは頂点が6倍
         };
@@ -91,7 +91,7 @@ class Circle {
     };
     remove() {
         if (0 < this.progress) {
-            this.progress -= 1 / 120;
+            this.progress -= 1 / 60;
             const count = easeInOutQuart(this.progress);
             this.thetaEnd = ((count * 360) * Math.PI) / 180;
             this.mesh.geometry.dispose();
@@ -147,7 +147,7 @@ class Round {
     };
     remove() {
         if (0 < this.progress) {
-            this.progress -= 1 / 120;
+            this.progress -= 1 / 60;
             const count = easeInOutQuart(this.progress);
             this.count = count * this.countLength;
             this.mesh.geometry.setDrawRange(0, this.count * 6) // LineMeshは頂点が6倍
@@ -201,7 +201,7 @@ class Rect {
     };
     remove() {
         if (0 < this.progress) {
-            this.progress -= 1 / 120;
+            this.progress -= 1 / 60;
             this.material.opacity = easeInOutQuart(this.progress);
         }
     };
@@ -395,6 +395,7 @@ class PointDistance {
  * ================================================== */
 class PointSpeed {
     constructor() {
+        this.count = 0;
         this.init();
     };
     init() {
@@ -608,6 +609,7 @@ export class Information {
     };
 
     update() {
+
         if (this.lineAnim) {
             this.lineUpdate();
         } else {
@@ -620,4 +622,30 @@ export class Information {
         };
     };
 
+    watch() {
+        const current = useRoute().name;
+        if (current == "planets-mercury") {
+
+        } else if (current == "planets-venus") {
+
+        }
+        else if (current == "planets-earth") {
+
+        }
+        else if (current == "planets-mars") {
+
+        }
+        else if (current == "planets-jupiter") {
+
+        }
+        else if (current == "planets-saturn") {
+
+        }
+        else if (current == "planets-uranus") {
+
+        }
+        else if (current == "planets-neptune") {
+
+        }
+    };
 };
