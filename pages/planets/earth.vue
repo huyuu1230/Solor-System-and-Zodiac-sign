@@ -2,7 +2,7 @@
     <div id="orbit-container">
         <div class="orbit">
             <h2 class="planet-info planet-info-name" :style="{ top: namePosition.y + 'px', left: namePosition.x + 'px' }">
-                {{ title.main }}
+                <span class="hide" ref="nameTest" v-for="(item, index) in title.main" :key="index">{{ item }}</span>
             </h2>
             <h3 class="planet-info planet-info-copy" :style="{ top: namePosition.y + 'px', left: namePosition.x + 'px' }">
                 {{ title.sub }}
@@ -13,22 +13,28 @@
             <p class="planet-info planet-info-body-r" :style="{ top: sizePosition.y + 'px', left: sizePosition.x + 'px' }">
                 {{ list.size.body }}
             </p>
-            <h4 class="planet-info planet-info-head-r" :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
+            <h4 class="planet-info planet-info-head-r"
+                :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
                 {{ list.distance.head }}
             </h4>
-            <p class="planet-info planet-info-body-r" :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
+            <p class="planet-info planet-info-body-r"
+                :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
                 {{ list.distance.body }}
             </p>
-            <h4 class="planet-info planet-info-head-l" :style="{top:revolutionPosition.y + 'px',left:revolutionPosition.x + 'px'}">
+            <h4 class="planet-info planet-info-head-l"
+                :style="{ top: revolutionPosition.y + 'px', left: revolutionPosition.x + 'px' }">
                 {{ list.revolution.head }}
             </h4>
-            <p class="planet-info planet-info-body-l" :style="{top:revolutionPosition.y + 'px',left:revolutionPosition.x + 'px'}">
+            <p class="planet-info planet-info-body-l"
+                :style="{ top: revolutionPosition.y + 'px', left: revolutionPosition.x + 'px' }">
                 {{ list.revolution.body }}
             </p>
-            <h4 class="planet-info planet-info-head-l" :style="{top:rotationPosition.y + 'px',left:rotationPosition.x + 'px'}">
+            <h4 class="planet-info planet-info-head-l"
+                :style="{ top: rotationPosition.y + 'px', left: rotationPosition.x + 'px' }">
                 {{ list.rotation.head }}
             </h4>
-            <p class="planet-info planet-info-body-l" :style="{top:rotationPosition.y + 'px',left:rotationPosition.x + 'px'}">
+            <p class="planet-info planet-info-body-l"
+                :style="{ top: rotationPosition.y + 'px', left: rotationPosition.x + 'px' }">
                 {{ list.rotation.body }}
             </p>
         </div>
@@ -88,6 +94,26 @@ const list = {
     },
 };
 
+function random(min: number, max: number): number {
+    return Math.floor(Math.random() * (max + 1 - min)) + min;
+};
+
+const nameTest = ref<HTMLSpanElement[]>([]);
+
+onMounted(()=>{
+    
+    for (let i = 0; i < nameTest.value.length; i++) {
+        const rand = random(0, nameTest.value.length);
+        console.log(nameTest.value[i])
+        if (rand == 0) {
+            nameTest.value[i].classList.remove('hide')
+        };
+    };
+})
+
+
+
+
 </script>
 
 <style lang="scss">
@@ -132,5 +158,13 @@ const list = {
     font-size: 1vw;
     transform: translate(0.5vw, 0.5vw);
     white-space: nowrap;
+}
+
+.view {
+    opacity: 1;
+}
+
+.hide {
+    opacity: 0;
 }
 </style>

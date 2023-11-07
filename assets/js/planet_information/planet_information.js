@@ -395,7 +395,6 @@ class PointDistance {
  * ================================================== */
 class PointSpeed {
     constructor() {
-        this.count = 0;
         this.init();
     };
     init() {
@@ -441,8 +440,8 @@ export class Information {
 
     constructor(scene) {
         this.scene = scene;
-        this.pointAnim = false;
-        this.lineAnim = false;
+        this.count = 0;
+        this.view = false;
         this.init();
     };
 
@@ -609,43 +608,61 @@ export class Information {
     };
 
     update() {
+        // 同時
+            this.updateDelay();
+            if (3 <= this.count) {
+                this.pointUpdate();
+                this.lineUpdate();
+            } else {
+                this.pointRemove();
+                this.lineRemove();
+            };
+        // 時間差
+        // this.updateDelay();
+        // if (3 <= this.count) {
+        //     this.pointUpdate();
+        //     if (3.5 <= this.count) {
+        //         this.lineUpdate();
+        //     }
+        // } else {
+        //     this.pointRemove();
+        //     this.lineRemove();
+        // };
+    };
 
-        if (this.lineAnim) {
-            this.lineUpdate();
-        } else {
-            this.lineRemove();
-        };
-        if (this.pointAnim) {
-            this.pointUpdate();
-        } else {
-            this.pointRemove();
+    updateDelay() {
+        if (this.count < 4 && this.view) {
+            this.count += 1 / 60;
         };
     };
 
     watch() {
         const current = useRoute().name;
+        this.count = 0;
         if (current == "planets-mercury") {
-
+            this.view = true;
         } else if (current == "planets-venus") {
-
+            this.view = true;
         }
         else if (current == "planets-earth") {
-
+            this.view = true;
         }
         else if (current == "planets-mars") {
-
+            this.view = true;
         }
         else if (current == "planets-jupiter") {
-
+            this.view = true;
         }
         else if (current == "planets-saturn") {
-
+            this.view = true;
         }
         else if (current == "planets-uranus") {
-
+            this.view = true;
         }
         else if (current == "planets-neptune") {
-
+            this.view = true;
+        } else {
+            this.view = false;
         }
     };
 };

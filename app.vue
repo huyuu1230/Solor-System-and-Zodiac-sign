@@ -88,14 +88,7 @@ watch(
   () => {
     WEBGL.change_camera();
     THREE_SIGN.watch();
-    PlanetInformation.pointAnim = false;
-    PlanetInformation.lineAnim = false;
-    if (currentPage == "planets-mercury") {
-      setTimeout(() => {
-        PlanetInformation.pointAnim = true;
-        PlanetInformation.lineAnim = true;
-      }, 3000);
-    }
+    PlanetInformation.watch()
   },
 );
 // ====================================================================================================
@@ -120,8 +113,8 @@ onMounted(() => {
     THREE_SIGN.watch();
 
     PlanetInformation = new Information(WEBGL2.scene);
-    // PlanetInformation.pointAnim = true;
-    // PlanetInformation.lineAnim = true;
+    PlanetInformation.watch();
+    
 
     rendering();
   };
