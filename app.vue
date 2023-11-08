@@ -40,6 +40,7 @@ import { WebGL_info } from "~/assets/js/planet_information/information_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
 import { Information } from "~/assets/js/planet_information/planet_information";
+import { Sign_information } from "~/assets/js/planet_information/sign_information";
 
 let namePoint = ref({ x: 0, y: 0 });
 let textSizePosition = ref({ x: 0, y: 0 });
@@ -51,7 +52,7 @@ let THREE_PLANET;
 let THREE_SIGN;
 
 let PlanetInformation;
-
+let SignInformation;
 // ==================================================
 // 変数 : 設定関連
 // ==================================================
@@ -95,6 +96,8 @@ watch(
 // MOUNTED
 // ====================================================================================================
 onMounted(() => {
+  console.log(window.innerWidth)
+  console.log(window.innerHeight)
   const container = document.getElementById("webgl-canvas");
   const container2 = document.getElementById("webgl-canvas-2");
   WEBGL = new WebGL(container);
@@ -114,6 +117,8 @@ onMounted(() => {
 
     PlanetInformation = new Information(WEBGL2.scene);
     PlanetInformation.watch();
+
+    SignInformation = new Sign_information(WEBGL2.scene);
     
 
     rendering();
@@ -160,6 +165,8 @@ onMounted(() => {
     textDistancePosition.value = toScreen(PlanetInformation.textDistancePosition);
     textRevolutionPosition.value = toScreen(PlanetInformation.textRevolutionPosition);
     textRotationPosition.value = toScreen(PlanetInformation.textRotationPosition);
+
+    SignInformation.update()
 
     rendering_style();
     requestAnimationFrame(rendering);
@@ -302,20 +309,6 @@ body {
 body::-webkit-scrollbar {
   display: none;
 }
-
-// ==================================================
-// ページ遷移アニメーション
-// ==================================================
-// .page-enter-active,
-// .page-leave-active {
-//   transition: all 0.5s;
-// }
-
-// .page-enter-from,
-// .page-leave-to {
-//   opacity: 0;
-//   filter: blur(1rem);
-// }
 
 #webgl-canvas {
   position: fixed;

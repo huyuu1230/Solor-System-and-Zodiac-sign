@@ -2,34 +2,60 @@
     <div id="orbit-container">
         <div class="orbit">
             <h2 class="planet-info planet-info-name" :style="{ top: namePosition.y + 'px', left: namePosition.x + 'px' }">
-                {{ title.main }}
+                <span class="hide" ref="textArray" v-for="(item, index) in title.main" :key="index">
+                    {{ item }}
+                </span>
             </h2>
             <h3 class="planet-info planet-info-copy" :style="{ top: namePosition.y + 'px', left: namePosition.x + 'px' }">
-                {{ title.sub }}
+                <span class="hide" ref="textArray" v-for="(item, index) in title.sub" :key="index">
+                    {{ item }}
+                </span>
             </h3>
             <h4 class="planet-info planet-info-head-r" :style="{ top: sizePosition.y + 'px', left: sizePosition.x + 'px' }">
-                {{ list.size.head }}
+                <span class="hide" ref="textArray" v-for="(item, index) in list.size.head" :key="index">
+                    {{ item }}
+                </span>
             </h4>
             <p class="planet-info planet-info-body-r" :style="{ top: sizePosition.y + 'px', left: sizePosition.x + 'px' }">
-                {{ list.size.body }}
+                <span class="hide" ref="textArray" v-for="(item, index) in list.size.body" :key="index">
+                    {{ item }}
+                </span>
             </p>
-            <h4 class="planet-info planet-info-head-r" :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
-                {{ list.distance.head }}
+            <h4 class="planet-info planet-info-head-r"
+                :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
+                <span class="hide" ref="textArray" v-for="(item, index) in list.distance.head" :key="index">
+                    {{ item }}
+                </span>
             </h4>
-            <p class="planet-info planet-info-body-r" :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
-                {{ list.distance.body }}
+            <p class="planet-info planet-info-body-r"
+                :style="{ top: distancePosition.y + 'px', left: distancePosition.x + 'px' }">
+                <span class="hide" ref="textArray" v-for="(item, index) in list.distance.body" :key="index">
+                    {{ item }}
+                </span>
             </p>
-            <h4 class="planet-info planet-info-head-l" :style="{top:revolutionPosition.y + 'px',left:revolutionPosition.x + 'px'}">
-                {{ list.revolution.head }}
+            <h4 class="planet-info planet-info-head-l"
+                :style="{ top: revolutionPosition.y + 'px', left: revolutionPosition.x + 'px' }">
+                <span class="hide" ref="textArray" v-for="(item, index) in list.revolution.head" :key="index">
+                    {{ item }}
+                </span>
             </h4>
-            <p class="planet-info planet-info-body-l" :style="{top:revolutionPosition.y + 'px',left:revolutionPosition.x + 'px'}">
-                {{ list.revolution.body }}
+            <p class="planet-info planet-info-body-l"
+                :style="{ top: revolutionPosition.y + 'px', left: revolutionPosition.x + 'px' }">
+                <span class="hide" ref="textArray" v-for="(item, index) in list.revolution.body" :key="index">
+                    {{ item }}
+                </span>
             </p>
-            <h4 class="planet-info planet-info-head-l" :style="{top:rotationPosition.y + 'px',left:rotationPosition.x + 'px'}">
-                {{ list.rotation.head }}
+            <h4 class="planet-info planet-info-head-l"
+                :style="{ top: rotationPosition.y + 'px', left: rotationPosition.x + 'px' }">
+                <span class="hide" ref="textArray" v-for="(item, index) in list.rotation.head" :key="index">
+                    {{ item }}
+                </span>
             </h4>
-            <p class="planet-info planet-info-body-l" :style="{top:rotationPosition.y + 'px',left:rotationPosition.x + 'px'}">
-                {{ list.rotation.body }}
+            <p class="planet-info planet-info-body-l"
+                :style="{ top: rotationPosition.y + 'px', left: rotationPosition.x + 'px' }">
+                <span class="hide" ref="textArray" v-for="(item, index) in list.rotation.body" :key="index">
+                    {{ item }}
+                </span>
             </p>
         </div>
     </div>
@@ -85,4 +111,30 @@ const list = {
         body: '24.62hour',
     },
 };
+
+function random(min: number, max: number): number {
+    return Math.floor(Math.random() * (max + 1 - min)) + min;
+};
+
+const textArray = ref<HTMLSpanElement[]>([]);
+
+let count: number = 60;
+
+onMounted(() => {
+    setTimeout(() => {
+        rendering();
+        function rendering() {
+            count--;
+            for (let i = 0; i < textArray.value.length; i++) {
+                const rand = random(0, count);
+                if (rand == 0) {
+                    textArray.value[i].classList.remove('hide');
+                };
+            };
+            if (0 < count) {
+                requestAnimationFrame(rendering);
+            };
+        };
+    }, 3000);
+});
 </script>
