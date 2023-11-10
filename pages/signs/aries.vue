@@ -1,18 +1,79 @@
 <template>
-    <div>
-        <div v-if="display" id="sign-page">
-            <div class="sign">
-                <SignPage :data="data" />
-            </div>
-            <div id="bg"></div>
-        </div>
+    <div class="sign">
+        <h2 class="sign-info sign-info-name" :style="{ top: sign.name.value.y + 'px', left: sign.name.value.x + 'px' }">
+            <span class="hide" ref="textArray" v-for="(item,index) in data.title.main" :key="index">
+            {{ item }}
+            </span>
+        </h2>
+        <p class="sign-info sign-info-copy" :style="{ top: sign.copy.value.y + 'px', left: sign.copy.value.x + 'px' }">
+            <span class="hide" ref="textArray" v-for="(item,index) in data.title.sub" :key="index">
+            {{ item }}
+            </span>
+        </p>
+        <p class="sign-info sign-info-body" :style="{ top: sign.body.value.y + 'px', left: sign.body.value.x + 'px' }">
+            <span class="hide" ref="textArray" v-for="(item,index) in data.body" :key="index">
+            {{ item }}
+            </span>
+        </p>
     </div>
 </template>
 
 <script setup lang="ts">
 
 interface Props {
-    display: boolean
+    planet: {
+        name: {
+            value: {
+                x: number,
+                y: number,
+            },
+        },
+        size: {
+            value: {
+                x: number,
+                y: number,
+            },
+        },
+        distance: {
+            value: {
+                x: number,
+                y: number,
+            },
+        },
+        revolution: {
+            value: {
+                x: number,
+                y: number,
+            },
+        },
+        rotation: {
+            value: {
+                x: number,
+                y: number,
+            },
+        },
+    };
+
+    sign: {
+        name: {
+            value: {
+                x: number,
+                y: number,
+            }
+        },
+        copy: {
+            value: {
+                x: number,
+                y: number,
+            }
+        },
+        body: {
+            value: {
+                x: number,
+                y: number,
+            }
+        },
+    };
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -27,6 +88,32 @@ const data = {
             牡羊座の人々は、エネルギッシュで行動的な性格を持っており、冒険心旺盛で競争心が強いことが多いです。彼らは決断力があり、新しいプロジェクトや挑戦に積極的に取り組みます。また、リーダーシップ能力にも優れており、目標達成に向けて努力を惜しまない傾向があります。
             占星術的には、牡羊座は個別主義、行動力、勇気、情熱などに焦点を当て、新しい始まりや成長を象徴するとされています。牡羊座は3月21日から4月19日までの期間に太陽が通過する星座であり、この期間に生まれた人々は牡羊座の特徴を強調された個性を持つとされています。`,
 };
+
+function random(min: number, max: number): number {
+    return Math.floor(Math.random() * (max + 1 - min)) + min;
+};
+
+const textArray = ref<HTMLSpanElement[]>([]);
+
+let count: number = 60;
+
+onMounted(() => {
+    setTimeout(() => {
+        rendering();
+        function rendering() {
+            count--;
+            for (let i = 0; i < textArray.value.length; i++) {
+                const rand = random(0, count);
+                if (rand == 0) {
+                    textArray.value[i].classList.remove('hide');
+                };
+            };
+            if (0 < count) {
+                requestAnimationFrame(rendering);
+            };
+        };
+    }, 3000);
+});
 </script>
 
 <style lang="scss">

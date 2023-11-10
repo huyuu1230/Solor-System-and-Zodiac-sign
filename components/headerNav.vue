@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 
-const siteTitle: string = "Solor System and Zodiac Signs";
+const siteTitle: string = "Solor System and Zodiac Sign";
 type HeaderLink = {
     text: string,
     path: string

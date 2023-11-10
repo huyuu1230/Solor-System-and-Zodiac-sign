@@ -27,7 +27,7 @@
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
-    <NuxtPage :namePosition="namePoint" :sizePosition="textSizePosition" :distancePosition="textDistancePosition" :revolutionPosition="textRevolutionPosition" :rotationPosition="textRotationPosition" />
+    <NuxtPage :planet="Planet_textposition" :sign="Sign_textPosition" />
 
   </div>
 </template>
@@ -40,13 +40,22 @@ import { WebGL_info } from "~/assets/js/planet_information/information_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";
 import { Three_Sign } from "~/assets/js/module_SIGN";
 import { Information } from "~/assets/js/planet_information/planet_information";
-import { Sign_information } from "~/assets/js/planet_information/sign_information";
+import { Sign_Information } from "~/assets/js/planet_information/sign_information";
 
-let namePoint = ref({ x: 0, y: 0 });
-let textSizePosition = ref({ x: 0, y: 0 });
-let textDistancePosition = ref({ x: 0, y: 0 });
-let textRevolutionPosition = ref({ x: 0, y: 0 });
-let textRotationPosition = ref({ x: 0, y: 0 });
+let Planet_textposition = {
+  name: ref({ x: 0, y: 0 }),
+  size: ref({ x: 0, y: 0 }),
+  distance: ref({ x: 0, y: 0 }),
+  revolution: ref({ x: 0, y: 0 }),
+  rotation: ref({ x: 0, y: 0 }),
+};
+
+let Sign_textPosition = {
+  name: ref({ x: 0, y: 0 }),
+  copy: ref({ x: 0, y: 0 }),
+  body: ref({ x: 0, y: 0 }),
+};
+
 
 let THREE_PLANET;
 let THREE_SIGN;
@@ -89,15 +98,14 @@ watch(
   () => {
     WEBGL.change_camera();
     THREE_SIGN.watch();
-    PlanetInformation.watch()
+    PlanetInformation.watch();
+    SignInformation.watch();
   },
 );
 // ====================================================================================================
 // MOUNTED
 // ====================================================================================================
 onMounted(() => {
-  console.log(window.innerWidth)
-  console.log(window.innerHeight)
   const container = document.getElementById("webgl-canvas");
   const container2 = document.getElementById("webgl-canvas-2");
   WEBGL = new WebGL(container);
@@ -118,8 +126,9 @@ onMounted(() => {
     PlanetInformation = new Information(WEBGL2.scene);
     PlanetInformation.watch();
 
-    SignInformation = new Sign_information(WEBGL2.scene);
-    
+    SignInformation = new Sign_Information(WEBGL2.scene);
+    SignInformation.watch();
+
 
     rendering();
   };
@@ -160,11 +169,15 @@ onMounted(() => {
     WEBGL.rendering(THREE_PLANET, THREE_SIGN);
     PlanetInformation.update();
 
-    namePoint.value = toScreen(PlanetInformation.textNamePosition);
-    textSizePosition.value = toScreen(PlanetInformation.textSizePosition);
-    textDistancePosition.value = toScreen(PlanetInformation.textDistancePosition);
-    textRevolutionPosition.value = toScreen(PlanetInformation.textRevolutionPosition);
-    textRotationPosition.value = toScreen(PlanetInformation.textRotationPosition);
+    Planet_textposition.name.value = toScreen(PlanetInformation.textNamePosition);
+    Planet_textposition.size.value = toScreen(PlanetInformation.textSizePosition);
+    Planet_textposition.distance.value = toScreen(PlanetInformation.textDistancePosition);
+    Planet_textposition.revolution.value = toScreen(PlanetInformation.textRevolutionPosition);
+    Planet_textposition.rotation.value = toScreen(PlanetInformation.textRotationPosition);
+
+    Sign_textPosition.name.value = toScreen(SignInformation.head.textNamePosition);
+    Sign_textPosition.copy.value = toScreen(SignInformation.head.textCopyPosition);
+    Sign_textPosition.body.value = toScreen(SignInformation.body.textBodyPosition);
 
     SignInformation.update()
 

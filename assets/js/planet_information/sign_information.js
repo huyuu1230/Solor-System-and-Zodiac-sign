@@ -100,36 +100,36 @@ class Circle {
     };
 };
 
-class Sign_head {
+class SignHead {
     constructor() {
         this.init();
     };
     init() {
-
+        this.pointCreate();
     };
-    create() {
+    pointCreate() {
         this.circle_01 = new Circle(5);
         this.circle_02 = new Circle(5);
         this.circle_03 = new Circle(10);
         this.circle_04 = new Circle(5);
         this.circle_05 = new Circle(5);
     };
-    add(scene){
+    pointAdd(scene) {
         scene.add(this.circle_01.mesh);
         scene.add(this.circle_02.mesh);
         scene.add(this.circle_03.mesh);
         scene.add(this.circle_04.mesh);
         scene.add(this.circle_05.mesh);
-    }
-    setPosition() {
-        const x = -900 * Math.cos(170 * Math.PI / 180);
-        const y = -900 * Math.sin(170 * Math.PI / 180);
+    };
+    pointPosition() {
+        const x = 1100 * Math.cos(170 * Math.PI / 180);
+        const y = 1100 * Math.sin(170 * Math.PI / 180);
         const z = 0;
-        const circle1_position = new THREE.Vector3(x,y,z);
+        const circle1_position = new THREE.Vector3(x, y, z);
 
         const circle2_position = circle1_position.clone();
-        circle2_position.x += 100 * Math.cos(45 * Math.PI  / 180);
-        circle2_position.y += 100 * Math.sin(45 * Math.PI  / 180);
+        circle2_position.x += 100 * Math.cos(45 * Math.PI / 180);
+        circle2_position.y += 100 * Math.sin(45 * Math.PI / 180);
 
         const circle3_position = circle2_position.clone();
         circle3_position.x += 100;
@@ -138,9 +138,9 @@ class Sign_head {
         circle4_position.x += 100 * Math.cos(45 * Math.PI / 180);
         circle4_position.y += 100 * Math.sin(45 * Math.PI / 180);
 
-        const circle5_position = circle4_position.clone();
+        const circle5_position = circle3_position.clone();
         circle5_position.x += 150 * Math.cos(-45 * Math.PI / 180);
-        circle5_position.y += 150 * Math.cos(-45 * Math.PI / 180);
+        circle5_position.y += 150 * Math.sin(-45 * Math.PI / 180);
 
         this.circle_01.position(circle1_position);
         this.circle_02.position(circle2_position);
@@ -148,55 +148,295 @@ class Sign_head {
         this.circle_04.position(circle4_position);
         this.circle_05.position(circle5_position);
     };
-    update(){
+
+    lineCreate() {
+        const line1_start = this.circle_01.mesh.position.clone();
+        const line1_end = this.circle_02.mesh.position.clone();
+        this.line_01 = new Line(line1_start, line1_end);
+
+        const line2_start = this.circle_02.mesh.position.clone();
+        const line2_end = this.circle_03.mesh.position.clone();
+        this.line_02 = new Line(line2_start, line2_end);
+
+        const line3_start = this.circle_03.mesh.position.clone();
+        const line3_end = this.circle_04.mesh.position.clone();
+        this.line_03 = new Line(line3_start, line3_end);
+
+        const line4_start = this.circle_04.mesh.position.clone();
+        const line4_end = this.circle_04.mesh.position.clone();
+        line4_end.x += 500;
+        this.line_04 = new Line(line4_start, line4_end);
+
+        const line5_start = this.circle_03.mesh.position.clone();
+        const line5_end = this.circle_05.mesh.position.clone();
+        this.line_05 = new Line(line5_start, line5_end);
+
+        const line6_start = this.circle_05.mesh.position.clone();
+        const line6_end = this.circle_05.mesh.position.clone();
+        line6_end.x += 500;
+        this.line_06 = new Line(line6_start, line6_end);
+
+        this.textNamePosition = line4_end;
+        this.textCopyPosition = line6_end;
+    };
+
+    lineAdd(scene) {
+        scene.add(this.line_01.mesh);
+        scene.add(this.line_02.mesh);
+        scene.add(this.line_03.mesh);
+        scene.add(this.line_04.mesh);
+        scene.add(this.line_05.mesh);
+        scene.add(this.line_06.mesh);
+    };
+
+    pointUpdate() {
         this.circle_01.update();
         this.circle_02.update();
         this.circle_03.update();
         this.circle_04.update();
         this.circle_05.update();
     };
-    remove(){
+    pointRemove() {
         this.circle_01.remove();
         this.circle_02.remove();
         this.circle_03.remove();
         this.circle_04.remove();
         this.circle_05.remove();
     };
+    lineUpdate() {
+        this.line_01.update();
+        this.line_02.update();
+        this.line_03.update();
+        this.line_04.update();
+        this.line_05.update();
+        this.line_06.update();
+    };
+    lineRemove() {
+        this.line_01.remove();
+        this.line_02.remove();
+        this.line_03.remove();
+        this.line_04.remove();
+        this.line_05.remove();
+        this.line_06.remove();
+    };
 };
 
-export class Sign_information {
-    constructor(scene) {
-        this.scene = scene;
+class SignBody {
+    constructor() {
         this.init();
     };
     init() {
-        this.create();
-        this.add();
+        this.pointCreate();
     };
-    create() {
-        const line_01_start = new THREE.Vector3(-900, 100, 0);
-        const line_01_end = line_01_start.clone();
-        line_01_end.x += 100 * Math.cos(45 * Math.PI / 180);
-        line_01_end.y += 100 * Math.sin(45 * Math.PI / 180);
-        line_01_end.z = 0;
-
-        this.line_01 = new Line(line_01_start, line_01_end);
-
-        this.circle_01 = new Circle(5);
-
-        const line_02_start = line_01_end.clone();
-        line_02_start.x -= 1;
-        line_02_start.y -= 1;
-        const line_02_end = line_02_start.clone();
-        line_02_end.x += 100;
-        this.line_02 = new Line(line_02_start, line_02_end);
+    pointCreate() {
+        this.circle_01 = new Circle(15);
+        this.circle_02 = new Circle(5);
+        this.circle_03 = new Circle(10);
+        this.circle_04 = new Circle(5);
     };
-    add() {
-        this.scene.add(this.line_01.mesh);
-        this.scene.add(this.line_02.mesh);
+    pointAdd(scene) {
+        scene.add(this.circle_01.mesh);
+        scene.add(this.circle_02.mesh);
+        scene.add(this.circle_03.mesh);
+        scene.add(this.circle_04.mesh);
     };
-    update() {
+    pointPosition() {
+        const x = 1100 * Math.cos(-15 * Math.PI / 180);
+        const y = 1100 * Math.sin(-15 * Math.PI / 180);
+        const z = 0;
+        const circle1_position = new THREE.Vector3(x, y, z);
+
+        const circle2_position = circle1_position.clone();
+        circle2_position.x += 100 * Math.cos(225 * Math.PI / 180);
+        circle2_position.y += 100 * Math.sin(225 * Math.PI / 180);
+
+        const circle3_position = circle2_position.clone();
+        circle3_position.x -= 100;
+
+        const circle4_position = circle3_position.clone();
+        circle4_position.x += 200 * Math.cos(225 * Math.PI / 180);
+        circle4_position.y += 200 * Math.sin(225 * Math.PI / 180);
+
+        this.circle_01.position(circle1_position);
+        this.circle_02.position(circle2_position);
+        this.circle_03.position(circle3_position);
+        this.circle_04.position(circle4_position);
+    };
+
+    pointUpdate() {
+        this.circle_01.update();
+        this.circle_02.update();
+        this.circle_03.update();
+        this.circle_04.update();
+    };
+
+    pointRemove() {
+        this.circle_01.remove();
+        this.circle_02.remove();
+        this.circle_03.remove();
+        this.circle_04.remove();
+    };
+
+    lineCreate() {
+        const line1_start = this.circle_01.mesh.position.clone();
+        const line1_end = this.circle_02.mesh.position.clone();
+
+        const line2_start = this.circle_02.mesh.position.clone();
+        const line2_end = this.circle_03.mesh.position.clone();
+
+        const line3_start = this.circle_03.mesh.position.clone();
+        const line3_end = this.circle_04.mesh.position.clone();
+
+        const line4_start = this.circle_04.mesh.position.clone();
+        const line4_end = this.circle_04.mesh.position.clone();
+        line4_end.x -= 1000;
+
+        this.line_01 = new Line(line1_start, line1_end);
+        this.line_02 = new Line(line2_start, line2_end);
+        this.line_03 = new Line(line3_start,line3_end);
+        this.line_04 = new Line(line4_start,line4_end);
+
+        this.textBodyPosition = line4_end;
+    };
+
+    lineAdd(scene){
+        scene.add(this.line_01.mesh);
+        scene.add(this.line_02.mesh);
+        scene.add(this.line_03.mesh);
+        scene.add(this.line_04.mesh);
+    };
+
+    lineUpdate(){
         this.line_01.update();
         this.line_02.update();
+        this.line_03.update();
+        this.line_04.update();
+    };
+
+    lineRemove(){
+        this.line_01.remove();
+        this.line_02.remove();
+        this.line_03.remove();
+        this.line_04.remove();
+    };
+};
+
+export class Sign_Information {
+    constructor(scene) {
+        this.scene = scene;
+        this.count = 0;
+        this.view = false;
+        this.init();
+    };
+    init() {
+        this.pointCreate();
+        this.pointAdd();
+        this.pointPosition();
+        this.lineCreate();
+        this.lineAdd()
+    };
+    pointCreate() {
+        this.head = new SignHead();
+        this.body = new SignBody();
+    };
+
+    pointAdd() {
+        this.head.pointAdd(this.scene);
+        this.body.pointAdd(this.scene);
+    };
+
+    pointPosition() {
+        this.head.pointPosition();
+        this.body.pointPosition();
+    };
+
+    pointUpdate() {
+        this.head.pointUpdate();
+        this.body.pointUpdate();
+    };
+
+    pointRemove() {
+        this.head.pointRemove();
+        this.body.pointRemove();
+    };
+
+    lineCreate() {
+        this.head.lineCreate();
+        this.body.lineCreate();
+    };
+
+    lineAdd() {
+        this.head.lineAdd(this.scene);
+        this.body.lineAdd(this.scene);
     }
+
+    lineUpdate() {
+        this.head.lineUpdate();
+        this.body.lineUpdate();
+    };
+
+    lineRemove() {
+        this.head.lineRemove();
+        this.body.lineRemove();
+    }
+
+    update() {
+        this.updateDelay();
+        if (3 <= this.count) {
+            this.pointUpdate();
+            this.lineUpdate();
+        } else {
+            this.pointRemove();
+            this.lineRemove();
+        };
+    };
+
+    updateDelay() {
+        if (this.count < 3 && this.view) {
+            this.count += 1 / 60;
+        };
+    };
+
+    watch(){
+        const current = useRoute().name;
+        this.count = 0;
+        if(current == "signs-aries"){
+            this.view = true;
+        }
+        else if (current == "signs-taurus") {
+            this.view = true;
+        }
+        else if (current == "signs-gemini") {
+            this.view = true;
+        }
+        else if (current == "signs-cancer") {
+            this.view = true;
+        }
+        else if (current == "signs-leo") {
+            this.view = true;
+        }
+        else if (current == "signs-virgo") {
+            this.view = true;
+        }
+        else if (current == "signs-libra") {
+            this.view = true;
+        }
+        else if (current == "signs-scorpius") {
+            this.view = true;
+        }
+        else if (current == "signs-sagittarius") {
+            this.view = true;
+        }
+        else if (current == "signs-capricornus") {
+            this.view = true;
+        }
+        else if (current == "signs-aquarius") {
+            this.view = true;
+        }
+        else if (current == "signs-pisces") {
+            this.view = true;
+        } else {
+            this.view = false;
+        };
+    };
 };

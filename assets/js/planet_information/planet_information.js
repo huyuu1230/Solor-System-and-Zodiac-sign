@@ -631,7 +631,7 @@ export class Information {
     };
 
     updateDelay() {
-        if (this.count < 4 && this.view) {
+        if (this.count < 3 && this.view) {
             this.count += 1 / 60;
         };
     };
