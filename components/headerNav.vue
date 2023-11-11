@@ -183,15 +183,15 @@ const abouts: HeaderLink[] = [
     //     path: '/about/greeting'
     // },
     {
-        text: 'EXPLANTION',
-        path: '/about/explanation'
+        text: 'ABOUT',
+        path: '/about/about'
     }
 ];
 // -----CONTACTS
 const contacts: HeaderLink[] = [
     {
-        text: 'PROFILE',
-        path: '/contacts/profile'
+        text: 'CONTACT',
+        path: '/contacts/contact'
     },
     // {
     //     text: 'MAIL',

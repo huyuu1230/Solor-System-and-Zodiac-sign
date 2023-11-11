@@ -1,7 +1,7 @@
 <template>
   <div>
     <headerNav />
-    <div>
+    <div id="webgl-container">
       <!--Canvas-->
       <div id="webgl-canvas"></div>
       <div id="webgl-canvas-2"></div>
@@ -322,12 +322,23 @@ body {
 body::-webkit-scrollbar {
   display: none;
 }
-
+#webgl-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+}
 #webgl-canvas {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: -10;
+}
+
+#webgl-canvas2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -9;
 }
 
 .planet {
