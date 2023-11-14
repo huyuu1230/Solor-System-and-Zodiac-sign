@@ -23,6 +23,12 @@
 
 <script setup>
 
+const HEAD_TITLE = ref("Contact - Solor System and Zodiac Sign");
+
+useHead({
+    title:HEAD_TITLE,
+});
+
 </script>
 
 <style lang="scss"></style>

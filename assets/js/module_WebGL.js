@@ -218,7 +218,10 @@ export class WebGL {
         } else if (current == "signs-pisces") {
             this.cameraLookEnd = this.#toSign_Look();
             this.cameraPositionEnd = this.#toSign_Position(sign.Pisces);
-        }
+        } else {
+            this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
+            this.cameraPositionEnd = new THREE.Vector3(0, au * 25, au * 50);
+        };
 
         this.#cameraLerpProgress();
         this.#cameraLerpLook(this.cameraLookStart, this.cameraLookEnd, this.cameraLookProgress);

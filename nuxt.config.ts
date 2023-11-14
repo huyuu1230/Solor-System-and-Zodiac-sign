@@ -1,7 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' }
+    head:{
+      title:'Solor System and Zodiac Sign',
+      meta:[
+        {name:'description',content:'The site about the planets of the solar system and the twelve zodiac constellations.'}
+      ]
+    }
   },
   css : [
     '@/assets/css/style.css'

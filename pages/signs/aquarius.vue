@@ -20,6 +20,12 @@
 
 <script setup lang="ts">
 
+const HEAD_TITLE = ref("Aquarius - Solor System and Zodiac Sign");
+
+useHead({
+    title:HEAD_TITLE,
+});
+
 interface Props {
     planet: {
         name: {
@@ -135,7 +141,7 @@ onMounted(() => {
 
 .sign-info-body {
     width: 40vw;
-    font-size: 0.5vw;
+    font-size: 0.6vw;
     line-height: 1.5em;
     transform: translate(1vw, -110%);
 }

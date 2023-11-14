@@ -34,7 +34,6 @@
 
 <script setup>
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { WebGL } from "~/assets/js/module_WebGL";
 import { WebGL_info } from "~/assets/js/planet_information/information_WebGL";
 import { Three_Planet } from "~/assets/js/module_PLANET";

@@ -63,6 +63,12 @@
 
 <script setup lang="ts">
 
+const HEAD_TITLE = ref("Mercury - Solor System and Zodiac Sign");
+
+useHead({
+    title:HEAD_TITLE,
+});
+
 interface Props {
     planet: {
         name: {

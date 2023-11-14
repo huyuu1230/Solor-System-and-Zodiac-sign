@@ -28,19 +28,19 @@
                 </h3>
                 <div class="about-content-body">
                     <p v-for="(item, index) in about_content.planet.body" :key="index">
-                        <span class="hide" ref="inputText" v-for="(child,index) in item" :key="index">
+                        <span class="hide" ref="inputText" v-for="(child, index) in item" :key="index">
                             {{ child }}
                         </span>
                     </p>
                 </div>
                 <h3>
-                    <span class="hide" ref="inputText" v-for="(item,index) in about_content.sign.head" :key="index">
+                    <span class="hide" ref="inputText" v-for="(item, index) in about_content.sign.head" :key="index">
                         {{ item }}
                     </span>
                 </h3>
                 <div class="about-content-body">
                     <p v-for="(item, index) in about_content.sign.body" :key="index">
-                        <span class="hide" ref="inputText" v-for="(child,index) in item" :key="index">
+                        <span class="hide" ref="inputText" v-for="(child, index) in item" :key="index">
                             {{ child }}
                         </span>
                     </p>
@@ -48,13 +48,13 @@
             </div>
             <div class="about-creator">
                 <h2>
-                    <span class="hide" ref="inputText" v-for="(item,index) in about_creator.head" :key="index">
+                    <span class="hide" ref="inputText" v-for="(item, index) in about_creator.head" :key="index">
                         {{ item }}
                     </span>
                 </h2>
                 <div class="about-creator-body">
                     <p v-for="(item, index) in about_creator.body" :key="index">
-                        <span class="hide" ref="inputText" v-for="(child,index) in item" :key="index">
+                        <span class="hide" ref="inputText" v-for="(child, index) in item" :key="index">
                             {{ child }}
                         </span>
                     </p>
@@ -66,6 +66,12 @@
 </template>
 
 <script setup lang="ts">
+
+const HEAD_TITLE = ref("About - Solor System and Zodiac Sign");
+
+useHead({
+    title: HEAD_TITLE,
+});
 
 interface Props {
     planet: {
@@ -171,7 +177,7 @@ onMounted(() => {
         if (count == 0 || count % 2 == 0) {
             inputText.value[count / 2].classList.remove('hide');
         };
-        if (count < inputText.value.length * 3) {
+        if (count < (inputText.value.length - 1) * 2) {
             requestAnimationFrame(rendering);
         };
         count++;

@@ -304,7 +304,7 @@ function shuffle_active(): void {
 header {
     font-family: 'Cormorant Garamond', serif;
     position: relative;
-    z-index: 1000;
+    z-index: 10000;
 
     #header {
         position: fixed;
