@@ -273,6 +273,80 @@ onMounted(() => {
     }
 }
 
+@media screen and (max-width:768px) {
+    #about-container{
+        #about{
+            width: 90vw;
+            text-align: left;
+            .about-head{
+                h2{
+                    font-size: 32px;
+                    text-align: center;
+                }
+
+                .about-head-body{
+                    p{
+                        font-size: 14px;
+                        line-height: 1.5em;
+                    }
+                    p:not(:first-child){
+                        margin: 0;
+                    }
+                }
+            }
+
+            .about-content{
+                margin: 64px 0 0;
+
+                h2{
+                    font-size: 32px;
+                    text-align: center;
+                }
+
+                h3{
+                    font-size: 24px;
+                    text-align: center;
+                }
+
+                .about-content-body{
+                    
+                    margin: 20px 0 0;
+                    
+                    p{
+                        font-size: 14px;
+                        line-height: 1.5em;
+                    }
+                    p:not(:first-child){
+                        margin: 0;
+                    }
+                }
+            }
+
+            .about-creator{
+                margin: 64px 0 0;
+
+                h2{
+                    font-size: 32px;
+                    text-align: center;
+                }
+
+                .about-creator-body{
+                    margin: 20px 0 0;
+                
+                    p{
+                        font-size: 14px;
+                        line-height: 1.5em;
+                    }
+                    p:not(:first-child){
+                        margin: 0;
+                    }
+                }
+
+            }
+        }
+    }
+}
+
 .hide {
     opacity: 0;
 }

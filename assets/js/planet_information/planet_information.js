@@ -216,7 +216,6 @@ class PointName {
     };
     init() {
         this.create();
-        this._setupPosition();
     };
     create() {
         this.round_01 = new Round(25, 10, 0, 360);
@@ -232,16 +231,13 @@ class PointName {
         scene.add(this.round_04.mesh);
         scene.add(this.round_05.mesh);
     };
-    _setupPosition() {
-        const r = 350;
-        const theta = (135 * Math.PI) / 180;
-        const x = r * Math.cos(theta);
-        const y = r * Math.sin(theta);
-        const z = 0;
-        const position = new THREE.Vector3(x, y, z);
+    _setupPosition(vec3) {
+        const position = vec3.clone();
         this.position = position;
     };
-    setPosition() {
+    setPosition(vec3) {
+        const position = vec3.clone();
+        this.position = position;
         this.round_01.position(this.position);
         this.round_02.position(this.position);
         this.round_03.position(this.position);
@@ -273,7 +269,6 @@ class PointSize {
 
     init() {
         this.create();
-        this._setupPosition();
     };
 
     create() {
@@ -300,15 +295,11 @@ class PointSize {
         };
     };
     _setupPosition() {
-        const r = 200;
-        const theta = (45 * Math.PI) / 180;
-        const x = r * Math.cos(theta);
-        const y = r * Math.sin(theta);
-        const z = 0;
-        const position = new THREE.Vector3(x, y, z);
-        this.position = position;
+
     };
-    setPosition() {
+    setPosition(vec3) {
+        const position = vec3.clone();
+        this.position = position;
         this.circle_01.position(this.position);
         this.round_01.position(this.position);
         this.round_02.position(this.position);
@@ -375,15 +366,11 @@ class PointDistance {
         this.round_03.remove();
     };
     _setupPosition(vec3) {
-        const r = 300;
-        const theta = (-45 * Math.PI) / 180;
-        const x = r * Math.cos(theta) + vec3.x;
-        const y = r * Math.sin(theta) + vec3.y;
-        const z = 0 + vec3.z;
-        this.position = new THREE.Vector3(x, y, z);
+
     };
     setPosition(vec3) {
-        this._setupPosition(vec3.clone());
+        const position = vec3.clone();
+        this.position = position;
         this.circle_01.position(this.position);
         this.round_01.position(this.position);
         this.round_02.position(this.position);
@@ -411,15 +398,11 @@ class PointSpeed {
         scene.add(this.round_02.mesh);
     };
     _setupPosition() {
-        const r = 250;
-        const theta = (225 * Math.PI) / 180;
-        const x = r * Math.cos(theta);
-        const y = r * Math.sin(theta);
-        const z = 0;
-        this.position = new THREE.Vector3(x, y, z);
-    }
-    setPosition() {
-        this._setupPosition();
+
+    };
+    setPosition(vec3) {
+        const position = vec3.clone();
+        this.position = position;
         this.circle_01.position(this.position);
         this.round_01.position(this.position);
         this.round_02.position(this.position);
@@ -468,10 +451,73 @@ export class Information {
     };
 
     pointPosition() {
-        this.pointName.setPosition();
-        this.pointSize.setPosition();
-        this.pointDistance.setPosition(this.pointSize.position);
-        this.pointSpeed.setPosition();
+        const name_r = 350;
+        const name_theta = (135 * Math.PI) / 180;
+        const name_x = name_r * Math.cos(name_theta);
+        const name_y = name_r * Math.sin(name_theta);
+        const name_z = 0;
+        const name_position = new THREE.Vector3(name_x, name_y, name_z);
+
+        this.pointName.setPosition(name_position);
+
+        const size_r = 200;
+        const size_theta = (45 * Math.PI) / 180;
+        const size_x = size_r * Math.cos(size_theta);
+        const size_y = size_r * Math.sin(size_theta);
+        const size_z = 0;
+        const size_position = new THREE.Vector3(size_x, size_y, size_z);
+
+        this.pointSize.setPosition(size_position);
+
+        const distance_r = 300;
+        const distance_theta = (-45 * Math.PI) / 180;
+        const distance_x = distance_r * Math.cos(distance_theta) + size_position.x;
+        const distance_y = distance_r * Math.sin(distance_theta) + size_position.y;
+        const distance_z = 0 + size_position.z;
+        const distance_position = new THREE.Vector3(distance_x, distance_y, distance_z);
+        this.pointDistance.setPosition(distance_position);
+
+        const speed_r = 250;
+        const speed_theta = (225 * Math.PI) / 180;
+        const speed_x = speed_r * Math.cos(speed_theta);
+        const speed_y = speed_r * Math.sin(speed_theta);
+        const speed_z = 0;
+        const speed_position = new THREE.Vector3(speed_x, speed_y, speed_z);
+
+        this.pointSpeed.setPosition(speed_position);
+        this.SP_pointPosition()
+    };
+    // SP
+    SP_pointPosition() {
+        if (window.innerWidth < 768) {
+
+            const name_x = 250;
+            const name_y = 500;
+            const name_z = 0;
+            const name_position = new THREE.Vector3(name_x, name_y, name_z);
+
+            this.pointName.setPosition(name_position);
+
+            const size_x = -250;
+            const size_y = 200;
+            const size_z = 0;
+            const size_position = new THREE.Vector3(size_x, size_y, size_z);
+
+            this.pointSize.setPosition(size_position);
+
+            const distance_x = -250;
+            const distance_y = -650;
+            const distance_z = 0;
+            const distance_position = new THREE.Vector3(distance_x, distance_y, distance_z)
+            this.pointDistance.setPosition(distance_position);
+
+            const speed_x = 250;
+            const speed_y = -350;
+            const speed_z = 0;
+            const speed_position = new THREE.Vector3(speed_x, speed_y, speed_z);
+
+            this.pointSpeed.setPosition(speed_position);
+        };
     };
 
     pointUpdate() {
@@ -578,18 +624,35 @@ export class Information {
     };
 
     lineUpdate() {
-        this.toName.update();
-        this.toName2.update();
-        this.toSize.update();
-        this.toSize2.update();
-        this.toSize3.update();
-        this.toDistance.update();
-        this.toDistance2.update();
-        this.toSpeed.update();
-        this.toRevolution.update();
-        this.toRevolution2.update();
-        this.toRotation.update();
-        this.toRotation2.update();
+        if (window.innerWidth > 768) {
+            this.toName.update();
+            this.toName2.update();
+            this.toSize.update();
+            this.toSize2.update();
+            this.toSize3.update();
+            this.toDistance.update();
+            this.toDistance2.update();
+            this.toSpeed.update();
+            this.toRevolution.update();
+            this.toRevolution2.update();
+            this.toRotation.update();
+            this.toRotation2.update();
+        };
+        // SP
+        if (window.innerWidth < 768) {
+            // this.toName.update();
+            this.toName2.update();
+            // this.toSize.update();
+            this.toSize2.update();
+            this.toSize3.update();
+            // this.toDistance.update();
+            this.toDistance2.update();
+            // this.toSpeed.update();
+            this.toRevolution.update();
+            this.toRevolution2.update();
+            this.toRotation.update();
+            this.toRotation2.update();
+        }
     };
 
     lineRemove() {
@@ -605,18 +668,21 @@ export class Information {
         this.toRevolution2.remove();
         this.toRotation.remove();
         this.toRotation2.remove();
+        if (window.innerWidth < 768) {
+
+        }
     };
 
     update() {
         // 同時
-            this.updateDelay();
-            if (3 <= this.count) {
-                this.pointUpdate();
-                this.lineUpdate();
-            } else {
-                this.pointRemove();
-                this.lineRemove();
-            };
+        this.updateDelay();
+        if (3 <= this.count) {
+            this.pointUpdate();
+            this.lineUpdate();
+        } else {
+            this.pointRemove();
+            this.lineRemove();
+        };
         // 時間差
         // this.updateDelay();
         // if (3 <= this.count) {

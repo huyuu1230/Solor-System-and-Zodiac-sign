@@ -93,6 +93,11 @@ export class WebGL {
         this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
         this.cameraPositionStart = new THREE.Vector3(0, au * 25, au * 50);
         this.cameraPositionEnd = new THREE.Vector3(0, au * 25, au * 50);
+        // SP
+        if (window.innerWidth < 768) {
+            this.cameraPositionStart = new THREE.Vector3(0, au * 50, au * 100);
+            this.cameraPositionEnd = new THREE.Vector3(0, au * 50, au * 100);
+        }
         this.cameraLookProgress = 0;
         this.cameraPositionProgress = 0;
     };
@@ -139,6 +144,10 @@ export class WebGL {
         if (current == "index") {
             this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
             this.cameraPositionEnd = new THREE.Vector3(0, au * 25, au * 50);
+            // SP
+            if (window.innerWidth < 768) {
+                this.cameraPositionEnd = new THREE.Vector3(0, au * 50, au * 100);
+            }
         }
         else if (current == "planets-mercury") {
             this.cameraLookEnd = this.#toPlanet_Look(planet.Mercury);
@@ -220,7 +229,10 @@ export class WebGL {
             this.cameraPositionEnd = this.#toSign_Position(sign.Pisces);
         } else {
             this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
-            this.cameraPositionEnd = new THREE.Vector3(0, au * 25, au * 50);
+            // SP
+            if (window.innerWidth < 768) {
+                this.cameraPositionEnd = new THREE.Vector3(0, au * 50, au * 100);
+            }
         };
 
         this.#cameraLerpProgress();
@@ -244,9 +256,16 @@ export class WebGL {
         const radius = planet.computeRadius;
         const theta = planet.alphaRad;
         const phi = planet.deltaRad;
-        const x = (distance + radius * 10) * Math.sin(theta) * Math.cos(phi);
-        const y = (distance + radius * 10) * Math.sin(theta) * Math.sin(phi);
-        const z = (distance + radius * 10) * Math.cos(theta);
+        let x, y, z;
+        if (window.innerWidth > 768) {
+            x = (distance + radius * 10) * Math.sin(theta) * Math.cos(phi);
+            y = (distance + radius * 10) * Math.sin(theta) * Math.sin(phi);
+            z = (distance + radius * 10) * Math.cos(theta);
+        } else {
+            x = (distance + radius * 15) * Math.sin(theta) * Math.cos(phi);
+            y = (distance + radius * 15) * Math.sin(theta) * Math.sin(phi);
+            z = (distance + radius * 15) * Math.cos(theta);
+        }
         return new THREE.Vector3(x, y, z);
     };
 
@@ -263,9 +282,16 @@ export class WebGL {
             y += sign[key].y;
             z += sign[key].z;
         };
-        x = x / Object.keys(sign).length * 2;
-        y = y / Object.keys(sign).length * 2;
-        z = z / Object.keys(sign).length * 2;
+        // SP
+        if (window.innerWidth > 768) {
+            x = x / Object.keys(sign).length * 2;
+            y = y / Object.keys(sign).length * 2;
+            z = z / Object.keys(sign).length * 2;
+        } else {
+            x = x / Object.keys(sign).length * 3;
+            y = y / Object.keys(sign).length * 3;
+            z = z / Object.keys(sign).length * 3;
+        };
         return new THREE.Vector3(x, y, z);
     };
 };

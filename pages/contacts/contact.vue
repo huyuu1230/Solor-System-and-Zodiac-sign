@@ -26,7 +26,7 @@
 const HEAD_TITLE = ref("Contact - Solor System and Zodiac Sign");
 
 useHead({
-    title:HEAD_TITLE,
+    title: HEAD_TITLE,
 });
 
 </script>
@@ -77,7 +77,8 @@ useHead({
         margin: 0 50px;
     }
 }
-#contact-container{
+
+#contact-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -86,4 +87,37 @@ useHead({
     background-color: rgba($color: #000000, $alpha: 0.5);
     z-index: 50;
 }
-</style>
+
+@media screen and (max-width:768px) {
+    #contact {
+        display: block;
+
+
+        .contact-content {
+            width: 90vw;
+
+            h2 {
+                font-size: 32px;
+            }
+
+            p {
+                margin: 32px;
+                line-height: 1.5em;
+            }
+
+            ul {
+                margin: 32px;
+
+                li {
+                    font-size: 12px;
+                }
+            }
+        }
+
+        .contact-line {
+            width: 100%;
+            height: 1px;
+            margin: 32px auto;
+        }
+    }
+}</style>

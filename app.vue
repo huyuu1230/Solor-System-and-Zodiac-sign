@@ -55,7 +55,6 @@ let Sign_textPosition = {
   body: ref({ x: 0, y: 0 }),
 };
 
-
 let THREE_PLANET;
 let THREE_SIGN;
 

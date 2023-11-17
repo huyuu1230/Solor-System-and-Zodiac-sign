@@ -147,6 +147,34 @@ class SignHead {
         this.circle_03.position(circle3_position);
         this.circle_04.position(circle4_position);
         this.circle_05.position(circle5_position);
+        // SP
+        if (window.innerWidth < 768) {
+            const x = -450;
+            const y = 400;
+            const z = 0;
+            const circle1_position = new THREE.Vector3(x, y, z);
+
+            const circle2_position = circle1_position.clone();
+            circle2_position.x += 100 * Math.cos(45 * Math.PI / 180);
+            circle2_position.y += 100 * Math.sin(45 * Math.PI / 180);
+
+            const circle3_position = circle2_position.clone();
+            circle3_position.x += 100;
+
+            const circle4_position = circle3_position.clone();
+            circle4_position.x += 100 * Math.cos(45 * Math.PI / 180);
+            circle4_position.y += 100 * Math.sin(45 * Math.PI / 180);
+
+            const circle5_position = circle3_position.clone();
+            circle5_position.x += 150 * Math.cos(-45 * Math.PI / 180);
+            circle5_position.y += 150 * Math.sin(-45 * Math.PI / 180);
+
+            this.circle_01.position(circle1_position);
+            this.circle_02.position(circle2_position);
+            this.circle_03.position(circle3_position);
+            this.circle_04.position(circle4_position);
+            this.circle_05.position(circle5_position);
+        }
     };
 
     lineCreate() {
@@ -261,6 +289,29 @@ class SignBody {
         this.circle_02.position(circle2_position);
         this.circle_03.position(circle3_position);
         this.circle_04.position(circle4_position);
+        // SP
+        if(window.innerWidth < 768){
+            const x = 1100 * Math.cos(-15 * Math.PI / 180) - 50;
+        const y = 1100 * Math.sin(-15 * Math.PI / 180) - 200;
+        const z = 0;
+        const circle1_position = new THREE.Vector3(x, y, z);
+
+        const circle2_position = circle1_position.clone();
+        circle2_position.x += 100 * Math.cos(225 * Math.PI / 180);
+        circle2_position.y += 100 * Math.sin(225 * Math.PI / 180);
+
+        const circle3_position = circle2_position.clone();
+        circle3_position.x -= 100;
+
+        const circle4_position = circle3_position.clone();
+        circle4_position.x += 200 * Math.cos(225 * Math.PI / 180);
+        circle4_position.y += 200 * Math.sin(225 * Math.PI / 180);
+
+        this.circle_01.position(circle1_position);
+        this.circle_02.position(circle2_position);
+        this.circle_03.position(circle3_position);
+        this.circle_04.position(circle4_position);
+        }
     };
 
     pointUpdate() {
@@ -293,27 +344,27 @@ class SignBody {
 
         this.line_01 = new Line(line1_start, line1_end);
         this.line_02 = new Line(line2_start, line2_end);
-        this.line_03 = new Line(line3_start,line3_end);
-        this.line_04 = new Line(line4_start,line4_end);
+        this.line_03 = new Line(line3_start, line3_end);
+        this.line_04 = new Line(line4_start, line4_end);
 
         this.textBodyPosition = line4_end;
     };
 
-    lineAdd(scene){
+    lineAdd(scene) {
         scene.add(this.line_01.mesh);
         scene.add(this.line_02.mesh);
         scene.add(this.line_03.mesh);
         scene.add(this.line_04.mesh);
     };
 
-    lineUpdate(){
+    lineUpdate() {
         this.line_01.update();
         this.line_02.update();
         this.line_03.update();
         this.line_04.update();
     };
 
-    lineRemove(){
+    lineRemove() {
         this.line_01.remove();
         this.line_02.remove();
         this.line_03.remove();
@@ -397,10 +448,10 @@ export class Sign_Information {
         };
     };
 
-    watch(){
+    watch() {
         const current = useRoute().name;
         this.count = 0;
-        if(current == "signs-aries"){
+        if (current == "signs-aries") {
             this.view = true;
         }
         else if (current == "signs-taurus") {

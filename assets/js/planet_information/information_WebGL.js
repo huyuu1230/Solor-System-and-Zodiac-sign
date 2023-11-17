@@ -66,6 +66,14 @@ export class WebGL_info {
             0,
             (1080 / 2) / Math.tan((this.cameraFov / 2) * (Math.PI / 180))
         );
+        // SP
+        if(window.innerWidth < 768){
+            this.camera.position.set(
+                0,
+                0,
+                (1080 * 1.4 / 2) / Math.tan((this.cameraFov / 2) * (Math.PI / 180))
+            );
+        };
     };
     // ==================================================
     // その他

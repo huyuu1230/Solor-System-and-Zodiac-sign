@@ -146,6 +146,27 @@ onMounted(() => {
     transform: translate(1vw, -110%);
 }
 
+@media screen and (max-width:768px) {
+    .sign-info-name {
+    font-size: 8vw;
+    transform: translate(-100%, -8vw);
+}
+
+.sign-info-copy {
+    width: 70vw;
+    text-align: right;
+    font-size: 4vw;
+    transform: translate(-100%, -110%);
+}
+
+.sign-info-body {
+    width: 85vw;
+    font-size: 2vw;
+    line-height: 1.5em;
+    transform: translate(2vw, -110%);
+}
+}
+
 .hide {
     opacity: 0;
 }

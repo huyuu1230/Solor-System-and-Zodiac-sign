@@ -1,22 +1,26 @@
 <template>
     <div id="orbit-container">
         <div class="orbit">
-            <h2 class="planet-info planet-info-name" :style="{ top: planet.name.value.y + 'px', left: planet.name.value.x + 'px' }">
+            <h2 class="planet-info planet-info-name"
+                :style="{ top: planet.name.value.y + 'px', left: planet.name.value.x + 'px' }">
                 <span class="hide" ref="textArray" v-for="(item, index) in title.main" :key="index">
                     {{ item }}
                 </span>
             </h2>
-            <h3 class="planet-info planet-info-copy" :style="{ top: planet.name.value.y + 'px', left: planet.name.value.x + 'px' }">
+            <h3 class="planet-info planet-info-copy"
+                :style="{ top: planet.name.value.y + 'px', left: planet.name.value.x + 'px' }">
                 <span class="hide" ref="textArray" v-for="(item, index) in title.sub" :key="index">
                     {{ item }}
                 </span>
             </h3>
-            <h4 class="planet-info planet-info-head-r" :style="{ top: planet.size.value.y + 'px', left: planet.size.value.x + 'px' }">
+            <h4 class="planet-info planet-info-head-r"
+                :style="{ top: planet.size.value.y + 'px', left: planet.size.value.x + 'px' }">
                 <span class="hide" ref="textArray" v-for="(item, index) in list.size.head" :key="index">
                     {{ item }}
                 </span>
             </h4>
-            <p class="planet-info planet-info-body-r" :style="{ top: planet.size.value.y + 'px', left: planet.size.value.x + 'px' }">
+            <p class="planet-info planet-info-body-r"
+                :style="{ top: planet.size.value.y + 'px', left: planet.size.value.x + 'px' }">
                 <span class="hide" ref="textArray" v-for="(item, index) in list.size.body" :key="index">
                     {{ item }}
                 </span>
@@ -66,7 +70,7 @@
 const HEAD_TITLE = ref("Earth - Solor System and Zodiac Sign");
 
 useHead({
-    title:HEAD_TITLE,
+    title: HEAD_TITLE,
 });
 
 interface Props {
@@ -201,6 +205,43 @@ onMounted(() => {
     font-size: 1vw;
     transform: translate(0.5vw, 0.5vw);
     white-space: nowrap;
+}
+
+@media screen and (max-width:768px) {
+    .planet-info-name {
+        font-size: 10vw;
+        transform: translate(0.5vw, -12vw);
+    }
+
+    .planet-info-copy {
+        width: 60vw;
+        font-size: 4vw;
+        transform: translate(0.5vw, 2vw);
+    }
+
+    .planet-info-head-r {
+        font-size: 5vw;
+        transform: translate(-100%, -6vw);
+        white-space: nowrap;
+    }
+
+    .planet-info-body-r {
+        font-size: 3vw;
+        transform: translate(-100%, 1vw);
+        white-space: nowrap;
+    }
+
+    .planet-info-head-l {
+        font-size: 5vw;
+        transform: translate(0.5vw, -6vw);
+        white-space: nowrap;
+    }
+
+    .planet-info-body-l {
+        font-size: 3vw;
+        transform: translate(0.5vw, 1vw);
+        white-space: nowrap;
+    }
 }
 
 .view {
