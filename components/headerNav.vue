@@ -19,7 +19,7 @@
                 <h2>
                     Solor System<br>
                     and<br>
-                    Zodiac Signs
+                    Zodiac Sign
                 </h2>
             </div>
             <div class="header-toggle-line"></div>
@@ -75,7 +75,7 @@
             </nav>
         </div>
         <div id="header-copyright" class="header-copyright-from">
-            <h6>copyright.Solor_System_and_Zodiac_Signs</h6>
+            <h6>copyright.Solor_System_and_Zodiac_Sign</h6>
         </div>
     </header>
 </template>
@@ -555,6 +555,11 @@ header {
                 margin: 0 0 24px;
             }
         }
+        #header-copyright {
+        h6{
+            font-size: 12px;
+        }
+    }
     }
 }
 

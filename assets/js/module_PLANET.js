@@ -38,10 +38,39 @@ class Planet_Sun {
         this.material = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             wireframe: true,
+            transparent:true,
         });
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(this.x, this.y, this.z);
         this.mesh.name = "sun";
+    }
+    watch() {
+        const current = useRoute().name;
+        if (current == "planets-mercury") {
+            this.mesh.material.opacity = 0;
+        } else if (current == "planets-venus") {
+            this.mesh.material.opacity = 0;
+        }
+        else if (current == "planets-earth") {
+            this.mesh.material.opacity = 0;
+        }
+        else if (current == "planets-mars") {
+            this.mesh.material.opacity = 0;
+        }
+        else if (current == "planets-jupiter") {
+            this.mesh.material.opacity = 0;
+        }
+        else if (current == "planets-saturn") {
+            this.mesh.material.opacity = 0;
+        }
+        else if (current == "planets-uranus") {
+            this.mesh.material.opacity = 0;
+        }
+        else if (current == "planets-neptune") {
+            this.mesh.material.opacity = 0;
+        } else {
+            this.mesh.material.opacity = 1;
+        }
     }
 };
 
@@ -155,7 +184,7 @@ export class Three_Planet {
         this.Uranus = this.#createPlanet(PLANET.Uranus);
         this.Neptune = this.#createPlanet(PLANET.Neptune);
     };
-    
+
     add_planet(scene) {
         scene.add(this.Sun.mesh);
         scene.add(this.Mercury.mesh);
@@ -199,6 +228,10 @@ export class Three_Planet {
         this.Saturn.update();
         this.Uranus.update();
         this.Neptune.update();
+    };
+
+    watch(){
+        this.Sun.watch();
     };
 
     #createPlanet(data) {

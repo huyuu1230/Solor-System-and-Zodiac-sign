@@ -78,10 +78,6 @@ let au = earthRadius * 23533.69;
 let ly = au * 63241;
 let pc = ly * 3.26;
 // ==================================================
-// 変数 : カメラ制御
-// ==================================================
-const fontPath = "/font/helvetiker_regular.typeface.json";
-// ==================================================
 // function 計算用
 // ==================================================
 function toRad(deg) {
@@ -95,6 +91,7 @@ watch(
   () => currentPage = useRoute().name,
   () => {
     WEBGL.change_camera();
+    THREE_PLANET.watch();
     THREE_SIGN.watch();
     PlanetInformation.watch();
     SignInformation.watch();
@@ -115,6 +112,7 @@ onMounted(() => {
     THREE_PLANET = new Three_Planet();
     THREE_PLANET.add_planet(WEBGL.scene);
     THREE_PLANET.add_orbit(WEBGL.scene);
+    THREE_PLANET.watch();
 
     THREE_SIGN = new Three_Sign();
     THREE_SIGN.add_Sign(WEBGL.scene);
@@ -127,6 +125,7 @@ onMounted(() => {
     SignInformation = new Sign_Information(WEBGL2.scene);
     SignInformation.watch();
 
+    WEBGL.setting_planetDistance(THREE_PLANET);
 
     rendering();
   };
@@ -177,7 +176,7 @@ onMounted(() => {
     Sign_textPosition.copy.value = toScreen(SignInformation.head.textCopyPosition);
     Sign_textPosition.body.value = toScreen(SignInformation.body.textBodyPosition);
 
-    SignInformation.update()
+    SignInformation.update();
 
     rendering_style();
     requestAnimationFrame(rendering);
@@ -312,6 +311,7 @@ li {
 
 body {
   color: #ffffff;
+  background-color: #000000;
   font-size: 16px;
   font-family: 'Cormorant Garamond', 'Shippori Mincho', serif;
   letter-spacing: 0.25em;
@@ -329,10 +329,10 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -10;
+  z-index: -8;
 }
 
-#webgl-canvas2 {
+#webgl-canvas-2 {
   position: fixed;
   top: 0;
   left: 0;

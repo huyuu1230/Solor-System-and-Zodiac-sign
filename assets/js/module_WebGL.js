@@ -28,9 +28,9 @@ export class WebGL {
         this.scene = new THREE.Scene();
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.setClearColor(new THREE.Color(0x000000));
+        // this.renderer.setClearColor(new THREE.Color(0x000000));
         this.renderer.setSize(this.width, this.height);
         this.init();
     };
@@ -56,9 +56,13 @@ export class WebGL {
         if (this.cameraControl) {
 
         } else {
-            this.update_camera(planet, sign);
+            if (useRoute().name == 'index' && this.cameraPositionProgress == 1) {
+
+            } else {
+                this.update_camera(planet, sign);
+            }
         }
-    }
+    };
     // ==================================================
     // キャンバスを作成
     // ==================================================
@@ -229,6 +233,7 @@ export class WebGL {
             this.cameraPositionEnd = this.#toSign_Position(sign.Pisces);
         } else {
             this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
+            this.cameraPositionEnd = new THREE.Vector3(0, au * 25, au * 50);
             // SP
             if (window.innerWidth < 768) {
                 this.cameraPositionEnd = new THREE.Vector3(0, au * 50, au * 100);
@@ -251,9 +256,28 @@ export class WebGL {
         return look;
     };
 
+    // 惑星の半径を計算
+    setting_planetDistance(planet) {
+        const planets = [];
+        planets.push(planet.Mercury);
+        planets.push(planet.Venus);
+        planets.push(planet.Earth);
+        planets.push(planet.Mars);
+        planets.push(planet.Jupiter);
+        planets.push(planet.Saturn);
+        planets.push(planet.Uranus);
+        planets.push(planet.Neptune);
+        let average = 0;
+        for (let i = 0; i < planets.length; i++) {
+            average += planets[i].computeRadius;
+        };
+        average = (average / (planets.length + 1)) / 2;
+        this.planetRadius = average;
+    };
+
     #toPlanet_Position(planet) {
         const distance = planet.computeDistance;
-        const radius = planet.computeRadius;
+        const radius = this.planetRadius;
         const theta = planet.alphaRad;
         const phi = planet.deltaRad;
         let x, y, z;
