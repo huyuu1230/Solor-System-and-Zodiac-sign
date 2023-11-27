@@ -178,7 +178,7 @@ onMounted(() => {
 
     SignInformation.update();
 
-    rendering_style();
+    rendering_style(WEBGL.camera);
     requestAnimationFrame(rendering);
   };
 });
@@ -257,7 +257,7 @@ function StylePlanetName(dom, data) {
   elem.style.left = sx + 'px';
 };
 
-function rendering_style() {
+function rendering_style(camera) {
   // -----惑星の位置を表す丸
   StylePlanet('mercury', THREE_PLANET.Mercury);
   StylePlanet('venus', THREE_PLANET.Venus);
@@ -276,6 +276,12 @@ function rendering_style() {
   StylePlanetName("saturn-name", THREE_PLANET.Saturn);
   StylePlanetName("uranus-name", THREE_PLANET.Uranus);
   StylePlanetName("neptune-name", THREE_PLANET.Neptune);
+
+  const cameraPosition = camera.position.clone();
+  const max = au * 500;
+  if(max < cameraPosition.x || cameraPosition.x < -max || max < cameraPosition.y || cameraPosition.y < -max || max < cameraPosition.z || cameraPosition.z < -max){
+   
+  };
 };
 </script>
 
