@@ -1,29 +1,30 @@
+<style lang="scss">
+/* -----_top.scss----- */
+</style>
+
 <template>
   <div>
     <headerNav />
-    <div id="webgl-container">
-      <!--Canvas-->
-      <div id="webgl-canvas"></div>
-      <div id="webgl-canvas-2"></div>
-    </div>
 
-    <!--three.jsの惑星の座標-->
+    <div id="webgl-canvas-1"></div>
+    <div id="webgl-canvas-2"></div>
+
     <ul>
-      <div v-on:click="toMercury" id="mercury" class="planet"></div>
+      <div v-on:click="toMercury" id="mercury" class="planet-circle"></div>
       <div id="mercury-name" class="planet-name">MERCURY</div>
-      <div v-on:click="toVenus" id="venus" class="planet"></div>
+      <div v-on:click="toVenus" id="venus" class="planet-circle"></div>
       <div id="venus-name" class="planet-name">VENUS</div>
-      <div v-on:click="toEarth" id="earth" class="planet"></div>
+      <div v-on:click="toEarth" id="earth" class="planet-circle"></div>
       <div id="earth-name" class="planet-name">EARTH</div>
-      <div v-on:click="toMars" id="mars" class="planet"></div>
+      <div v-on:click="toMars" id="mars" class="planet-circle"></div>
       <div id="mars-name" class="planet-name">MARS</div>
-      <div v-on:click="toJupiter" id="jupiter" class="planet"></div>
+      <div v-on:click="toJupiter" id="jupiter" class="planet-circle"></div>
       <div id="jupiter-name" class="planet-name">JUPITER</div>
-      <div v-on:click="toSaturn" id="saturn" class="planet"></div>
+      <div v-on:click="toSaturn" id="saturn" class="planet-circle"></div>
       <div id="saturn-name" class="planet-name">SATURN</div>
-      <div v-on:click="toUranus" id="uranus" class="planet"></div>
+      <div v-on:click="toUranus" id="uranus" class="planet-circle"></div>
       <div id="uranus-name" class="planet-name">URANUS</div>
-      <div v-on:click="toNeptune" id="neptune" class="planet"></div>
+      <div v-on:click="toNeptune" id="neptune" class="planet-circle"></div>
       <div id="neptune-name" class="planet-name">NEPTUNE</div>
     </ul>
 
@@ -60,6 +61,8 @@ let THREE_SIGN;
 
 let PlanetInformation;
 let SignInformation;
+
+let styleMode = true;
 // ==================================================
 // 変数 : 設定関連
 // ==================================================
@@ -97,13 +100,14 @@ watch(
     SignInformation.watch();
   },
 );
+
 // ====================================================================================================
 // MOUNTED
 // ====================================================================================================
 onMounted(() => {
-  const container = document.getElementById("webgl-canvas");
+  const container1 = document.getElementById("webgl-canvas-1");
   const container2 = document.getElementById("webgl-canvas-2");
-  WEBGL = new WebGL(container);
+  WEBGL = new WebGL(container1);
   WEBGL2 = new WebGL_info(container2)
 
   function init() {
@@ -257,6 +261,56 @@ function StylePlanetName(dom, data) {
   elem.style.left = sx + 'px';
 };
 
+function StyleAllView(){
+  const circle = document.querySelectorAll(".planet-circle");
+  const name = document.querySelectorAll(".planet-name");
+  for (let i = 0; i < circle.length; i++) {
+    if(!circle[i].classList.contains("view")){
+      circle[i].classList.remove("hide");
+      circle[i].classList.add("view");
+    } else {
+      // no script
+    }
+  };
+  for(let i = 0; i < name.length; i++){
+    if(!name[i].classList.contains("view")){
+      name[i].classList.remove("hide");
+      name[i].classList.add("view");
+    } else {
+      // no script
+    }
+  };
+};
+
+function StyleAllHide() {
+  const circle = document.querySelectorAll(".planet-circle");
+  const name = document.querySelectorAll(".planet-name");
+  for (let i = 0; i < circle.length; i++) {
+    if(!circle[i].classList.contains("hide")){
+      circle[i].classList.remove("view");
+      circle[i].classList.add("hide");
+    } else {
+      // no script
+    }
+  };
+  for(let i = 0; i < name.length; i++){
+    if(!name[i].classList.contains("hide")){
+      name[i].classList.remove("view");
+      name[i].classList.add("hide");
+    } else {
+      // no script
+    }
+  };
+};
+
+function StyleViewMode(){
+  if(styleMode){
+    StyleAllView();
+  } else {
+    StyleAllHide();
+  }
+};
+
 function rendering_style(camera) {
   // -----惑星の位置を表す丸
   StylePlanet('mercury', THREE_PLANET.Mercury);
@@ -277,106 +331,15 @@ function rendering_style(camera) {
   StylePlanetName("uranus-name", THREE_PLANET.Uranus);
   StylePlanetName("neptune-name", THREE_PLANET.Neptune);
 
+  // リファクタリングした方がいいかも
   const cameraPosition = camera.position.clone();
   const max = au * 500;
-  if(max < cameraPosition.x || cameraPosition.x < -max || max < cameraPosition.y || cameraPosition.y < -max || max < cameraPosition.z || cameraPosition.z < -max){
-   
-  };
+  if (max < cameraPosition.x || cameraPosition.x < -max || max < cameraPosition.y || cameraPosition.y < -max || max < cameraPosition.z || cameraPosition.z < -max) {
+    styleMode = false;
+    StyleAllHide();
+  } else {
+    styleMode = true;
+    StyleAllView();
+  }
 };
 </script>
-
-<style lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap");
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a {
-  line-height: 1em;
-}
-
-a {
-  display: block;
-  text-decoration: none;
-  color: #ffffff;
-}
-
-ul,
-li {
-  list-style: none;
-}
-
-body {
-  color: #ffffff;
-  background-color: #000000;
-  font-size: 16px;
-  font-family: 'Cormorant Garamond', 'Shippori Mincho', serif;
-  letter-spacing: 0.25em;
-}
-
-body::-webkit-scrollbar {
-  display: none;
-}
-#webgl-container{
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-#webgl-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -8;
-}
-
-#webgl-canvas-2 {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -9;
-}
-
-.planet {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1px solid #ffffff;
-  z-index: 1;
-  cursor: pointer;
-}
-
-.planet-name {
-  position: fixed;
-  top: 0;
-  left: 0;
-  font-size: 16px;
-}
-
-#planet-text {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  z-index: 10;
-  color: #ffffff;
-
-  h2 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    font-size: 2.5vw;
-  }
-}
-</style>

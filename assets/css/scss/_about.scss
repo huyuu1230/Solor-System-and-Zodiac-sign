@@ -1,0 +1,160 @@
+#about-container {
+
+    #about {
+        position: relative;
+        width: fit-content;
+        margin: 200px auto;
+        z-index: 1000;
+        color: #ffffff;
+        text-align: center;
+
+        .about-head {
+            h2 {
+                font-size: 40px;
+            }
+
+            .about-head-body {
+                margin: 64px 0 0 0;
+
+                p {
+                    font-size: 16px;
+                    line-height: 1em;
+                }
+
+                p:not(:first-child) {
+                    margin: 16px 0 0 0;
+                }
+            }
+        }
+
+        .about-content {
+            margin: 128px 0 0;
+
+            h2 {
+                font-size: 32px;
+            }
+
+            h3 {
+                margin: 64px 0 0 0;
+                font-size: 24px;
+                font-weight: 400;
+            }
+
+            .about-content-body {
+                margin: 40px 0 0 0;
+
+                p {
+                    font-size: 16px;
+                }
+
+                p:not(:first-child) {
+                    margin: 16px 0 0 0;
+                }
+            }
+        }
+
+        .about-creator {
+            margin: 128px 0 0 0;
+
+            h2 {
+                font-size: 32px;
+            }
+
+            .about-creator-body {
+                margin: 40px 0 0;
+
+                p {
+                    font-size: 16px;
+                }
+
+                p:not(:first-child) {
+                    margin: 16px 0 0 0;
+                }
+            }
+        }
+    }
+
+    #about-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba($color: #000000, $alpha: 0.5);
+        z-index: 100;
+    }
+}
+
+@media screen and (max-width:768px) {
+    #about-container{
+        #about{
+            width: 90vw;
+            text-align: left;
+            .about-head{
+                h2{
+                    font-size: 32px;
+                    text-align: center;
+                }
+
+                .about-head-body{
+                    p{
+                        font-size: 14px;
+                        line-height: 1.5em;
+                    }
+                    p:not(:first-child){
+                        margin: 0;
+                    }
+                }
+            }
+
+            .about-content{
+                margin: 64px 0 0;
+
+                h2{
+                    font-size: 32px;
+                    text-align: center;
+                }
+
+                h3{
+                    font-size: 24px;
+                    text-align: center;
+                }
+
+                .about-content-body{
+                    
+                    margin: 20px 0 0;
+                    
+                    p{
+                        font-size: 14px;
+                        line-height: 1.5em;
+                    }
+                    p:not(:first-child){
+                        margin: 0;
+                    }
+                }
+            }
+
+            .about-creator{
+                margin: 64px 0 0;
+
+                h2{
+                    font-size: 32px;
+                    text-align: center;
+                }
+
+                .about-creator-body{
+                    margin: 20px 0 0;
+                
+                    p{
+                        font-size: 14px;
+                        line-height: 1.5em;
+                    }
+                    p:not(:first-child){
+                        margin: 0;
+                    }
+                }
+
+            }
+        }
+    }
+}

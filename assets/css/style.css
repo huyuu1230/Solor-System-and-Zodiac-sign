@@ -1,54 +1,385 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap");
-.orbit {
-  font-family: "Cormorant Garamond", serif;
+* {
+  margin: 0;
+  padding: 0;
 }
-.orbit .orbit-title {
-  position: fixed;
-  top: 15%;
-  left: 5%;
-  width: -moz-fit-content;
-  width: fit-content;
-  color: #ffffff;
+
+ul, li {
+  list-style: none;
 }
-.orbit .orbit-title h1 {
-  font-size: calc(32px + 64 * (100vw - 768px) / 1152);
+
+h1, h2, h3, h4, h5, h6, p {
   line-height: 1em;
+}
+
+a {
+  display: block;
+  color: #ffffff;
+  line-height: 1em;
+  text-decoration: none;
+}
+
+body {
+  color: #ffffff;
+  background-color: #000000;
+  font-family: "Cormorant Garamond", "Shippori Mincho", serif;
+  font-size: 16px;
   letter-spacing: 0.25em;
 }
-.orbit .orbit-title .line {
-  width: 100%;
-  height: 1px;
-  margin: 20px 0;
-  background-color: #ffffff;
+
+body::-webkit-scrollbar {
+  display: none;
 }
-.orbit .orbit-title h6 {
-  font-size: 18px;
-  line-height: 1em;
-  letter-spacing: 0.25em;
+
+.view {
+  opacity: 1;
 }
-.orbit .orbit-params {
+
+.hide {
+  opacity: 0;
+}
+
+#webgl-canvas-1 {
   position: fixed;
-  left: 5%;
-  bottom: 10%;
-  width: -moz-fit-content;
-  width: fit-content;
-  color: #ffffff;
+  top: 0;
+  left: 0;
+  z-index: -8;
 }
-.orbit .orbit-params li {
-  padding: 0 0 5px;
-  border-bottom: 1px solid;
+
+#webgl-canvas-2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -9;
 }
-.orbit .orbit-params li h2 {
-  font-size: 12px;
+
+.planet-circle {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+  z-index: 1;
+  cursor: pointer;
 }
-.orbit .orbit-params li p {
+
+.planet-name {
+  position: fixed;
+  top: 0;
+  left: 0;
   font-size: 16px;
 }
-.orbit .orbit-params li:not(:first-child) {
-  margin: 10px 0 0 0;
+
+.orbit {
+  color: #ffffff;
 }
-.orbit .planet-log {
+
+.planet-info {
   position: fixed;
-  right: 5%;
-  bottom: 10%;
+}
+
+.planet-info-name {
+  font-size: 2.5vw;
+  transform: translate(0.5vw, -3vw);
+}
+
+.planet-info-copy {
+  width: 20vw;
+  font-size: 1.5vw;
+  transform: translate(0.5vw, 0.5vw);
+}
+
+.planet-info-head-r {
+  font-size: 1.25vw;
+  transform: translate(-100%, -1.75vw);
+  white-space: nowrap;
+}
+
+.planet-info-body-r {
+  font-size: 1vw;
+  transform: translate(-100%, 0.5vw);
+  white-space: nowrap;
+}
+
+.planet-info-head-l {
+  font-size: 1.25vw;
+  transform: translate(0.5vw, -1.75vw);
+  white-space: nowrap;
+}
+
+.planet-info-body-l {
+  font-size: 1vw;
+  transform: translate(0.5vw, 0.5vw);
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 768px) {
+  .planet-info-name {
+    font-size: 10vw;
+    transform: translate(0.5vw, -12vw);
+  }
+  .planet-info-copy {
+    width: 60vw;
+    font-size: 4vw;
+    transform: translate(0.5vw, 2vw);
+  }
+  .planet-info-head-r {
+    font-size: 5vw;
+    transform: translate(-100%, -6vw);
+    white-space: nowrap;
+  }
+  .planet-info-body-r {
+    font-size: 3vw;
+    transform: translate(-100%, 1vw);
+    white-space: nowrap;
+  }
+  .planet-info-head-l {
+    font-size: 5vw;
+    transform: translate(0.5vw, -6vw);
+    white-space: nowrap;
+  }
+  .planet-info-body-l {
+    font-size: 3vw;
+    transform: translate(0.5vw, 1vw);
+    white-space: nowrap;
+  }
+}
+.sign-info {
+  position: fixed;
+}
+
+.sign-info-name {
+  font-size: 2.5vw;
+  transform: translate(-100%, -3vw);
+}
+
+.sign-info-copy {
+  width: 20vw;
+  text-align: right;
+  font-size: 1vw;
+  transform: translate(-100%, -120%);
+}
+
+.sign-info-body {
+  width: 40vw;
+  font-size: 0.6vw;
+  line-height: 1.5em;
+  transform: translate(1vw, -110%);
+  text-align: justify;
+}
+
+@media screen and (max-width: 768px) {
+  .sign-info-name {
+    font-size: 8vw;
+    transform: translate(-100%, -8vw);
+  }
+  .sign-info-copy {
+    width: 70vw;
+    text-align: right;
+    font-size: 4vw;
+    transform: translate(-100%, -110%);
+  }
+  .sign-info-body {
+    width: 85vw;
+    font-size: 2vw;
+    line-height: 1.5em;
+    transform: translate(2vw, -110%);
+  }
+}
+#about-container #about {
+  position: relative;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: 200px auto;
+  z-index: 1000;
+  color: #ffffff;
+  text-align: center;
+}
+#about-container #about .about-head h2 {
+  font-size: 40px;
+}
+#about-container #about .about-head .about-head-body {
+  margin: 64px 0 0 0;
+}
+#about-container #about .about-head .about-head-body p {
+  font-size: 16px;
+  line-height: 1em;
+}
+#about-container #about .about-head .about-head-body p:not(:first-child) {
+  margin: 16px 0 0 0;
+}
+#about-container #about .about-content {
+  margin: 128px 0 0;
+}
+#about-container #about .about-content h2 {
+  font-size: 32px;
+}
+#about-container #about .about-content h3 {
+  margin: 64px 0 0 0;
+  font-size: 24px;
+  font-weight: 400;
+}
+#about-container #about .about-content .about-content-body {
+  margin: 40px 0 0 0;
+}
+#about-container #about .about-content .about-content-body p {
+  font-size: 16px;
+}
+#about-container #about .about-content .about-content-body p:not(:first-child) {
+  margin: 16px 0 0 0;
+}
+#about-container #about .about-creator {
+  margin: 128px 0 0 0;
+}
+#about-container #about .about-creator h2 {
+  font-size: 32px;
+}
+#about-container #about .about-creator .about-creator-body {
+  margin: 40px 0 0;
+}
+#about-container #about .about-creator .about-creator-body p {
+  font-size: 16px;
+}
+#about-container #about .about-creator .about-creator-body p:not(:first-child) {
+  margin: 16px 0 0 0;
+}
+#about-container #about-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+@media screen and (max-width: 768px) {
+  #about-container #about {
+    width: 90vw;
+    text-align: left;
+  }
+  #about-container #about .about-head h2 {
+    font-size: 32px;
+    text-align: center;
+  }
+  #about-container #about .about-head .about-head-body p {
+    font-size: 14px;
+    line-height: 1.5em;
+  }
+  #about-container #about .about-head .about-head-body p:not(:first-child) {
+    margin: 0;
+  }
+  #about-container #about .about-content {
+    margin: 64px 0 0;
+  }
+  #about-container #about .about-content h2 {
+    font-size: 32px;
+    text-align: center;
+  }
+  #about-container #about .about-content h3 {
+    font-size: 24px;
+    text-align: center;
+  }
+  #about-container #about .about-content .about-content-body {
+    margin: 20px 0 0;
+  }
+  #about-container #about .about-content .about-content-body p {
+    font-size: 14px;
+    line-height: 1.5em;
+  }
+  #about-container #about .about-content .about-content-body p:not(:first-child) {
+    margin: 0;
+  }
+  #about-container #about .about-creator {
+    margin: 64px 0 0;
+  }
+  #about-container #about .about-creator h2 {
+    font-size: 32px;
+    text-align: center;
+  }
+  #about-container #about .about-creator .about-creator-body {
+    margin: 20px 0 0;
+  }
+  #about-container #about .about-creator .about-creator-body p {
+    font-size: 14px;
+    line-height: 1.5em;
+  }
+  #about-container #about .about-creator .about-creator-body p:not(:first-child) {
+    margin: 0;
+  }
+}
+#contact {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  z-index: 100;
+  color: #ffffff;
+}
+#contact .contact-content {
+  width: 500px;
+  margin: auto 0;
+  text-align: center;
+}
+#contact .contact-content h2 {
+  font-size: 48px;
+}
+#contact .contact-content p {
+  margin: 64px 0 0;
+  font-size: 16px;
+}
+#contact .contact-content ul {
+  margin: 64px 0 0;
+}
+#contact .contact-content ul li {
+  font-size: 20px;
+}
+#contact .contact-content ul li a {
+  display: inline-block;
+}
+#contact .contact-line {
+  width: 1px;
+  height: 400px;
+  background-color: #ffffff;
+  margin: 0 50px;
+}
+
+#contact-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+}
+
+@media screen and (max-width: 768px) {
+  #contact {
+    display: block;
+  }
+  #contact .contact-content {
+    width: 90vw;
+  }
+  #contact .contact-content h2 {
+    font-size: 32px;
+  }
+  #contact .contact-content p {
+    margin: 32px;
+    line-height: 1.5em;
+  }
+  #contact .contact-content ul {
+    margin: 32px;
+  }
+  #contact .contact-content ul li {
+    font-size: 12px;
+  }
+  #contact .contact-line {
+    width: 100%;
+    height: 1px;
+    margin: 32px auto;
+  }
 }/*# sourceMappingURL=style.css.map */

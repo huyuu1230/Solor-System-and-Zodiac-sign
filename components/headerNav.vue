@@ -294,8 +294,6 @@ function shuffle_active(): void {
         shuffle(shuffleElem[i], DefaultShuffleTextArray[i]);
     };
 };
-
-
 </script>
 
 

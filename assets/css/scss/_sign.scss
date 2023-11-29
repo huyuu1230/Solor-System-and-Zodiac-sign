@@ -1,0 +1,44 @@
+.sign-info {
+    position: fixed;
+}
+
+.sign-info-name {
+    font-size: 2.5vw;
+    transform: translate(-100%, -3vw);
+}
+
+.sign-info-copy {
+    width: 20vw;
+    text-align: right;
+    font-size: 1vw;
+    transform: translate(-100%, -120%);
+}
+
+.sign-info-body {
+    width: 40vw;
+    font-size: 0.6vw;
+    line-height: 1.5em;
+    transform: translate(1vw, -110%);
+    text-align: justify;
+}
+
+@media screen and (max-width: 768px) {
+    .sign-info-name {
+        font-size: 8vw;
+        transform: translate(-100%, -8vw);
+    }
+
+    .sign-info-copy {
+        width: 70vw;
+        text-align: right;
+        font-size: 4vw;
+        transform: translate(-100%, -110%);
+    }
+
+    .sign-info-body {
+        width: 85vw;
+        font-size: 2vw;
+        line-height: 1.5em;
+        transform: translate(2vw, -110%);
+    }
+}
