@@ -1,9 +1,16 @@
 <style lang="scss">
-/* -----_about.scss----- */
+.c__001{
+    position: fixed;
+    top: 30%;
+    left: 30%;
+}
 </style>
 
 <template>
-    <div id="about-container">
+    <div>
+        <AboutContent class="c__001"/>
+    </div>
+<!-- <div id="about-container">
         <div id="about">
             <div class="about-head">
                 <h2>
@@ -66,10 +73,10 @@
             </div>
         </div>
         <div id="about-bg"></div>
-    </div>
+    </div> -->
 </template>
 
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 
 const HEAD_TITLE = ref("About - Solor System and Zodiac Sign");
 
@@ -137,7 +144,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const about = {
-    head: 'こんにちは、私の小さな宇宙へようこそ！',
+    head: 'こんにちは、私の小さな宇宙へようこそ',
     body: [
         'このWebサイトは、太陽系の惑星や、黄道十二星座に関する情報を、グラフィックと合わせて楽しく知ることのできる場所です。',
         '宇宙は未知であり、神秘的であり、多くの人の頭上に広がっている広大な存在です。',
@@ -187,4 +194,4 @@ onMounted(() => {
         count++;
     };
 });
-</script>
+</script> -->

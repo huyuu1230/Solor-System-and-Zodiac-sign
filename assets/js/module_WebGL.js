@@ -16,9 +16,11 @@ let pc = ly * 3.26;
 function lerp(x, y, a) {
     return (1 - a) * x + a * y;
 };
+
 function easeInOutQuart(x) {
     return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
 };
+
 // ==================================================
 // WEBGL
 // ==================================================
@@ -39,6 +41,7 @@ export class WebGL {
         this.#setting_camera();
         this.#setting_controls();
         this.#setting_camera_control();
+        this.autoPlay();
     };
     onResize() {
         this.width = window.innerWidth;
@@ -53,12 +56,22 @@ export class WebGL {
         this.controls.update();
     };
     rendering(planet, sign) {
+        /* ルートがインデックス　且つ　cameraPositionProgressが1 且つ　コントロールを有効に
+         * ルートがインデックス　且つ　this.autoPlayCount > 30の場合、this.autoPlayModeがtrue　結果、オートプレイを有効に
+         * ルートがインデックス以外の場合、this.update_cameraを実行
+         * 
+         * ルートがインデックスの場合、this.autoPlayCount += 1/60 30を超えた場合停止
+         *
+        */
         if (this.cameraControl) {
-
+            // if(useRoute().name == 'index' && this.autoPlayMode){
+                
+            // }
         } else {
             if (useRoute().name == 'index' && this.cameraPositionProgress == 1) {
-
-            } else {
+                this.autoPlayUpdate();
+            } 
+            else {
                 this.update_camera(planet, sign);
             }
         }
@@ -143,7 +156,7 @@ export class WebGL {
         this.cameraPositionStart = this.camera.position.clone();
     };
     update_camera(planet, sign) {
-
+        // this.autoPlay = false;
         const current = useRoute().name;
         if (current == "index") {
             this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
@@ -152,6 +165,7 @@ export class WebGL {
             if (window.innerWidth < 768) {
                 this.cameraPositionEnd = new THREE.Vector3(0, au * 50, au * 100);
             }
+            this.autoPlay();
         }
         else if (current == "planets-mercury") {
             this.cameraLookEnd = this.#toPlanet_Look(planet.Mercury);
@@ -317,5 +331,31 @@ export class WebGL {
             z = z / Object.keys(sign).length * 3;
         };
         return new THREE.Vector3(x, y, z);
+    };
+
+    autoPlay() {
+        const cameraPosition = this.cameraPositionEnd.clone();
+        
+        const x = cameraPosition.x;
+        const y = cameraPosition.y;
+        const z = cameraPosition.z;
+        
+        // 直交座標から極座標を求める
+        this.r = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
+        this.theta = Math.acos(z / Math.sqrt(x ** 2 + y ** 2 + z ** 2));
+        this.phi = Math.sign(y) * Math.acos(x / Math.sqrt(x ** 2 + y ** 2));
+        
+        this.x = this.r * Math.sin(this.theta) * Math.cos(this.phi);
+        this.y = this.r * Math.sin(this.theta) * Math.sin(this.phi);
+        this.z = this.r * Math.cos(this.theta);
+    };
+
+    autoPlayUpdate() {
+        this.theta += 0.1 * Math.PI / 180;
+        this.phi += 0.05 * Math.PI / 180;
+        this.x = this.r * Math.sin(this.theta) * Math.cos(this.phi);
+        this.y = this.r * Math.sin(this.theta) * Math.sin(this.phi);
+        this.z = this.r * Math.cos(this.theta);
+        this.camera.position.set(this.x, this.y, this.z);
     };
 };
