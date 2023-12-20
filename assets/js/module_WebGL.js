@@ -56,24 +56,20 @@ export class WebGL {
         this.controls.update();
     };
     rendering(planet, sign) {
-        /* ルートがインデックス　且つ　cameraPositionProgressが1 且つ　コントロールを有効に
-         * ルートがインデックス　且つ　this.autoPlayCount > 30の場合、this.autoPlayModeがtrue　結果、オートプレイを有効に
-         * ルートがインデックス以外の場合、this.update_cameraを実行
-         * 
-         * ルートがインデックスの場合、this.autoPlayCount += 1/60 30を超えた場合停止
-         *
-        */
-        if (this.cameraControl) {
-            // if(useRoute().name == 'index' && this.autoPlayMode){
-                
-            // }
-        } else {
-            if (useRoute().name == 'index' && this.cameraPositionProgress == 1) {
-                this.autoPlayUpdate();
-            } 
-            else {
-                this.update_camera(planet, sign);
+        // 現在のルートがindex 且つ カメラの遷移が終了ている場合
+        if (useRoute().name == "index" && this.cameraPositionProgress == 1) {
+            // カメラの遷移終了から15秒間カウントする
+            if (this.autoPlayCount < 15) {
+                this.autoPlayCount += 1 / 60;
             }
+            // カメラの遷移終了から15秒以上経過した場合、オートプレイを有効にする
+            else {
+                this.autoPlayUpdate();
+            }
+        }
+        // 現在のルートがindex以外の場合カメラの移動を有効に
+        else {
+            this.update_camera(planet, sign);
         }
     };
     // ==================================================
@@ -156,7 +152,6 @@ export class WebGL {
         this.cameraPositionStart = this.camera.position.clone();
     };
     update_camera(planet, sign) {
-        // this.autoPlay = false;
         const current = useRoute().name;
         if (current == "index") {
             this.cameraLookEnd = new THREE.Vector3(0, 0, 0);
@@ -334,17 +329,18 @@ export class WebGL {
     };
 
     autoPlay() {
+        this.autoPlayCount = 0;
         const cameraPosition = this.cameraPositionEnd.clone();
-        
+
         const x = cameraPosition.x;
         const y = cameraPosition.y;
         const z = cameraPosition.z;
-        
+
         // 直交座標から極座標を求める
         this.r = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
         this.theta = Math.acos(z / Math.sqrt(x ** 2 + y ** 2 + z ** 2));
         this.phi = Math.sign(y) * Math.acos(x / Math.sqrt(x ** 2 + y ** 2));
-        
+
         this.x = this.r * Math.sin(this.theta) * Math.cos(this.phi);
         this.y = this.r * Math.sin(this.theta) * Math.sin(this.phi);
         this.z = this.r * Math.cos(this.theta);
@@ -359,3 +355,116 @@ export class WebGL {
         this.camera.position.set(this.x, this.y, this.z);
     };
 };
+
+/**
+ * @param {string} webgl // コンテナのid名 or class名
+ */
+class _WebGL {
+    constructor(webgl) {
+        this.webgl = document.querySelector(webgl);
+        this.scene = new THREE.Scene();
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setSize(this.width, this.height);
+        this.init();
+    }
+
+    init() {
+
+    }
+
+    resize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.camera.aspect = this.width / this.height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(this.width, this.height);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    }
+
+    update() {
+        this.renderer.render(this.scene, this.camera);
+        this.controls.update();
+        if (this.playMode == 0) {
+            // play
+        } else if (this.playMode == 1) {
+            // control
+        } else if (this.playMode == 2) {
+            //auto  play
+        }
+    }
+
+    watch() {
+
+    }
+
+    _init_params() {
+
+
+    }
+
+    _init_controls() {
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+    }
+
+    _init_camera() {
+        this.cameraFov = 45;
+        this.cameraAspect = window.innerWidth / window.innerHeight;
+        this.cameraNear = 0.1;
+        this.cameraFar = pc; // 1pc
+        this.camera = new THREE.PerspectiveCamera(
+            this.cameraFov,
+            this.cameraAspect,
+            this.cameraNear,
+            this.cameraFar,
+        );
+    };
+
+    _init_camera_control() {
+        this.playMode = 0;
+        this.cameraLS = new THREE.Vector3(0, 0, 0);
+        this.cameraLE = new THREE.Vector3(0, 0, 0);
+        this.cameraPS = new THREE.Vector3(0, 0, 0);
+        this.cameraPE = new THREE.Vector3(0, au * 25, au * 50);
+        this.cameraLProg = 0;
+        this.cameraPProg = 0;
+    };
+
+    _init_autoPlay() {
+        this.autoR = 0;
+        this.autoTheta = 0;
+        this.autoPhi = 0;
+        this.autoX = this.autoR * Math.sin(this.autoTheta) * Math.cos(this.autoPhi);
+        this.autoY = this.autoR * Math.sin(this.autoTheta) * Math.sin(this.autoPhi);
+        this.autoZ = this.autoR * Math.cos(this.autoTheta);
+    };
+
+    _update_cameraPos(startVec3, endVec3, prog) {
+        const newVec3 = new THREE.Vector3();
+        newVec3.x = lerp(startVec3.x, endVec3.x, prog);
+        newVec3.y = lerp(startVec3.x, endVec3.x, prog);
+        newVec3.z = lerp(startVec3.z, endVec3.z, prog);
+        this.camera.position.copy(newVec3);
+    }
+
+    _update_cameraLook(startVec3, endVec3, prog) {
+        const newVec3 = new THREE.Vector3();
+        newVec3.x = lerp(startVec3.x, endVec3.x, prog);
+        newVec3.y = lerp(startVec3.x, endVec3.x, prog);
+        newVec3.z = lerp(startVec3.z, endVec3.z, prog);
+        this.controls.target.copy(newVec3);
+    }
+
+    _update_cameraProg() {
+        if (this.cameraLProg < 1) {
+            this.cameraLProg += 1 / 60;
+        }
+        if(this.cameraPProg < 1){
+            this.cameraPProg += 1 / 120;
+        }
+        
+    }
+}

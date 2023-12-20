@@ -1,28 +1,32 @@
 <template>
-    <div>
-        <h2>
-            <a v-bind:class="{ 'active': auto }">AUTO</a>
-            <span>|</span>
-            <a v-bind:class="{ 'active': control }">CONTROL</a>
-        </h2>
-    </div>
+  <div>
+    <h2>
+      <a v-on:click="setAuto" v-bind:class="{ 'active': auto }">AUTO</a>
+      <span>|</span>
+      <a v-on:click="setControl" v-bind:class="{ 'active': control }">CONTROL</a>
+    </h2>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-a{
-    display: inline-block;
-    font-size: 24px;
-    opacity: 0.5;
-    transition: all 1000ms ease-in-out;
-    cursor: pointer;
+h2 {
+  font-family: 'Orbitron', sans-serif;
 }
 
-span{
-    margin: 0 24px;
+a {
+  display: inline-block;
+  font-size: 24px;
+  opacity: 0.5;
+  transition: all 1000ms ease-in-out;
+  cursor: pointer;
 }
 
-.active{
-    opacity: 1;
+span {
+  margin: 0 24px;
+}
+
+.active {
+  opacity: 1;
 }
 </style>
 
@@ -71,11 +75,23 @@ function convertStrToBool(str: string | undefined): boolean {
   }
 };
 
-// function setAuto() {
-//   router.push({ query: { auto: "true" } })
-// }
+function setAuto() {
+  const current = Object.assign({}, route.query);
+  if (convertStrToBool(current.auto?.toString())) {
+    delete current.auto;
+  } else {
+    current.auto = "true";
+  }
+  router.push({ query: current });
+}
 
-// function setControl() {
-//   router.push({ query: { control: "true" } })
-// }
+function setControl() {
+  const current = Object.assign({}, route.query);
+  if (convertStrToBool(current.control?.toString())) {
+    delete current.control;
+  } else {
+    current.control = "true";
+  }
+  router.push({ query: current });
+}
 </script>

@@ -12,6 +12,7 @@
   
 <style lang="scss" scoped>
 div {
+    font-family: 'Orbitron', sans-serif;
     width: fit-content;
 }
 
@@ -48,6 +49,16 @@ h2 {
 
 .t__button__view {
     opacity: 1;
+}
+
+@media screen and (max-width:768px) {
+    div{
+        width: 90vw;
+    }
+
+    h2{
+        font-size: 16px;
+    }
 }
 </style>
   

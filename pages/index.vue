@@ -16,14 +16,18 @@
   right: 40px;
   bottom: 40px;
 }
+
+@media screen and (max-width:768px) {
+  .t__nav{
+    left: 5vw;
+  }
+
+  .t__nav__control{
+    display: none;
+  }
+}
 </style>
 
 <script setup>
-let from = Object.assign({},useRouter().query);
-from.id= 1;
-console.log(from)
 
-onMounted(()=>{
-  useRouter().push({query:from})
-})
 </script>

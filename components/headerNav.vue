@@ -15,7 +15,7 @@
         <div id="header-toggle-bg" class="header-toggle-bg-from"></div>
         <div id="header-toggle" class="header-toggle-from">
             <div id="header-logo">
-                <div class="header-img"></div>
+                
                 <h2>
                     Solor System<br>
                     and<br>
@@ -178,13 +178,9 @@ const signs: HeaderLink[] = [
 ];
 // -----ABOUT
 const abouts: HeaderLink[] = [
-    // {
-    //     text: 'GREETING',
-    //     path: '/about/greeting'
-    // },
     {
         text: 'ABOUT',
-        path: '/about/about'
+        path: '/about/'
     }
 ];
 // -----CONTACTS
@@ -193,10 +189,6 @@ const contacts: HeaderLink[] = [
         text: 'CONTACT',
         path: '/contacts/contact'
     },
-    // {
-    //     text: 'MAIL',
-    //     path: '/contacts/mail'
-    // },
 ];
 
 const DefaultShuffleTextArray: string[] = [];
@@ -300,9 +292,9 @@ function shuffle_active(): void {
 
 <style lang="scss" scoped>
 header {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Orbitron', sans-serif;
     position: relative;
-    z-index: 10000;
+    z-index: 1000;
 
     #header {
         position: fixed;
@@ -312,7 +304,7 @@ header {
         align-items: center;
         justify-content: space-between;
         width: 95%;
-        padding: 8px 2.5%;
+        padding: 16px 2.5%;
         background-color: rgba($color: #222222, $alpha: 0.8);
         border-bottom: 1px solid;
         z-index: 1000;

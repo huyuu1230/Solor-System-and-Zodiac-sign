@@ -1,4 +1,9 @@
-<style lang="scss"></style>
+<style lang="scss">
+#test {
+    width: fit-content;
+    margin: 300px auto 0;
+}
+</style>
 
 <template>
     <div id="contact-container">
@@ -24,6 +29,41 @@
 </template>
 
 <script setup>
+
+const planet = [
+    {
+        text: 'MERCURY',
+        path: '/planets/mercury'
+    },
+    {
+        text: 'VENUS',
+        path: '/planets/venus'
+    },
+    {
+        text: 'EARTH',
+        path: '/planets/earth'
+    },
+    {
+        text: 'MARS',
+        path: '/planets/mars'
+    },
+    {
+        text: 'JUPITER',
+        path: '/planets/jupiter'
+    },
+    {
+        text: 'SATURN',
+        path: '/planets/saturn'
+    },
+    {
+        text: 'URANUS',
+        path: '/planets/uranus'
+    },
+    {
+        text: 'NEPTUNE',
+        path: '/planets/neptune'
+    },
+];
 
 const HEAD_TITLE = ref("Contact - Solor System and Zodiac Sign");
 
