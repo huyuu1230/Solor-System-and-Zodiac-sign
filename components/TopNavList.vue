@@ -16,6 +16,7 @@ nav {
 
             a::before {
                 content: "- ";
+                font-family: sans-serif;
             }
         }
     }

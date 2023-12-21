@@ -12,7 +12,7 @@
   
 <style lang="scss" scoped>
 div {
-    font-family: 'Orbitron', sans-serif;
+    // font-family: 'Orbitron', sans-serif;
     width: fit-content;
 }
 

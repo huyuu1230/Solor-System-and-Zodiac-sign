@@ -292,7 +292,7 @@ function shuffle_active(): void {
 
 <style lang="scss" scoped>
 header {
-    font-family: 'Orbitron', sans-serif;
+    // font-family: 'Orbitron', sans-serif;
     position: relative;
     z-index: 1000;
 
