@@ -6,7 +6,7 @@
   <div>
     <headerNav />
 
-    <div id="webgl-canvas-1"></div>
+    <div id="webgl-canvas-1" @click="noAutoPlay"></div>
     <div id="webgl-canvas-2"></div>
 
     <ul>
@@ -342,4 +342,8 @@ function rendering_style(camera) {
     StyleAllView();
   }
 };
+
+function noAutoPlay(){
+  WEBGL.autoPlayCount = 0;
+}
 </script>

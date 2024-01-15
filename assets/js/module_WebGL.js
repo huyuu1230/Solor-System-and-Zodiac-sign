@@ -59,7 +59,7 @@ export class WebGL {
         // 現在のルートがindex 且つ カメラの遷移が終了ている場合
         if (useRoute().name == "index" && this.cameraPositionProgress == 1) {
             // カメラの遷移終了から15秒間カウントする
-            if (this.autoPlayCount < 15) {
+            if (this.autoPlayCount < 60) {
                 this.autoPlayCount += 1 / 60;
             }
             // カメラの遷移終了から15秒以上経過した場合、オートプレイを有効にする
